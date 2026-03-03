@@ -1,0 +1,14 @@
+{
+  "name": "com.damdor.sequentio",
+  "version": "1.0.0",
+  "displayName": "Sequentio",
+  "description": "Tween-based animation library",
+  "unity": "2022.3",
+  "publishConfig": {
+    "registry": "https://upm.pckgs.io"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/damdordev/Foundation.git"
+  }
+}
