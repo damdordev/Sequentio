@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Damdor.Vario;
+using UnityEngine;
 
 namespace Damdor.Sequentio
 {
@@ -11,46 +12,58 @@ namespace Damdor.Sequentio
             public bool ValuesApplied;
             public float StartTime;
             public float EndTime;
+            public float Duration;
+            public bool Append;
+            public bool InitOnStart;
         }
         
-        private readonly List<SequentioStep> allSteps = new();
-        private readonly List<StepData> steps = new();
+        public float Duration { get; private set; }
+        public float CurrentTime { get; private set; }
+        
+        private readonly List<SequentioStep> steps = new();
+        private readonly List<StepData> data = new();
         private readonly VarioStorage storage;
         private readonly bool runtime;
         private bool isInit;
         
-        public SequentioRunner(bool runtime, VarioStorage storage, List<SequentioStep> allSteps)
+        public SequentioRunner(bool runtime, VarioStorage storage, List<SequentioStep> steps)
         {
             this.runtime = runtime;
             this.storage = storage;
-            this.allSteps = allSteps;
+            this.steps = steps;
         }
 
         public void Init()
         {
             if (isInit) return;
             
-            foreach (var step in allSteps) step.Storage = storage;
-            steps.Clear();
-            foreach (var step in allSteps)
+            foreach (var step in steps) step.Storage = storage;
+            data.Clear();
+            foreach (var step in steps)
             {
-                if (step.IsEnabled(runtime)) steps.Add(new StepData
-                {
-                    Step = step,
-                    ValuesApplied = false
-                });
+                if (!step.IsEnabled(runtime)) continue;
+                data.Add(CreateStepData(step));
             }
 
-            var time = 0f;
-            foreach (var data in steps)
+            foreach (var step in data) step.Duration = step.Step.CalculateDuration();
+
+            if (data.Count > 0)
             {
-                var duration = data.Step.CalculateDuration();
-                data.StartTime = time;
-                data.EndTime = data.StartTime + duration;
-                time += duration;
+                data[0].StartTime = 0f;
+                data[0].EndTime = data[0].Duration;
             }
-            foreach (var data in steps) data.Step.SaveInitialState();
-            foreach (var data in steps)
+
+            for (var i = 1; i < data.Count; i++)
+            {
+                data[i].StartTime = data[i].Append ? data[i - 1].StartTime : data[i - 1].EndTime;
+                data[i].EndTime = data[i].StartTime + data[i].Duration;
+            }
+
+            Duration = data.Count > 0 ? data[^1].EndTime : 0f;
+            CurrentTime = 0f;
+            
+            foreach (var data in data) data.Step.SaveInitialState();
+            foreach (var data in data)
             {
                 if (data.Step.InitOnStart)
                 {
@@ -62,16 +75,44 @@ namespace Damdor.Sequentio
         
         public void Update(float dt)
         {
-            
+            SetTime(CurrentTime + dt);
+            foreach (var stepData in data)
+            {
+                if(CurrentTime < stepData.StartTime) continue;
+                
+                if (!stepData.ValuesApplied)
+                {
+                    // TODO: error handling
+                    stepData.Step.ApplyValues();
+                    stepData.ValuesApplied = true;
+                }
+                
+                var t = Mathf.InverseLerp(stepData.StartTime, stepData.EndTime, CurrentTime);
+                stepData.Step.SetProgress(t);
+                
+            }
+        }
+
+        public void SetTime(float newTime)
+        {
+            CurrentTime = Mathf.Clamp(newTime, 0f, Duration);
         }
 
         public void ReturnToInitialState()
         {
-            for (var index = steps.Count - 1; index >= 0; index--)
+            for (var index = data.Count - 1; index >= 0; index--)
             {
-                steps[index].Step.ReturnToInitialState();
+                data[index].Step.ReturnToInitialState();
             }
         }
+        
+        private StepData CreateStepData(SequentioStep step) => new()
+        {
+            Step = step,
+            ValuesApplied = false,
+            Append = false,
+            InitOnStart = step.InitOnStart
+        };
         
     }
 }

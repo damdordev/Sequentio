@@ -23,8 +23,22 @@ namespace Damdor.Sequentio
             set => initOnStart = value;
         }
         
+        public bool Append
+        {
+            get => append;
+            set => append = value;
+        }
+
+        public VarioValue<float> Delay
+        {
+            get => delay;
+            set => delay = value;
+        }
+        
         [SerializeField] private SequentioStepVisibility visibility;
         [SerializeField] private bool initOnStart;
+        [SerializeField] private bool append;
+        [SerializeField] private VarioValue<float> delay;
 
         public bool IsEnabled(bool runtime) => visibility.IsEnabled(runtime);
         

@@ -51,11 +51,6 @@ namespace Damdor.Sequentio
             }
         }
 
-        public UniTask PlayAndWait()
-        {
-            return UniTask.CompletedTask;
-        }
-
         public void Pause()
         {
             if (state == SequentioState.Playing)
@@ -77,6 +72,11 @@ namespace Damdor.Sequentio
             runner.ReturnToInitialState();
             state = SequentioState.Idle;
             runner = null;
+        }
+
+        protected virtual void Update()
+        {
+            if (state == SequentioState.Playing) runner.Update(Time.deltaTime);
         }
         
     }
