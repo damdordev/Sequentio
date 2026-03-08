@@ -16,6 +16,7 @@ namespace Damdor.Sequentio
     public class Sequence : MonoBehaviour, IVarioStorageSource
     {
         public VarioStorage Storage => storage;
+        public SequenceState State => state;
         
         [SerializeField] private VarioStorage storage = new();
         [SerializeReference] public List<SequentioStep> steps = new();

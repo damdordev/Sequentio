@@ -12,6 +12,24 @@ namespace Damdor.Sequentio.Editor
     public class SequenceEditor : UnityEditor.Editor
     {
         private readonly Dictionary<string, ReorderableList> propertyPathToReorderableList = new();
+        private GUIContent playButtonContent;
+        private GUIContent playPauseButtonContent;
+        private GUIContent stopButtonContent;
+        private GUIContent pauseButtonContent;
+
+        private void OnEnable()
+        {
+            playButtonContent = EditorGUIUtility.IconContent("PlayButton On");
+            playPauseButtonContent = EditorGUIUtility.IconContent("Animation.NextKey");
+            stopButtonContent = EditorGUIUtility.IconContent("animationdopesheetkeyframe");
+            pauseButtonContent = EditorGUIUtility.IconContent("PauseButton On");
+        }
+
+        private void OnDisable()
+        {
+            var sequence = (Sequence) serializedObject.targetObject;
+            sequence.Stop();
+        }
 
         public override void OnInspectorGUI()
         {
@@ -22,11 +40,62 @@ namespace Damdor.Sequentio.Editor
             {
                 statesList = CreateStepsReorderableList(stepsProperty);
             }
-            
+
+            ShowPlayControls();
             EditorGUILayout.PropertyField(storageProperty);
             statesList.DoLayoutList();
         }
+        
+        private void ShowPlayControls()
+        {
+            var sequence = (Sequence) serializedObject.targetObject;
+            
+            EditorGUILayout.BeginVertical();
+            
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
 
+            switch (sequence.State)
+            {
+                case SequenceState.Idle:
+                    ShowPlayButton(sequence);
+                    break;
+                case SequenceState.Playing:
+                    ShowPauseButton(sequence);
+                    ShowStopButton(sequence);
+                    break;
+                case SequenceState.Paused:
+                    ShowPlayButton(sequence);
+                    ShowStopButton(sequence);
+                    break;
+                case SequenceState.Finished:
+                    ShowStopButton(sequence);
+                    break;
+            }
+
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.EndVertical();
+        }
+
+        private void ShowPlayButton(Sequence sequence)
+        {
+            if (!GUILayout.Button(playButtonContent)) return;
+            sequence.Play();
+        }
+        
+        private void ShowPauseButton(Sequence sequence)
+        {
+            if (!GUILayout.Button(pauseButtonContent)) return;
+            sequence.Pause();
+        }
+        
+        private void ShowStopButton(Sequence sequence)
+        {
+            if (!GUILayout.Button(stopButtonContent)) return;
+            sequence.Stop();
+        }
+        
         private ReorderableList CreateStepsReorderableList(SerializedProperty property)
         {
             var reorderableList = new ReorderableList(
