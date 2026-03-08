@@ -45,8 +45,7 @@ namespace Damdor.Sequentio
         private VarioStorage storage;
 
         public virtual float CalculateDuration() => 0f;
-        public virtual void ApplyValues() {}
-        public virtual void SaveInitialState() {}
+        public virtual void Init() {}
         public virtual void ReturnToInitialState() {}
         public virtual void SetProgress(float t){}
         

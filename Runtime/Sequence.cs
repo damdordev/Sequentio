@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
-    public enum SequentioState
+    public enum SequenceState
     {
         Idle,
         Playing,
@@ -13,15 +13,15 @@ namespace Damdor.Sequentio
         Finished
     }
     
-    public class Sequentio : MonoBehaviour, IVarioStorageSource
+    public class Sequence : MonoBehaviour, IVarioStorageSource
     {
         public VarioStorage Storage => storage;
         
-        [SerializeField] private VarioStorage storage;
-        [SerializeReference] private List<SequentioStep> steps;
+        [SerializeField] private VarioStorage storage = new();
+        [SerializeReference] public List<SequentioStep> steps = new();
 
         private List<SequentioStep> currentSteps;
-        private SequentioState state;
+        private SequenceState state;
         private SequentioRunner runner;
 
         public void Init()
@@ -34,17 +34,18 @@ namespace Damdor.Sequentio
         {
             switch (state)
             {
-                case SequentioState.Idle:
+                case SequenceState.Idle:
                     runner = new SequentioRunner(Application.isPlaying, storage, steps);
                     runner.Init();
+                    state = SequenceState.Playing;
                     break;
-                case SequentioState.Playing:
+                case SequenceState.Playing:
                     break;
-                case SequentioState.Paused:
+                case SequenceState.Paused:
                     // resume, should I have separate method Resume?
-                    state = SequentioState.Playing;
+                    state = SequenceState.Playing;
                     break;
-                case SequentioState.Finished:
+                case SequenceState.Finished:
                     Stop();
                     Play();
                     break;
@@ -53,30 +54,32 @@ namespace Damdor.Sequentio
 
         public void Pause()
         {
-            if (state == SequentioState.Playing)
+            if (state == SequenceState.Playing)
             {
-                state = SequentioState.Paused;
+                state = SequenceState.Paused;
             }
         }
 
         public void Stop()
         {
-            if (state != SequentioState.Idle)
+            if (state != SequenceState.Idle)
             {
                 ReturnToInitialState();
             }
         }
 
+        public void AddStep(SequentioStep step) => steps.Add(step);
+
         private void ReturnToInitialState()
         {
             runner.ReturnToInitialState();
-            state = SequentioState.Idle;
+            state = SequenceState.Idle;
             runner = null;
         }
 
         protected virtual void Update()
         {
-            if (state == SequentioState.Playing) runner.Update(Time.deltaTime);
+            if (state == SequenceState.Playing) runner.Update(Time.deltaTime);
         }
         
     }

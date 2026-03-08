@@ -62,12 +62,11 @@ namespace Damdor.Sequentio
             Duration = data.Count > 0 ? data[^1].EndTime : 0f;
             CurrentTime = 0f;
             
-            foreach (var data in data) data.Step.SaveInitialState();
             foreach (var data in data)
             {
                 if (data.Step.InitOnStart)
                 {
-                    data.Step.ApplyValues();
+                    data.Step.Init();
                     data.ValuesApplied = true;
                 }
             }
@@ -76,6 +75,12 @@ namespace Damdor.Sequentio
         public void Update(float dt)
         {
             SetTime(CurrentTime + dt);
+        }
+
+        public void SetTime(float newTime)
+        {
+            CurrentTime = Mathf.Clamp(newTime, 0f, Duration);
+            
             foreach (var stepData in data)
             {
                 if(CurrentTime < stepData.StartTime) continue;
@@ -83,7 +88,7 @@ namespace Damdor.Sequentio
                 if (!stepData.ValuesApplied)
                 {
                     // TODO: error handling
-                    stepData.Step.ApplyValues();
+                    stepData.Step.Init();
                     stepData.ValuesApplied = true;
                 }
                 
@@ -91,11 +96,6 @@ namespace Damdor.Sequentio
                 stepData.Step.SetProgress(t);
                 
             }
-        }
-
-        public void SetTime(float newTime)
-        {
-            CurrentTime = Mathf.Clamp(newTime, 0f, Duration);
         }
 
         public void ReturnToInitialState()
