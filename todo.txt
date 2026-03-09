@@ -1,0 +1,13 @@
+* good property drawer for SequentioStep
+* additional steps
+* autoPlay
+* speed
+* timescale
+* loop
+* PlayAndWait()
+* Pooling SequentioRunner
+* Pooling StepData
+* Error handling
+* Docs
+* ParameterPreview
+* play in editor
