@@ -38,7 +38,7 @@ namespace Damdor.Sequentio
         {
             supportedStepTypes.Clear();
             
-            supportedStepTypes.Add(typeof(PositionSequentioStep));
+            supportedStepTypes.Add(typeof(PositionTweenStep));
         }
         
         private static void EnsureInit()

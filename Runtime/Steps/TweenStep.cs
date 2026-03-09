@@ -5,45 +5,37 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
-    public abstract class SimpleInterpolationSequentioStep<TComponent, TValue> : SequentioStep
+    [Serializable]
+    public struct TweenPoint<TComponent, TValue>
     {
-        #region Types
-        
-        public enum ValueSource
+        public TweenPointSource ValueSource
         {
-            Value,
-            Target,
-            OtherTarget
+            get => valueSource;
+            set => valueSource = value;
+        }
+
+        public VarioValue<TComponent> OtherTarget
+        {
+            get => otherTarget;
+            set => otherTarget = value;
         }
         
-        [Serializable]
-        public struct Point<TComponent, TValue>
+        public VarioValue<TValue> Value
         {
-            public ValueSource ValueSource
-            {
-                get => valueSource;
-                set => valueSource = value;
-            }
-
-            public VarioValue<TComponent> OtherTarget
-            {
-                get => otherTarget;
-                set => otherTarget = value;
-            }
-        
-            public VarioValue<TValue> Value
-            {
-                get => value;
-                set => this.value = value;
-            }
-        
-            [SerializeField] private ValueSource valueSource;
-            [SerializeField] private VarioValue<TComponent> otherTarget;
-            [SerializeField] private VarioValue<TValue> value;
+            get => value;
+            set => this.value = value;
         }
         
-        #endregion
+        [SerializeField] private TweenPointSource valueSource;
+        [SerializeField] private VarioValue<TComponent> otherTarget;
+        [SerializeField] private VarioValue<TValue> value;
+            
+        public static implicit operator TweenPoint<TComponent, TValue>(TValue value) => new() { ValueSource = TweenPointSource.Value, Value = value };
 
+    }
+    
+    public abstract class TweenStep<TComponent, TValue> : SequentioStep
+    {
         public VarioValue<TComponent> Target
         {
             get => target;
@@ -62,13 +54,13 @@ namespace Damdor.Sequentio
             set => easing = value;
         }
 
-        public Point<TComponent, TValue> Start
+        public TweenPoint<TComponent, TValue> Start
         {
             get => start;
             set => start = value;
         }
 
-        public Point<TComponent, TValue> End
+        public TweenPoint<TComponent, TValue> End
         {
             get => end;
             set => end = value;
@@ -77,8 +69,8 @@ namespace Damdor.Sequentio
         [SerializeField] private VarioValue<TComponent> target;
         [SerializeField] private VarioValue<TimeSpan, SerializableTimeSpan> duration;
         [SerializeField] private VarioValue<AnimationCurve> easing = AnimationCurve.Linear(0, 0, 1, 1);
-        [SerializeField] private Point<TComponent, TValue> start;
-        [SerializeField] private Point<TComponent, TValue> end;
+        [SerializeField] private TweenPoint<TComponent, TValue> start;
+        [SerializeField] private TweenPoint<TComponent, TValue> end;
 
         private TValue initialValue;
         private TComponent v_target;
@@ -115,11 +107,11 @@ namespace Damdor.Sequentio
         protected abstract TValue Lerp(TValue a, TValue b, float t);
         protected abstract TValue Sum(TValue a, TValue b);
 
-        private TValue Evaluate(Point<TComponent, TValue> point) => point.ValueSource switch
+        private TValue Evaluate(TweenPoint<TComponent, TValue> point) => point.ValueSource switch
         {
-            ValueSource.Value => Storage.Evaluate(point.Value),
-            ValueSource.Target => Sum(GetValue(v_target), Storage.Evaluate(point.Value)),
-            ValueSource.OtherTarget => Sum(GetValue(Storage.Evaluate(point.OtherTarget)),
+            TweenPointSource.Value => Storage.Evaluate(point.Value),
+            TweenPointSource.Target => Sum(GetValue(v_target), Storage.Evaluate(point.Value)),
+            TweenPointSource.OtherTarget => Sum(GetValue(Storage.Evaluate(point.OtherTarget)),
                 Storage.Evaluate(point.Value)),
             _ => throw new ArgumentOutOfRangeException()
         };
