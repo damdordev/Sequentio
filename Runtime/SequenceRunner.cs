@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
-    public class SequentioRunner
+    public class SequenceRunner
     {
         private class StepData
         {
-            public SequentioStep Step;
+            public SequenceStep Step;
             public bool ValuesApplied;
             public float StartTime;
             public float EndTime;
@@ -20,13 +20,13 @@ namespace Damdor.Sequentio
         public float Duration { get; private set; }
         public float CurrentTime { get; private set; }
         
-        private readonly List<SequentioStep> steps = new();
+        private readonly List<SequenceStep> steps = new();
         private readonly List<StepData> data = new();
         private readonly VarioStorage storage;
         private readonly bool runtime;
         private bool isInit;
         
-        public SequentioRunner(bool runtime, VarioStorage storage, List<SequentioStep> steps)
+        public SequenceRunner(bool runtime, VarioStorage storage, List<SequenceStep> steps)
         {
             this.runtime = runtime;
             this.storage = storage;
@@ -106,7 +106,7 @@ namespace Damdor.Sequentio
             }
         }
         
-        private StepData CreateStepData(SequentioStep step) => new()
+        private StepData CreateStepData(SequenceStep step) => new()
         {
             Step = step,
             ValuesApplied = false,

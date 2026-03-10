@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Damdor.Sequentio
 {
     [Serializable]
-    public class SequentioStep
+    public class SequenceStep
     {
         public VarioStorage Storage
         {

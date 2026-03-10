@@ -5,36 +5,7 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
-    [Serializable]
-    public struct TweenPoint<TComponent, TValue>
-    {
-        public TweenPointSource ValueSource
-        {
-            get => valueSource;
-            set => valueSource = value;
-        }
-
-        public VarioValue<TComponent> OtherTarget
-        {
-            get => otherTarget;
-            set => otherTarget = value;
-        }
-        
-        public VarioValue<TValue> Value
-        {
-            get => value;
-            set => this.value = value;
-        }
-        
-        [SerializeField] private TweenPointSource valueSource;
-        [SerializeField] private VarioValue<TComponent> otherTarget;
-        [SerializeField] private VarioValue<TValue> value;
-            
-        public static implicit operator TweenPoint<TComponent, TValue>(TValue value) => new() { ValueSource = TweenPointSource.Value, Value = value };
-
-    }
-    
-    public abstract class TweenStep<TComponent, TValue> : SequentioStep
+    public abstract class TweenStep<TComponent, TValue> : SequenceStep
     {
         public VarioValue<TComponent> Target
         {
@@ -104,8 +75,6 @@ namespace Damdor.Sequentio
 
         protected abstract TValue GetValue(TComponent target);
         protected abstract void SetValue(TComponent target, TValue value);
-        protected abstract TValue Lerp(TValue a, TValue b, float t);
-        protected abstract TValue Sum(TValue a, TValue b);
 
         private TValue Evaluate(TweenPoint<TComponent, TValue> point) => point.ValueSource switch
         {
@@ -115,5 +84,12 @@ namespace Damdor.Sequentio
                 Storage.Evaluate(point.Value)),
             _ => throw new ArgumentOutOfRangeException()
         };
+
+        protected virtual TValue Lerp(TValue a, TValue b, float t)
+            => NumericOperations.Get<TValue>().LerpUnclamped(a, b, t);
+
+        protected virtual TValue Sum(TValue a, TValue b)
+            => NumericOperations.Get<TValue>().Sum(a, b);
+        
     }
 }

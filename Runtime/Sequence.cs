@@ -19,11 +19,11 @@ namespace Damdor.Sequentio
         public SequenceState State => state;
         
         [SerializeField] private VarioStorage storage = new();
-        [SerializeReference] public List<SequentioStep> steps = new();
+        [SerializeReference] public List<SequenceStep> steps = new();
 
-        private List<SequentioStep> currentSteps;
+        private List<SequenceStep> currentSteps;
         private SequenceState state;
-        private SequentioRunner runner;
+        private SequenceRunner runner;
 
         public void Init()
         {
@@ -36,7 +36,7 @@ namespace Damdor.Sequentio
             switch (state)
             {
                 case SequenceState.Idle:
-                    runner = new SequentioRunner(Application.isPlaying, storage, steps);
+                    runner = new SequenceRunner(Application.isPlaying, storage, steps);
                     runner.Init();
                     state = SequenceState.Playing;
                     break;
@@ -69,7 +69,7 @@ namespace Damdor.Sequentio
             }
         }
 
-        public void AddStep(SequentioStep step) => steps.Add(step);
+        public void AddStep(SequenceStep step) => steps.Add(step);
 
         private void ReturnToInitialState()
         {
