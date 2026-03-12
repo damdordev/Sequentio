@@ -11,9 +11,9 @@ namespace Damdor.Sequentio
         
         public bool IsEnabled(bool runtime)
         {
-            if (!Storage.Evaluate(enabled)) return false;
-            if (runtime && !Storage.Evaluate(enabledInRuntime)) return false;
-            if (!runtime && !Storage.Evaluate(enabledInPreview)) return false;
+            if (!enabled.Evaluate(Storage)) return false;
+            if (runtime && !enabledInRuntime.Evaluate(Storage)) return false;
+            if (!runtime && !enabledInPreview.Evaluate(Storage)) return false;
             return true;
         }
 

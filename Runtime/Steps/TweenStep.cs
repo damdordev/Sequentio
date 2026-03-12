@@ -48,16 +48,16 @@ namespace Damdor.Sequentio
         private TValue v_start;
         private TValue v_end;
         private AnimationCurve v_easing;
-        
-        public override float CalculateDuration() => (float) Storage.Evaluate(duration).TotalSeconds;
+
+        public override float CalculateDuration() => (float)duration.Evaluate(Storage).TotalSeconds;
         
         public override void Init()
         {
             base.Init();
-            v_target = Storage.Evaluate(target);
+            v_target = target.Evaluate(Storage);
             v_start = Evaluate(start);
             v_end = Evaluate(end);
-            v_easing = Storage.Evaluate(easing);
+            v_easing = easing.Evaluate(Storage);
             initialValue = GetValue(v_target);
         }
 
@@ -78,10 +78,12 @@ namespace Damdor.Sequentio
 
         private TValue Evaluate(TweenPoint<TComponent, TValue> point) => point.ValueSource switch
         {
-            TweenPointSource.Value => Storage.Evaluate(point.Value),
-            TweenPointSource.Target => Sum(GetValue(v_target), Storage.Evaluate(point.Value)),
-            TweenPointSource.OtherTarget => Sum(GetValue(Storage.Evaluate(point.OtherTarget)),
-                Storage.Evaluate(point.Value)),
+            TweenPointSource.Value => point.Value.Evaluate(Storage),
+            TweenPointSource.Target => Sum(GetValue(v_target), point.Value.Evaluate(Storage)),
+            TweenPointSource.OtherTarget => Sum(
+                GetValue(point.OtherTarget.Evaluate(Storage)),
+                point.Value.Evaluate(Storage)
+            ),
             _ => throw new ArgumentOutOfRangeException()
         };
 
