@@ -13,7 +13,6 @@ namespace Damdor.Sequentio.Editor
     {
         private readonly Dictionary<string, ReorderableList> propertyPathToReorderableList = new();
         private GUIContent playButtonContent;
-        // private GUIContent playPauseButtonContent;
         private GUIContent stopButtonContent;
         private GUIContent pauseButtonContent;
         private Sequence sequence;
@@ -21,7 +20,6 @@ namespace Damdor.Sequentio.Editor
         private void OnEnable()
         {
             playButtonContent = EditorGUIUtility.IconContent("PlayButton On");
-            // playPauseButtonContent = EditorGUIUtility.IconContent("Animation.NextKey");
             stopButtonContent = EditorGUIUtility.IconContent("animationdopesheetkeyframe");
             pauseButtonContent = EditorGUIUtility.IconContent("PauseButton On");
         }
@@ -34,25 +32,38 @@ namespace Damdor.Sequentio.Editor
 
         public override void OnInspectorGUI()
         {
+            serializedObject.Update();
+            
             sequence = (Sequence)serializedObject.targetObject;
             
             var storageProperty = serializedObject.FindProperty("storage");
             var stepsProperty = serializedObject.FindProperty("steps");
+            var settingsProperty = serializedObject.FindProperty("settings");
 
-            if(!propertyPathToReorderableList.TryGetValue(stepsProperty.propertyPath, out var statesList))
+            if(!propertyPathToReorderableList.TryGetValue(stepsProperty.propertyPath, out var stepsList))
             {
-                statesList = CreateStepsReorderableList(stepsProperty);
+                stepsList = CreateStepsReorderableList(stepsProperty);
             }
 
             ShowPlayControls();
 
             var wasEnabled = GUI.enabled;
             if (sequence.State != SequenceState.Idle) GUI.enabled = false;
+
+            EditorGUILayout.PropertyField(settingsProperty);
+
+            storageProperty.isExpanded = EditorGUILayout.Foldout(storageProperty.isExpanded, "Storage");
+            if (storageProperty.isExpanded)
+            {
+                EditorGUILayout.PropertyField(storageProperty);
+            }
             
-            EditorGUILayout.PropertyField(storageProperty);
-            statesList.DoLayoutList();
+            stepsProperty.isExpanded = EditorGUILayout.Foldout(stepsProperty.isExpanded, "Steps");
+            if (stepsProperty.isExpanded) stepsList.DoLayoutList();
             
             if (sequence.State != SequenceState.Idle) GUI.enabled = wasEnabled;
+            
+            serializedObject.ApplyModifiedProperties();
         }
         
         private void ShowPlayControls()

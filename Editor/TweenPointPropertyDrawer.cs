@@ -46,25 +46,25 @@ namespace Damdor.Sequentio.Editor
             var valueProperty = property.FindPropertyRelative("value");
             var otherTargetProperty = property.FindPropertyRelative("otherTarget");
 
-            var x = position.x;
+            var x = 0f;
             var y = position.y;
-            x += 20f;
             
             EditorGUI.PropertyField(
-                new Rect(position.x, position.y, position.width, EditorGUI.GetPropertyHeight(valueSourceProperty)),
+                new Rect(position.x + x, position.y, position.width - x, EditorGUI.GetPropertyHeight(valueSourceProperty)),
                 property,
                 false
             );
 
             if (!property.isExpanded) return;
             
+            x += 20f;
             y += EditorGUI.GetPropertyHeight(valueSourceProperty);
             y += EditorGUIUtility.standardVerticalSpacing;
             
             var source = (TweenPointSource) valueSourceProperty.enumValueIndex;
             
             EditorGUI.PropertyField(
-                new Rect(x, y, position.width, EditorGUI.GetPropertyHeight(valueSourceProperty)),
+                new Rect(position.x + x, y, position.width - x, EditorGUI.GetPropertyHeight(valueSourceProperty)),
                 valueSourceProperty,
                 new GUIContent("Source")
             );
@@ -75,21 +75,21 @@ namespace Damdor.Sequentio.Editor
             {
                 case TweenPointSource.Value:
                     EditorGUI.PropertyField(
-                        new Rect(x, y, position.width, EditorGUI.GetPropertyHeight(valueProperty)),
+                        new Rect(position.x + x, y, position.width - x, EditorGUI.GetPropertyHeight(valueProperty)),
                         valueProperty,
                         new GUIContent("Value")
                     );
                     break;
                 case TweenPointSource.Target:
                     EditorGUI.PropertyField(
-                        new Rect(x, y, position.width, EditorGUI.GetPropertyHeight(valueProperty)),
+                        new Rect(position.x + x, y, position.width - x, EditorGUI.GetPropertyHeight(valueProperty)),
                         valueProperty,
                         new GUIContent("Shift")
                     );
                     break;
                 case TweenPointSource.OtherTarget:
                     EditorGUI.PropertyField(
-                        new Rect(x, y, position.width, EditorGUI.GetPropertyHeight(otherTargetProperty)),
+                        new Rect(position.x + x, y, position.width - x, EditorGUI.GetPropertyHeight(otherTargetProperty)),
                         otherTargetProperty,
                         new GUIContent("Other target")
                     );
@@ -97,12 +97,14 @@ namespace Damdor.Sequentio.Editor
                     y += EditorGUIUtility.standardVerticalSpacing;
                     
                     EditorGUI.PropertyField(
-                        new Rect(x, y, position.width, EditorGUI.GetPropertyHeight(valueProperty)),
+                        new Rect(position.x + x, y, position.width - x, EditorGUI.GetPropertyHeight(valueProperty)),
                         valueProperty,
                         new GUIContent("Shift")
                     );
                     break;
             }
+            
+            x -= 20f;
             
             if (EditorGUI.EndChangeCheck())
             {

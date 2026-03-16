@@ -25,12 +25,16 @@ namespace Damdor.Sequentio
         private readonly VarioStorage storage;
         private readonly bool runtime;
         private bool isInit;
+        private LoopMode loopMode;
+        private PlayDirection direction;
         
-        public SequenceRunner(bool runtime, VarioStorage storage, List<SequenceStep> steps)
+        public SequenceRunner(bool runtime, VarioStorage storage, List<SequenceStep> steps, LoopMode loopMode, PlayDirection direction)
         {
             this.runtime = runtime;
             this.storage = storage;
             this.steps = steps;
+            this.loopMode = loopMode;
+            this.direction = direction;
         }
 
         public void Init()
@@ -60,7 +64,7 @@ namespace Damdor.Sequentio
             }
 
             Duration = data.Count > 0 ? data[^1].EndTime : 0f;
-            CurrentTime = 0f;
+            CurrentTime = direction == PlayDirection.Normal ? 0f : Duration;
             
             foreach (var data in data)
             {
@@ -70,11 +74,60 @@ namespace Damdor.Sequentio
                     data.ValuesApplied = true;
                 }
             }
+
+            isInit = true;
         }
         
         public void Update(float dt)
         {
-            SetTime(CurrentTime + dt);
+            var factor = direction == PlayDirection.Normal ? 1f : -1f;
+            var newTime = CurrentTime + dt * factor;
+
+            if (newTime < 0f || newTime > Duration)
+            {
+                switch (loopMode)
+                {
+                    case LoopMode.None:
+                        newTime = Mathf.Clamp(newTime, 0f, Duration);
+                        break;
+                    case LoopMode.Loop:
+                        if (Duration > 0f)
+                        {
+                            if (newTime > Duration)
+                            {
+                                newTime %= Duration;
+                            }
+                            else if (newTime < 0f)
+                            {
+                                newTime = Duration + (newTime % Duration);
+                            }
+                        }
+                        else
+                        {
+                            newTime = 0f;
+                        }
+                        break;
+                    case LoopMode.PingPong:
+                        if (Duration > 0f)
+                        {
+                            direction = direction == PlayDirection.Normal ? PlayDirection.Reverse : PlayDirection.Normal;
+                            if (newTime > Duration)
+                            {
+                                newTime = Duration - (newTime - Duration);
+                            }
+                            else if (newTime < 0f)
+                            {
+                                newTime = -newTime;
+                            }
+                        }
+                        else
+                        {
+                            newTime = 0f;
+                        }
+                        break;
+                }
+            }
+            SetTime(newTime);
         }
 
         public void SetTime(float newTime)
@@ -94,7 +147,6 @@ namespace Damdor.Sequentio
                 
                 var t = Mathf.InverseLerp(stepData.StartTime, stepData.EndTime, CurrentTime);
                 stepData.Step.SetProgress(t);
-                
             }
         }
 

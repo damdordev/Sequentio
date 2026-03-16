@@ -1,9 +1,6 @@
 * good property drawer for SequentioStep
 * additional steps
-* autoPlay
 * speed
-* timescale
-* loop
 * PlayAndWait()
 * Pooling SequentioRunner
 * Pooling StepData

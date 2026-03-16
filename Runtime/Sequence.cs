@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using Damdor.Vario;
 using UnityEngine;
 
@@ -21,7 +21,8 @@ namespace Damdor.Sequentio
         public float CurrentTime => runner?.CurrentTime ?? 0f;
         
         [SerializeField] private VarioStorage storage = new();
-        [SerializeReference] public List<SequenceStep> steps = new();
+        [SerializeReference] private List<SequenceStep> steps = new();
+        [SerializeField] private SequenceSettings settings;
 
         private List<SequenceStep> currentSteps;
         private SequenceState state;
@@ -38,7 +39,7 @@ namespace Damdor.Sequentio
             switch (state)
             {
                 case SequenceState.Idle:
-                    runner = new SequenceRunner(Application.isPlaying, storage, steps);
+                    runner = new SequenceRunner(Application.isPlaying, storage, steps, settings.Loop, settings.Direction);
                     runner.Init();
                     state = SequenceState.Playing;
                     break;
@@ -89,8 +90,37 @@ namespace Damdor.Sequentio
 
         protected virtual void Update()
         {
-            if (state == SequenceState.Playing) runner.Update(Time.deltaTime);
+            var dt = settings.Timescale switch
+            {
+                TimescaleMode.Normal => Time.deltaTime,
+                TimescaleMode.Unscaled => Time.unscaledDeltaTime,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+            if (state == SequenceState.Playing) runner.Update(dt);
         }
-        
+
+        protected virtual void Awake()
+        {
+            if(settings.AutoPlay == AutoPlayMode.Awake) Play();
+        }
+
+        protected virtual void Start()
+        {
+            if(settings.AutoPlay == AutoPlayMode.Start) Play();
+        }
+
+        protected virtual void OnEnable()
+        {
+            if (settings.AutoPlay == AutoPlayMode.OnEnable)
+            {
+                Stop();
+                Play();
+            }
+        }
+
+        protected void OnDisable()
+        {
+            if (!Application.isPlaying) Stop();
+        }
     }
 }
