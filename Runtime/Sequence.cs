@@ -17,6 +17,8 @@ namespace Damdor.Sequentio
     {
         public VarioStorage Storage => storage;
         public SequenceState State => state;
+        public float Duration => runner?.Duration ?? 0f;
+        public float CurrentTime => runner?.CurrentTime ?? 0f;
         
         [SerializeField] private VarioStorage storage = new();
         [SerializeReference] public List<SequenceStep> steps = new();
@@ -70,6 +72,13 @@ namespace Damdor.Sequentio
         }
 
         public void AddStep(SequenceStep step) => steps.Add(step);
+
+        public void MoveToTime(float time)
+        {
+            if (state == SequenceState.Idle) return;
+            
+            runner.SetTime(time);
+        }
 
         private void ReturnToInitialState()
         {

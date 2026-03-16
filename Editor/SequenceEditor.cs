@@ -13,14 +13,15 @@ namespace Damdor.Sequentio.Editor
     {
         private readonly Dictionary<string, ReorderableList> propertyPathToReorderableList = new();
         private GUIContent playButtonContent;
-        private GUIContent playPauseButtonContent;
+        // private GUIContent playPauseButtonContent;
         private GUIContent stopButtonContent;
         private GUIContent pauseButtonContent;
+        private Sequence sequence;
 
         private void OnEnable()
         {
             playButtonContent = EditorGUIUtility.IconContent("PlayButton On");
-            playPauseButtonContent = EditorGUIUtility.IconContent("Animation.NextKey");
+            // playPauseButtonContent = EditorGUIUtility.IconContent("Animation.NextKey");
             stopButtonContent = EditorGUIUtility.IconContent("animationdopesheetkeyframe");
             pauseButtonContent = EditorGUIUtility.IconContent("PauseButton On");
         }
@@ -33,6 +34,8 @@ namespace Damdor.Sequentio.Editor
 
         public override void OnInspectorGUI()
         {
+            sequence = (Sequence)serializedObject.targetObject;
+            
             var storageProperty = serializedObject.FindProperty("storage");
             var stepsProperty = serializedObject.FindProperty("steps");
 
@@ -42,40 +45,43 @@ namespace Damdor.Sequentio.Editor
             }
 
             ShowPlayControls();
+
+            var wasEnabled = GUI.enabled;
+            if (sequence.State != SequenceState.Idle) GUI.enabled = false;
+            
             EditorGUILayout.PropertyField(storageProperty);
             statesList.DoLayoutList();
+            
+            if (sequence.State != SequenceState.Idle) GUI.enabled = wasEnabled;
         }
         
         private void ShowPlayControls()
         {
-            var sequence = (Sequence) serializedObject.targetObject;
-            
+            serializedObject.Update();
             EditorGUILayout.BeginVertical();
             
             EditorGUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
 
-            switch (sequence.State)
+            if (sequence.State != SequenceState.Playing)
             {
-                case SequenceState.Idle:
-                    ShowPlayButton(sequence);
-                    break;
-                case SequenceState.Playing:
-                    ShowPauseButton(sequence);
-                    ShowStopButton(sequence);
-                    break;
-                case SequenceState.Paused:
-                    ShowPlayButton(sequence);
-                    ShowStopButton(sequence);
-                    break;
-                case SequenceState.Finished:
-                    ShowStopButton(sequence);
-                    break;
+                ShowPlayButton(sequence);
+            }
+            else
+            {
+                ShowPauseButton(sequence);
             }
 
+            ShowStopButton(sequence);
+            
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndHorizontal();
+
+            ShowProgress(sequence);
+            GUILayout.Space(50f);
             EditorGUILayout.EndVertical();
+            
+            serializedObject.ApplyModifiedProperties();
         }
 
         private void ShowPlayButton(Sequence sequence)
@@ -94,6 +100,15 @@ namespace Damdor.Sequentio.Editor
         {
             if (!GUILayout.Button(stopButtonContent)) return;
             sequence.Stop();
+        }
+
+        private void ShowProgress(Sequence sequence)
+        {
+            var newTime = GUILayout.HorizontalSlider(sequence.CurrentTime, 0.0f, sequence.Duration, GUILayout.ExpandWidth(true));
+            if (!Mathf.Approximately(newTime, sequence.CurrentTime))
+            {
+                sequence.MoveToTime(newTime);
+            }
         }
         
         private ReorderableList CreateStepsReorderableList(SerializedProperty property)
