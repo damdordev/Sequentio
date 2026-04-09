@@ -78,7 +78,7 @@ namespace Damdor.Sequentio
             isInit = true;
         }
         
-        public void Update(float dt)
+        public SequenceRunnerUpdateResult Update(float dt)
         {
             var factor = direction == PlayDirection.Normal ? 1f : -1f;
             var newTime = CurrentTime + dt * factor;
@@ -128,6 +128,18 @@ namespace Damdor.Sequentio
                 }
             }
             SetTime(newTime);
+
+            if (loopMode == LoopMode.None && direction == PlayDirection.Normal && newTime >= Duration)
+            {
+                return SequenceRunnerUpdateResult.Finished;
+            }
+            
+            if (loopMode == LoopMode.None && direction == PlayDirection.Reverse && newTime <= 0f)
+            {
+                return SequenceRunnerUpdateResult.Finished;
+            }
+
+            return SequenceRunnerUpdateResult.NotFinished;
         }
 
         public void SetTime(float newTime)

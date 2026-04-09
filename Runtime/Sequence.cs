@@ -96,7 +96,7 @@ namespace Damdor.Sequentio
                 TimescaleMode.Unscaled => Time.unscaledDeltaTime,
                 _ => throw new ArgumentOutOfRangeException()
             };
-            if (state == SequenceState.Playing) runner.Update(dt);
+            UpdateTime(dt);
         }
 
         protected virtual void Awake()
@@ -122,5 +122,13 @@ namespace Damdor.Sequentio
         {
             if (!Application.isPlaying) Stop();
         }
+        
+        private void UpdateTime(float dt)
+        {
+            if (state != SequenceState.Playing) return;
+            var result = runner.Update(dt);
+            if (result == SequenceRunnerUpdateResult.Finished) state = SequenceState.Finished;
+        }
+        
     }
 }

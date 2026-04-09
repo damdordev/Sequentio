@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Damdor.Foundation.Editor;
 using UnityEditor;
 using UnityEditorInternal;
@@ -16,18 +17,24 @@ namespace Damdor.Sequentio.Editor
         private GUIContent stopButtonContent;
         private GUIContent pauseButtonContent;
         private Sequence sequence;
+        private float lastTime;
+        private MethodInfo updateTimeMethod;
+        private object[] updateTimeMethodParameters = new object[1];
 
         private void OnEnable()
         {
             playButtonContent = EditorGUIUtility.IconContent("PlayButton On");
             stopButtonContent = EditorGUIUtility.IconContent("animationdopesheetkeyframe");
             pauseButtonContent = EditorGUIUtility.IconContent("PauseButton On");
+            EditorApplication.update += EditorUpdate;
+            lastTime = -1f;
         }
 
         private void OnDisable()
         {
             var sequence = (Sequence) serializedObject.targetObject;
             sequence.Stop();
+            EditorApplication.update -= EditorUpdate;
         }
 
         public override void OnInspectorGUI()
@@ -165,6 +172,27 @@ namespace Damdor.Sequentio.Editor
             propertyPathToReorderableList[property.propertyPath] = reorderableList;
             
             return reorderableList;
+        }
+        
+        private void EditorUpdate()
+        {
+            if (Application.isPlaying) return;
+            if (sequence == null || !sequence.isActiveAndEnabled) return;
+
+            if (updateTimeMethod == null)
+            {
+                updateTimeMethod = typeof(Sequence).GetMethod("UpdateTime", BindingFlags.NonPublic | BindingFlags.Instance);
+            }
+            
+            var time = Time.realtimeSinceStartup;
+            if(lastTime > 0f)
+            {
+                var dt = time - lastTime;
+                updateTimeMethodParameters[0] = dt;
+                updateTimeMethod.Invoke(sequence, updateTimeMethodParameters);
+            }
+
+            lastTime = time;
         }
 
     }

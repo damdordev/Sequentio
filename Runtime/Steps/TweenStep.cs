@@ -13,7 +13,7 @@ namespace Damdor.Sequentio
             set => target = value;
         }
 
-        public VarioValue<TimeSpan, SerializableTimeSpan> Duration
+        public VarioValue<float> Duration
         {
             get => duration;
             set => duration = value;
@@ -38,7 +38,7 @@ namespace Damdor.Sequentio
         }
         
         [SerializeField] private VarioValue<TComponent> target;
-        [SerializeField] private VarioValue<TimeSpan, SerializableTimeSpan> duration;
+        [SerializeField] private VarioValue<float> duration;
         [SerializeField] private VarioValue<AnimationCurve> easing = AnimationCurve.Linear(0, 0, 1, 1);
         [SerializeField] private TweenPoint<TComponent, TValue> start;
         [SerializeField] private TweenPoint<TComponent, TValue> end;
@@ -49,7 +49,7 @@ namespace Damdor.Sequentio
         private TValue v_end;
         private AnimationCurve v_easing;
 
-        public override float CalculateDuration() => (float)duration.Evaluate(Storage).TotalSeconds;
+        public override float CalculateDuration() => duration.Evaluate(Storage);
         
         public override void Init()
         {
