@@ -72,6 +72,7 @@ namespace Damdor.Sequentio
                 {
                     data.Step.Init();
                     data.ValuesApplied = true;
+                    data.Step.SetProgress(0f);
                 }
             }
 
