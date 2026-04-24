@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+#if DAMDOR_SEQUENTIO_UNITASK
 using Cysharp.Threading.Tasks;
+#endif
 using Damdor.Vario;
 using UnityEngine;
 
@@ -56,12 +58,16 @@ namespace Damdor.Sequentio
                     break;
             }
         }
+        
+        #if DAMDOR_SEQUENTIO_UNITASK
 
         public UniTask PlayAndWait()
         {
             Play();
             return UniTask.WaitUntil(() => State == SequenceState.Finished);
         }
+        
+        #endif
 
         public void Pause()
         {
