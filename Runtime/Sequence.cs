@@ -8,28 +8,29 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
-    public enum SequenceState
-    {
-        Idle,
-        Playing,
-        Paused,
-        Finished
-    }
     
-    public class Sequence : MonoBehaviour, IVarioStorageSource
+    public class Sequence : MonoBehaviour, ISequence, IVarioStorageSource
     {
         public VarioStorage Storage => storage;
         public SequenceState State => state;
-        public float Duration => runner?.Duration ?? 0f;
-        public float CurrentTime => runner?.CurrentTime ?? 0f;
+        public float Duration => runner.Duration;
+        public float CurrentTime => runner.CurrentTime;
+        private SequenceRunner runner
+        {
+            get
+            {
+                if (innerRunner != null) return innerRunner;
+                innerRunner = SequentioPooling.PopRunner();
+                return innerRunner;
+            }
+        }
         
         [SerializeField] private VarioStorage storage = new();
         [SerializeReference] private List<SequenceStep> steps = new();
         [SerializeField] private SequenceSettings settings;
 
-        private List<SequenceStep> currentSteps;
         private SequenceState state;
-        private SequenceRunner runner;
+        private SequenceRunner innerRunner;
 
         public void Init()
         {
@@ -42,7 +43,7 @@ namespace Damdor.Sequentio
             switch (state)
             {
                 case SequenceState.Idle:
-                    runner = new SequenceRunner(Application.isPlaying, storage, steps, settings.Loop, settings.Direction);
+                    innerRunner.Setup(Application.isPlaying, storage, steps, settings.Loop, settings.Direction);
                     runner.Init();
                     state = SequenceState.Playing;
                     break;
@@ -84,6 +85,8 @@ namespace Damdor.Sequentio
                 ReturnToInitialState();
             }
         }
+        
+        public void Release(){}
 
         public void AddStep(SequenceStep step) => steps.Add(step);
 
@@ -98,7 +101,6 @@ namespace Damdor.Sequentio
         {
             runner.ReturnToInitialState();
             state = SequenceState.Idle;
-            runner = null;
         }
 
         protected virtual void Update()
@@ -135,7 +137,13 @@ namespace Damdor.Sequentio
         {
             if (!Application.isPlaying) Stop();
         }
-        
+
+        private void OnDestroy()
+        {
+            if (innerRunner != null) SequentioPooling.ReleaseRunner(innerRunner);
+            innerRunner = null;
+        }
+
         private void UpdateTime(float dt)
         {
             if (state != SequenceState.Playing) return;

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
+    
     public class SequenceRunner
     {
         private class StepData
@@ -20,21 +21,28 @@ namespace Damdor.Sequentio
         public float Duration { get; private set; }
         public float CurrentTime { get; private set; }
         
-        private readonly List<SequenceStep> steps = new();
+        private List<SequenceStep> steps = new();
         private readonly List<StepData> data = new();
-        private readonly VarioStorage storage;
-        private readonly bool runtime;
+        private VarioStorage storage;
+        private bool runtime;
         private bool isInit;
         private LoopMode loopMode;
         private PlayDirection direction;
         
-        public SequenceRunner(bool runtime, VarioStorage storage, List<SequenceStep> steps, LoopMode loopMode, PlayDirection direction)
+        public void Setup(bool runtime, VarioStorage storage, List<SequenceStep> steps, LoopMode loopMode, PlayDirection direction)
         {
             this.runtime = runtime;
             this.storage = storage;
             this.steps = steps;
             this.loopMode = loopMode;
             this.direction = direction;
+        }
+
+        internal void Reset()
+        {
+            storage = null;
+            steps = null;
+            isInit = false;
         }
 
         public void Init()
@@ -169,6 +177,10 @@ namespace Damdor.Sequentio
             {
                 data[index].Step.ReturnToInitialState();
             }
+            data.Clear();
+
+            CurrentTime = 0f;
+            isInit = false;
         }
         
         private StepData CreateStepData(SequenceStep step) => new()

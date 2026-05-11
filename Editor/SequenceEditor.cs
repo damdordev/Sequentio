@@ -126,6 +126,7 @@ namespace Damdor.Sequentio.Editor
             if (!Mathf.Approximately(newTime, sequence.CurrentTime))
             {
                 sequence.MoveToTime(newTime);
+                sequence.Pause();
             }
         }
         
