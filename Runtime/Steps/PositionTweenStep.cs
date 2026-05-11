@@ -4,6 +4,7 @@ using UnityEngine;
 namespace Damdor.Sequentio
 {
     [Serializable]
+    [SequentioStep("Transform/Position")]
     public class PositionTweenStep : TweenStep<Transform, Vector3>
     {
         protected override Vector3 GetValue(Transform target) => target.localPosition;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Damdor.Sequentio
 {
@@ -9,42 +10,47 @@ namespace Damdor.Sequentio
         {
             get
             {
-                EnsureInit();
+                EnsureSupportedTypesInit();
                 return supportedStepTypes;
             }
         }
-        
-        private static readonly List<Type> supportedStepTypes = new();
-        private static bool init;
-        
-        public static void ResetToInitialSettings()
+
+        private static List<Type> supportedStepTypes;
+        private static readonly Dictionary<Type, string> stepTypeToName = new();
+       
+        public static string GetStepName(Type type)
         {
-            ResetSupportedStateTypes();
-            init = true;
+            EnsureSupportedTypesInit();
+            var name = stepTypeToName.GetValueOrDefault(type, "");
+            return name;
         }
         
-        public static void RegisterStateType(Type type)
+        private static void EnsureSupportedTypesInit()
         {
-            EnsureInit();
-            supportedStepTypes.Add(type);
-        }
-        
-        private static void ClearSupportedStateTypes()
-        {
-            supportedStepTypes.Clear();
-        }
-        
-        private static void ResetSupportedStateTypes()
-        {
-            supportedStepTypes.Clear();
+            if (supportedStepTypes != null) return;
             
-            supportedStepTypes.Add(typeof(PositionTweenStep));
+            var baseType = typeof(SequenceStep);
+
+            supportedStepTypes = new();
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                foreach (var type in assembly.GetTypes())
+                {
+                    if(type.IsInterface || type.IsAbstract || !type.IsSerializable || !baseType.IsAssignableFrom(type)) continue;
+                    var attr = type.GetCustomAttribute<SequentioStepAttribute>();
+                    if(attr == null) continue;
+                    
+                    RegisterStepType(type, attr.Name);
+                }
+            }
+
         }
         
-        private static void EnsureInit()
+        private static void RegisterStepType(Type type, string name)
         {
-            if (init) return;
-            ResetToInitialSettings();
+            if(supportedStepTypes.Contains(type)) return;
+            supportedStepTypes.Add(type);
+            stepTypeToName[type] = name;
         }
         
     }

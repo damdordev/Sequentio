@@ -161,7 +161,7 @@ namespace Damdor.Sequentio.Editor
             reorderableList.onAddDropdownCallback += (rect, _) =>
             {
                 var types = SequentioSettings.SupportedStepTypes.OrderBy(t => t.Name).ToList();
-                new HierarchicalDropdown<Type>(types, t => t.Name, type =>
+                new HierarchicalDropdown<Type>(types, SequentioSettings.GetStepName, type =>
                 {
                     property.InsertArrayElementAtIndex(property.arraySize);
                     var element = property.GetArrayElementAtIndex(property.arraySize - 1);
