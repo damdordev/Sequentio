@@ -13,25 +13,27 @@ namespace Damdor.Sequentio
     {
         public VarioStorage Storage => storage;
         public SequenceState State => state;
-        public float Duration => runner.Duration;
-        public float CurrentTime => runner.CurrentTime;
+        public float Duration => runner?.Duration ?? 0f;
+        public float CurrentTime => runner?.CurrentTime ?? 0f;
         private SequenceRunner runner
         {
             get
             {
-                if (innerRunner != null) return innerRunner;
+                if (innerRunner != null || !isSetup) return innerRunner;
                 innerRunner = SequentioPooling.PopRunner();
+                SequentioUpdateProvider.Register(Update);
                 return innerRunner;
             }
         }
 
         private VarioStorage storage;
-        private List<SequenceStep> steps;
+        private List<SequenceStep> steps = new();
         private SequenceSettings settings;
         private bool autoRelease;
 
         private SequenceState state;
         private SequenceRunner innerRunner;
+        private bool isSetup;
 
         internal RawSequence() { }
 
@@ -39,8 +41,12 @@ namespace Damdor.Sequentio
         {
             var sequence = SequentioPooling.PopRawSequence();
             sequence.storage = storage != null ? storage.Clone() : VarioStorage.Create();
-            sequence.steps = steps ?? new List<SequenceStep>();
+            if (steps != null)
+            {
+                foreach (var step in steps) sequence.steps.Add(step.Clone());
+            }
             sequence.settings = settings != null ? settings.Clone() : SequentioPooling.PopSettings();
+            sequence.isSetup = true;
             return sequence;
         }
 
@@ -51,10 +57,31 @@ namespace Damdor.Sequentio
 
         internal void Reset()
         {
+            isSetup = false;
             storage.Release();
+            storage = null;
             state = SequenceState.Idle;
             SequentioPooling.ReleaseSettings(settings);
+            if (steps != null)
+            {
+                foreach (var step in steps) SequentioPooling.ReleaseStep(step);
+                steps.Clear();
+            }
+
+            if (innerRunner != null)
+            {
+                SequentioPooling.ReleaseRunner(innerRunner);
+                innerRunner = null;
+            }
+
+            if (settings != null)
+            {
+                SequentioPooling.ReleaseSettings(settings);
+                settings = null;
+            }
+            
             autoRelease = false;
+            SequentioUpdateProvider.Unregister(Update);
         }
         
         public void Init()
@@ -73,7 +100,7 @@ namespace Damdor.Sequentio
             switch (state)
             {
                 case SequenceState.Idle:
-                    innerRunner.Setup(Application.isPlaying, storage, steps, settings.Loop, settings.Direction);
+                    runner.Setup(Application.isPlaying, storage, steps, settings.Loop, settings.Direction);
                     runner.Init();
                     state = SequenceState.Playing;
                     break;
@@ -86,7 +113,6 @@ namespace Damdor.Sequentio
                 case SequenceState.Finished:
                     Stop();
                     Play();
-                    if (autoRelease) Release();
                     break;
             }
         }
@@ -132,12 +158,12 @@ namespace Damdor.Sequentio
             state = SequenceState.Idle;
         }
 
-        protected virtual void Update()
+        private void Update(float deltaTime, float unscaledDeltaTime)
         {
             var dt = settings.Timescale switch
             {
-                TimescaleMode.Normal => Time.deltaTime,
-                TimescaleMode.Unscaled => Time.unscaledDeltaTime,
+                TimescaleMode.Normal => deltaTime,
+                TimescaleMode.Unscaled => unscaledDeltaTime,
                 _ => throw new ArgumentOutOfRangeException()
             };
             UpdateTime(dt);
@@ -177,7 +203,11 @@ namespace Damdor.Sequentio
         {
             if (state != SequenceState.Playing) return;
             var result = runner.Update(dt);
-            if (result == SequenceRunnerUpdateResult.Finished) state = SequenceState.Finished;
+            if (result == SequenceRunnerUpdateResult.Finished)
+            {
+                state = SequenceState.Finished;
+                if (autoRelease) Release();
+            }
         }
         
     }

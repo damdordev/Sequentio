@@ -73,6 +73,35 @@ namespace Damdor.Sequentio
             SetValue(v_target, Lerp(v_start, v_end, v_easing.Evaluate(t)));
         }
 
+        internal override void Reset()
+        {
+            base.Reset();
+            target = default;
+            duration = default;
+            easing = AnimationCurve.Linear(0, 0, 1, 1);
+            start = default;
+            end = default;
+            v_target = default;
+            v_start = default;
+            v_end = default;
+            v_easing = null;
+            initialValue = default;
+        }
+
+        internal override void CopyFrom(SequenceStep otherStep)
+        {
+            base.CopyFrom(otherStep);
+            if (otherStep is TweenStep<TComponent, TValue> other)
+            {
+                target = other.target;
+                duration = other.duration;
+                easing = other.easing;
+                start = other.start;
+                end = other.end;
+            }
+            
+        }
+
         protected abstract TValue GetValue(TComponent target);
         protected abstract void SetValue(TComponent target, TValue value);
 

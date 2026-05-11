@@ -17,8 +17,24 @@ namespace Damdor.Sequentio
             return true;
         }
 
+        internal void Reset()
+        {
+            Storage = null;
+            enabled = VarioValue<bool>.Raw(true);
+            enabledInRuntime = VarioValue<bool>.Raw(true);
+            enabledInPreview = VarioValue<bool>.Raw(true);
+        }
+
+        internal void CopyFrom(SequentioStepVisibility other)
+        {
+            enabled = other.enabled;
+            enabledInRuntime = other.enabledInRuntime;
+            enabledInPreview = other.enabledInPreview;
+        }
+
         [SerializeField] private VarioValue<bool> enabled = true;
         [SerializeField] private VarioValue<bool> enabledInRuntime = true;
         [SerializeField] private VarioValue<bool> enabledInPreview = true;
+        
     }
 }

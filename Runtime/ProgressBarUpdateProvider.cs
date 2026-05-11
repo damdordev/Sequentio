@@ -8,6 +8,7 @@ namespace Damdor.Sequentio
         public delegate void UpdateReceiver(float deltaTime, float unscaledDeltaTime);
 
         private static readonly List<UpdateReceiver> receivers = new();
+        private static readonly List<UpdateReceiver> tmpReceivers = new();
         private static SequentioUpdateProvider instance;
 
         public static void Register(UpdateReceiver receiver)
@@ -32,10 +33,13 @@ namespace Damdor.Sequentio
 
         private void Update()
         {
-            foreach (var updateReceiver in receivers)
+            tmpReceivers.Clear();
+            tmpReceivers.AddRange(receivers);
+            foreach (var updateReceiver in tmpReceivers)
             {
                 updateReceiver(Time.deltaTime, Time.unscaledDeltaTime);
             }
+            tmpReceivers.Clear();
         }
 
         private static void CreateInstance()

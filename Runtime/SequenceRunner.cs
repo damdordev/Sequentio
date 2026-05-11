@@ -4,25 +4,29 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
-    
-    public class SequenceRunner
+    internal class SequenceRunnerStepData
     {
-        private class StepData
+        public SequenceStep Step;
+        public bool ValuesApplied;
+        public float StartTime;
+        public float EndTime;
+        public float Duration;
+        public bool Append;
+        public bool InitOnStart;
+
+        internal void Reset()
         {
-            public SequenceStep Step;
-            public bool ValuesApplied;
-            public float StartTime;
-            public float EndTime;
-            public float Duration;
-            public bool Append;
-            public bool InitOnStart;
+            Step = null;
         }
-        
+    }
+    
+    internal class SequenceRunner
+    {
         public float Duration { get; private set; }
         public float CurrentTime { get; private set; }
         
         private List<SequenceStep> steps = new();
-        private readonly List<StepData> data = new();
+        private readonly List<SequenceRunnerStepData> data = new();
         private VarioStorage storage;
         private bool runtime;
         private bool isInit;
@@ -40,9 +44,12 @@ namespace Damdor.Sequentio
 
         internal void Reset()
         {
+            Duration = 0f;
+            CurrentTime = 0f;
             storage = null;
             steps = null;
             isInit = false;
+            ClearStepData();
         }
 
         public void Init()
@@ -50,7 +57,7 @@ namespace Damdor.Sequentio
             if (isInit) return;
             
             foreach (var step in steps) step.Storage = storage;
-            data.Clear();
+            ClearStepData();
             foreach (var step in steps)
             {
                 if (!step.IsEnabled(runtime)) continue;
@@ -177,19 +184,29 @@ namespace Damdor.Sequentio
             {
                 data[index].Step.ReturnToInitialState();
             }
-            data.Clear();
+            ClearStepData();
 
             CurrentTime = 0f;
             isInit = false;
         }
         
-        private StepData CreateStepData(SequenceStep step) => new()
+        private SequenceRunnerStepData CreateStepData(SequenceStep step)
         {
-            Step = step,
-            ValuesApplied = false,
-            Append = false,
-            InitOnStart = step.InitOnStart
-        };
-        
+            var stepData = SequentioPooling.PopRunnerStepData();
+            stepData.Step = step;
+            stepData.ValuesApplied = false;
+            stepData.Append = false;
+            stepData.InitOnStart = step.InitOnStart;
+            return stepData;
+        }
+
+        private void ClearStepData()
+        {
+            foreach (var stepData in data)
+            {
+                SequentioPooling.ReleaseRunnerStepData(stepData);
+            }
+            data.Clear();
+        }
     }
 }

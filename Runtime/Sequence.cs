@@ -43,7 +43,7 @@ namespace Damdor.Sequentio
             switch (state)
             {
                 case SequenceState.Idle:
-                    innerRunner.Setup(Application.isPlaying, storage, steps, settings.Loop, settings.Direction);
+                    runner.Setup(Application.isPlaying, storage, steps, settings.Loop, settings.Direction);
                     runner.Init();
                     state = SequenceState.Playing;
                     break;

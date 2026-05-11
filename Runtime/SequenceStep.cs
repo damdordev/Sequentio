@@ -35,7 +35,7 @@ namespace Damdor.Sequentio
             set => delay = value;
         }
         
-        [SerializeField] private SequentioStepVisibility visibility;
+        [SerializeField] private SequentioStepVisibility visibility = new();
         [SerializeField] private bool initOnStart;
         [SerializeField] private bool append;
         [SerializeField] private VarioValue<float> delay;
@@ -48,6 +48,32 @@ namespace Damdor.Sequentio
         public virtual void Init() {}
         public virtual void ReturnToInitialState() {}
         public virtual void SetProgress(float t){}
-        
+
+        internal virtual void Reset()
+        {
+            Storage = null;
+            visibility.Reset();
+            initOnStart = false;
+            append = false;
+            delay = default;
+        }
+
+        internal virtual void CopyFrom(SequenceStep otherStep)
+        {
+            visibility.CopyFrom(otherStep.visibility);
+            initOnStart = otherStep.initOnStart;
+            append = otherStep.append;
+            delay = otherStep.delay;
+        }
+
+        internal SequenceStep Clone()
+        {
+            var step = SequentioPooling.PopStep(GetType());
+            step.CopyFrom(this);
+            return step;
+        }
+
+        public static T Create<T>() where T : SequenceStep, new()
+            => SequentioPooling.PopStep<T>();
     }
 }
