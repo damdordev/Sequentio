@@ -12,6 +12,7 @@
     "url": "https://github.com/damdordev/Foundation.git"
   },
   "dependencies": {
-     "com.cysharp.unitask": "2.5.0"
+     "com.cysharp.unitask": "2.5.0",
+     "com.damdor.numerio": "1.0.0"
   }    
 }
