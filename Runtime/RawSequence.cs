@@ -61,7 +61,6 @@ namespace Damdor.Sequentio
             storage.Release();
             storage = null;
             state = SequenceState.Idle;
-            SequentioPooling.ReleaseSettings(settings);
             if (steps != null)
             {
                 foreach (var step in steps) SequentioPooling.ReleaseStep(step);

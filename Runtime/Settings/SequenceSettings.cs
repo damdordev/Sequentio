@@ -30,13 +30,15 @@ namespace Damdor.Sequentio
             set => direction = value;
         }
 
-        internal SequenceSettings Clone() => new()
+        internal SequenceSettings Clone()
         {
-            autoPlay = autoPlay,
-            loop = loop,
-            timescale = timescale,
-            direction = direction
-        };
+            var clone = SequentioPooling.PopSettings();
+            clone.AutoPlay = AutoPlay;
+            clone.Loop = Loop;
+            clone.Timescale = Timescale;
+            clone.Direction = Direction;
+            return clone;
+        }
 
         internal void Reset()
         {
