@@ -9,9 +9,12 @@ using UnityEngine;
 namespace Damdor.Sequentio
 {
     
-    public class Sequence : MonoBehaviour, ISequence, IVarioStorageSource
+    public class Sequence : MonoBehaviour, ISequence, ISequenceAsset, IVarioStorageSource
     {
+        public SequenceSettings Settings => settings;
         public VarioStorage Storage => storage;
+        public IReadOnlyList<SequenceStep> Steps => steps;
+        
         public SequenceState State => state;
         public float Duration => runner.Duration;
         public float CurrentTime => runner.CurrentTime;

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using Damdor.Foundation;
 #if DAMDOR_SEQUENTIO_UNITASK
 using Cysharp.Threading.Tasks;
 #endif
 using Damdor.Vario;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Damdor.Sequentio
 {
@@ -26,8 +28,8 @@ namespace Damdor.Sequentio
             }
         }
 
+        private readonly List<SequenceStep> steps = new();
         private VarioStorage storage;
-        private List<SequenceStep> steps = new();
         private SequenceSettings settings;
         private bool autoRelease;
 
@@ -37,16 +39,28 @@ namespace Damdor.Sequentio
 
         internal RawSequence() { }
 
-        public static RawSequence Create(VarioStorage storage = null, List<SequenceStep> steps = null, SequenceSettings settings = null)
+        public static RawSequence Create(ISequenceAsset sequenceAsset)
         {
             var sequence = SequentioPooling.PopRawSequence();
-            sequence.storage = storage != null ? storage.Clone() : VarioStorage.Create();
-            if (steps != null)
-            {
-                foreach (var step in steps) sequence.steps.Add(step.Clone());
-            }
-            sequence.settings = settings != null ? settings.Clone() : SequentioPooling.PopSettings();
+            sequence.storage = sequenceAsset.Storage.Clone();
+            sequence.settings = sequenceAsset.Settings.Clone();
+            foreach (var step in sequenceAsset.Steps) sequence.steps.Add(step.Clone());
             sequence.isSetup = true;
+
+            return sequence;
+        }
+        
+        public static RawSequence Create(ISequenceAsset sequenceAsset, UIDocument uiDocument)
+        {
+            var sequence = Create(sequenceAsset);
+            SequentioInternalHelper.PutRoot(sequence.Storage, uiDocument);
+            return sequence;
+        }
+        
+        public static RawSequence Create(ISequenceAsset sequenceAsset, UIDocument uiDocument, UiToolkitQuery root)
+        {
+            var sequence = Create(sequenceAsset);
+            SequentioInternalHelper.PutRoot(sequence.Storage, uiDocument, root);
             return sequence;
         }
 
