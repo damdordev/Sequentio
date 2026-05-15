@@ -10,20 +10,25 @@ namespace Damdor.Sequentio
         public float CurrentTime { get; private set; }
         
         private List<SequenceStep> steps = new();
+        private SequenceSettings settings;
         private readonly List<SequenceRunnerStepData> data = new();
         private VarioStorage storage;
         private bool runtime;
-        private bool isInit;
-        private LoopMode loopMode;
         private PlayDirection direction;
         
-        public void Setup(bool runtime, VarioStorage storage, List<SequenceStep> steps, LoopMode loopMode, PlayDirection direction)
+        public void Setup(bool runtime, VarioStorage storage, List<SequenceStep> steps, SequenceSettings settings)
         {
             this.runtime = runtime;
             this.storage = storage;
             this.steps = steps;
-            this.loopMode = loopMode;
-            this.direction = direction;
+            this.settings = settings.Clone();
+            direction = settings.Direction;
+            
+            ClearStepData();
+            CreateStepData();
+            RecalculateStepsTimes();
+            InitSteps();
+            CalculateDurationAndInitialTime();
         }
 
         internal void Reset()
@@ -32,60 +37,19 @@ namespace Damdor.Sequentio
             CurrentTime = 0f;
             storage = null;
             steps = null;
-            isInit = false;
+            SequentioPooling.ReleaseSettings(settings);
+            settings = null;
             ClearStepData();
-        }
-
-        public void Init()
-        {
-            if (isInit) return;
-            
-            foreach (var step in steps) step.Storage = storage;
-            ClearStepData();
-            foreach (var step in steps)
-            {
-                if (!step.IsEnabled(runtime)) continue;
-                data.Add(CreateStepData(step));
-            }
-
-            foreach (var step in data) step.Duration = step.Step.CalculateDuration();
-
-            if (data.Count > 0)
-            {
-                data[0].StartTime = 0f;
-                data[0].EndTime = data[0].Duration;
-            }
-
-            for (var i = 1; i < data.Count; i++)
-            {
-                data[i].StartTime = data[i].Append ? data[i - 1].StartTime : data[i - 1].EndTime;
-                data[i].EndTime = data[i].StartTime + data[i].Duration;
-            }
-
-            Duration = data.Count > 0 ? data[^1].EndTime : 0f;
-            CurrentTime = direction == PlayDirection.Normal ? 0f : Duration;
-            
-            foreach (var data in data)
-            {
-                if (data.Step.InitOnStart)
-                {
-                    data.Step.Init();
-                    data.ValuesApplied = true;
-                    data.Step.SetProgress(0f);
-                }
-            }
-
-            isInit = true;
         }
         
         public SequenceRunnerUpdateResult Update(float dt)
         {
-            var factor = direction == PlayDirection.Normal ? 1f : -1f;
+            var factor = settings.Direction == PlayDirection.Normal ? 1f : -1f;
             var newTime = CurrentTime + dt * factor;
 
             if (newTime < 0f || newTime > Duration)
             {
-                switch (loopMode)
+                switch (settings.Loop)
                 {
                     case LoopMode.None:
                         newTime = Mathf.Clamp(newTime, 0f, Duration);
@@ -129,12 +93,12 @@ namespace Damdor.Sequentio
             }
             SetTime(newTime);
 
-            if (loopMode == LoopMode.None && direction == PlayDirection.Normal && newTime >= Duration)
+            if (settings.Loop == LoopMode.None && direction == PlayDirection.Normal && newTime >= Duration)
             {
                 return SequenceRunnerUpdateResult.Finished;
             }
             
-            if (loopMode == LoopMode.None && direction == PlayDirection.Reverse && newTime <= 0f)
+            if (settings.Loop == LoopMode.None && direction == PlayDirection.Reverse && newTime <= 0f)
             {
                 return SequenceRunnerUpdateResult.Finished;
             }
@@ -171,19 +135,8 @@ namespace Damdor.Sequentio
             ClearStepData();
 
             CurrentTime = 0f;
-            isInit = false;
         }
         
-        private SequenceRunnerStepData CreateStepData(SequenceStep step)
-        {
-            var stepData = SequentioPooling.PopRunnerStepData();
-            stepData.Step = step;
-            stepData.ValuesApplied = false;
-            stepData.Append = false;
-            stepData.InitOnStart = step.InitOnStart;
-            return stepData;
-        }
-
         private void ClearStepData()
         {
             foreach (var stepData in data)
@@ -192,5 +145,65 @@ namespace Damdor.Sequentio
             }
             data.Clear();
         }
+
+        private void CreateStepData()
+        {
+            foreach (var step in steps)
+            {
+                step.Storage = storage;
+                if (!step.IsEnabled(runtime)) continue;
+                
+                var stepData = SequentioPooling.PopRunnerStepData();
+                stepData.Step = step;
+                stepData.ValuesApplied = false;
+                stepData.Append = step.Append;
+                stepData.InitOnStart = step.InitOnStart;
+                stepData.Delay = step.Delay.Evaluate(storage);
+                stepData.Duration = step.CalculateDuration();
+                
+                data.Add(stepData);
+            }
+        }
+
+        private void RecalculateStepsTimes()
+        {
+            var groupStartTime = 0f;
+            var groupDuration = 0f;
+            
+            for (var i = 0; i < data.Count; i++)
+            {
+                if (data[i].Append)
+                {
+                    groupDuration = Mathf.Max(groupDuration, data[i].Duration);
+                }
+                else
+                {
+                    groupStartTime += groupDuration;
+                    groupDuration = data[i].Duration + data[i].Delay;
+                }
+
+                data[i].StartTime = groupStartTime + data[i].Delay;
+                data[i].EndTime = groupStartTime + data[i].Duration + data[i].Delay;
+            }
+        }
+
+        private void InitSteps()
+        {
+            foreach (var stepData in data)
+            {
+                if (!stepData.InitOnStart) continue;
+                stepData.Step.Init();
+                stepData.ValuesApplied = true;
+                stepData.Step.SetProgress(0f);
+            }
+        }
+        
+        private void CalculateDurationAndInitialTime()
+        {
+            Duration = 0f;
+            foreach (var stepData in data) Duration = Mathf.Max(Duration, stepData.EndTime);
+            CurrentTime = direction == PlayDirection.Normal ? 0f : Duration;
+        }
+        
     }
 }

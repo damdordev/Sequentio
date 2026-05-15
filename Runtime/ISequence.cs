@@ -17,12 +17,14 @@ namespace Damdor.Sequentio
     {
         VarioStorage Storage { get; }
         SequenceState State { get; }
+        SequenceSettings Settings { get; }
         float Duration { get; }
         float CurrentTime { get; }
         void Init();
         void Play();
         void Pause();
         void Stop();
+        void Stop(StopBehaviour stopBehaviour);
         void MoveToTime(float time);
         void Release();
         void AddStep(SequenceStep step);

@@ -13,20 +13,11 @@ namespace Damdor.Sequentio
     
     public class RawSequence : ISequence, IVarioStorageSource
     {
+        public SequenceSettings Settings => settings;
         public VarioStorage Storage => storage;
         public SequenceState State => state;
         public float Duration => runner?.Duration ?? 0f;
         public float CurrentTime => runner?.CurrentTime ?? 0f;
-        private SequenceRunner runner
-        {
-            get
-            {
-                if (innerRunner != null || !isSetup) return innerRunner;
-                innerRunner = SequentioPooling.PopRunner();
-                SequentioUpdateProvider.Register(Update);
-                return innerRunner;
-            }
-        }
 
         private readonly List<SequenceStep> steps = new();
         private VarioStorage storage;
@@ -34,44 +25,45 @@ namespace Damdor.Sequentio
         private bool autoRelease;
 
         private SequenceState state;
-        private SequenceRunner innerRunner;
-        private bool isSetup;
+        private SequenceRunner runner;
 
         internal RawSequence() { }
-
+        
         public static RawSequence Create(ISequenceAsset sequenceAsset)
         {
             var sequence = SequentioPooling.PopRawSequence();
-            sequence.storage = sequenceAsset.Storage.Clone();
-            sequence.settings = sequenceAsset.Settings.Clone();
-            foreach (var step in sequenceAsset.Steps) sequence.steps.Add(step.Clone());
-            sequence.isSetup = true;
-
+            sequence.Setup(sequenceAsset);
+            sequence.TryAutoPlay();
             return sequence;
         }
         
         public static RawSequence Create(ISequenceAsset sequenceAsset, UIDocument uiDocument)
         {
-            var sequence = Create(sequenceAsset);
+            var sequence = SequentioPooling.PopRawSequence();
+            sequence.Setup(sequenceAsset);
             SequentioInternalHelper.PutRoot(sequence.Storage, uiDocument);
+            sequence.TryAutoPlay();
             return sequence;
         }
         
         public static RawSequence Create(ISequenceAsset sequenceAsset, UIDocument uiDocument, UiToolkitQuery root)
         {
-            var sequence = Create(sequenceAsset);
+            var sequence = SequentioPooling.PopRawSequence();
+            sequence.Setup(sequenceAsset);
+            SequentioInternalHelper.PutRoot(sequence.Storage, uiDocument);
             SequentioInternalHelper.PutRoot(sequence.Storage, uiDocument, root);
+            sequence.TryAutoPlay();
             return sequence;
         }
 
         public void Release()
         {
+            Stop();
             SequentioPooling.ReleaseRawSequence(this);
         }
-
+        
         internal void Reset()
         {
-            isSetup = false;
             storage.Release();
             storage = null;
             state = SequenceState.Idle;
@@ -81,11 +73,7 @@ namespace Damdor.Sequentio
                 steps.Clear();
             }
 
-            if (innerRunner != null)
-            {
-                SequentioPooling.ReleaseRunner(innerRunner);
-                innerRunner = null;
-            }
+            ReleaseRunner();
 
             if (settings != null)
             {
@@ -94,7 +82,6 @@ namespace Damdor.Sequentio
             }
             
             autoRelease = false;
-            SequentioUpdateProvider.Unregister(Update);
         }
         
         public void Init()
@@ -106,6 +93,7 @@ namespace Damdor.Sequentio
         public void AutoRelease()
         {
             autoRelease = true;
+            if(state == SequenceState.Finished) Release();
         }
         
         public void Play()
@@ -113,9 +101,10 @@ namespace Damdor.Sequentio
             switch (state)
             {
                 case SequenceState.Idle:
-                    runner.Setup(Application.isPlaying, storage, steps, settings.Loop, settings.Direction);
-                    runner.Init();
+                    runner = new SequenceRunner();
+                    runner.Setup(Application.isPlaying, storage, steps, settings);
                     state = SequenceState.Playing;
+                    SequentioUpdateProvider.Register(Update);
                     break;
                 case SequenceState.Playing:
                     break;
@@ -135,7 +124,7 @@ namespace Damdor.Sequentio
         public UniTask PlayAndWait()
         {
             Play();
-            return UniTask.WaitUntil(() => State == SequenceState.Finished);
+            return UniTask.WaitUntil(() => State == SequenceState.Finished || State == SequenceState.Idle);
         }
         
         #endif
@@ -150,10 +139,15 @@ namespace Damdor.Sequentio
 
         public void Stop()
         {
-            if (state != SequenceState.Idle)
-            {
-                ReturnToInitialState();
-            }
+            Stop(Settings.DefaultStopBehaviour);
+        }
+
+        public void Stop(StopBehaviour stopBehaviour)
+        {
+            if (state == SequenceState.Idle) return;
+            if(stopBehaviour == StopBehaviour.ReturnToInitialState) runner?.ReturnToInitialState();
+            ReleaseRunner();
+            state = SequenceState.Idle;
         }
 
         public void AddStep(SequenceStep step) => steps.Add(step);
@@ -164,11 +158,18 @@ namespace Damdor.Sequentio
             
             runner.SetTime(time);
         }
-
-        private void ReturnToInitialState()
+        
+        private void Setup(ISequenceAsset sequenceAsset)
         {
-            runner.ReturnToInitialState();
-            state = SequenceState.Idle;
+            storage = sequenceAsset.Storage.Clone();
+            settings = sequenceAsset.Settings.Clone();
+            foreach (var step in sequenceAsset.Steps) steps.Add(step.Clone());
+        }
+
+        private void TryAutoPlay()
+        {
+            if (Settings.AutoPlay == AutoPlayMode.None) return;
+            Play();
         }
 
         private void Update(float deltaTime, float unscaledDeltaTime)
@@ -181,37 +182,7 @@ namespace Damdor.Sequentio
             };
             UpdateTime(dt);
         }
-
-        protected virtual void Awake()
-        {
-            if(settings.AutoPlay == AutoPlayMode.Awake) Play();
-        }
-
-        protected virtual void Start()
-        {
-            if(settings.AutoPlay == AutoPlayMode.Start) Play();
-        }
-
-        protected virtual void OnEnable()
-        {
-            if (settings.AutoPlay == AutoPlayMode.OnEnable)
-            {
-                Stop();
-                Play();
-            }
-        }
-
-        protected void OnDisable()
-        {
-            if (!Application.isPlaying) Stop();
-        }
-
-        private void OnDestroy()
-        {
-            if (innerRunner != null) SequentioPooling.ReleaseRunner(innerRunner);
-            innerRunner = null;
-        }
-
+        
         private void UpdateTime(float dt)
         {
             if (state != SequenceState.Playing) return;
@@ -221,6 +192,14 @@ namespace Damdor.Sequentio
                 state = SequenceState.Finished;
                 if (autoRelease) Release();
             }
+        }
+        
+        private void ReleaseRunner()
+        {
+            if (runner == null) return;
+            SequentioPooling.ReleaseRunner(runner);
+            SequentioUpdateProvider.Unregister(Update);
+            runner = null;
         }
         
     }

@@ -23,11 +23,23 @@ namespace Damdor.Sequentio
             get => timescale;
             set => timescale = value;
         }
+        
+        public float Speed
+        {
+            get => speed;
+            set => speed = speed;
+        }
 
         public PlayDirection Direction
         {
             get => direction;
             set => direction = value;
+        }
+        
+        public StopBehaviour DefaultStopBehaviour
+        {
+            get => defaultStopBehaviour;
+            set => defaultStopBehaviour = value;
         }
 
         internal SequenceSettings Clone()
@@ -37,6 +49,7 @@ namespace Damdor.Sequentio
             clone.Loop = Loop;
             clone.Timescale = Timescale;
             clone.Direction = Direction;
+            clone.DefaultStopBehaviour = DefaultStopBehaviour;
             return clone;
         }
 
@@ -46,6 +59,8 @@ namespace Damdor.Sequentio
             loop = LoopMode.None;
             timescale = TimescaleMode.Normal;
             direction = PlayDirection.Normal;
+            defaultStopBehaviour = StopBehaviour.ReturnToInitialState;
+            speed = 1f;
         }
 
         internal void Release()
@@ -56,7 +71,8 @@ namespace Damdor.Sequentio
         [SerializeField] private AutoPlayMode autoPlay;
         [SerializeField] private LoopMode loop;
         [SerializeField] private TimescaleMode timescale;
+        [SerializeField] private float speed = 1f;
         [SerializeField] private PlayDirection direction;
-
+        [SerializeField] private StopBehaviour defaultStopBehaviour;
     }
 }

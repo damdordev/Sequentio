@@ -23,6 +23,7 @@ namespace Damdor.Sequentio.Editor
         private GUIContent pauseButtonContent;
         private float lastTime;
         private MethodInfo updateTimeMethod;
+        private bool attachedToUpdate;
         
         private readonly Dictionary<string, ReorderableList> propertyPathToReorderableList = new();
         private object[] updateTimeMethodParameters = new object[1];
@@ -36,15 +37,17 @@ namespace Damdor.Sequentio.Editor
                 stopButtonContent = EditorGUIUtility.IconContent("animationdopesheetkeyframe");
                 pauseButtonContent = EditorGUIUtility.IconContent("PauseButton On");
                 EditorApplication.update += EditorUpdate;
+                attachedToUpdate = true;
                 lastTime = -1f;
             }
         }
 
         private void OnDisable()
         {
-            if (sequenceAsset != null)
+            if (attachedToUpdate)
             {
                 EditorApplication.update -= EditorUpdate;
+                attachedToUpdate = true;
             }
 
             sequence = null;
@@ -140,9 +143,13 @@ namespace Damdor.Sequentio.Editor
 
             reorderableList.drawElementCallback += (rect, index, _, _) =>
             {
+                var element = property.GetArrayElementAtIndex(index);
+                var step = (SequenceStep)element.managedReferenceValue;
+                var indent = step.Append ? 30f : 10f;
                 EditorGUI.PropertyField(
-                    new Rect(rect.x + 10f, rect.y, rect.width - 10f, rect.height),
+                    new Rect(rect.x + indent, rect.y, rect.width - indent, rect.height),
                     property.GetArrayElementAtIndex(index),
+                    new GUIContent(GetStepName(step)),
                     true
                 );
             };
@@ -170,7 +177,8 @@ namespace Damdor.Sequentio.Editor
         private void EditorUpdate()
         {
             if (Application.isPlaying) return;
-            if (sequence == null || !((MonoBehaviour)sequence).isActiveAndEnabled) return;
+            var mono = (MonoBehaviour)sequence;
+            if (sequence == null || mono == null || !mono.isActiveAndEnabled) return;
 
             if (updateTimeMethod == null)
             {
@@ -196,6 +204,11 @@ namespace Damdor.Sequentio.Editor
             storageProperty = serializedObject.FindProperty("storage");
             stepsProperty = serializedObject.FindProperty("steps");
             settingsProperty = serializedObject.FindProperty("settings");
+        }
+
+        private string GetStepName(SequenceStep step)
+        {
+            return SequentioSettings.GetStepName(step.GetType());
         }
 
     }

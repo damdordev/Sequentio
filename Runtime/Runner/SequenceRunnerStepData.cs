@@ -9,6 +9,7 @@ namespace Damdor.Sequentio
         public float Duration;
         public bool Append;
         public bool InitOnStart;
+        public float Delay;
 
         internal void Reset()
         {

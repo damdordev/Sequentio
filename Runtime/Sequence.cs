@@ -16,24 +16,15 @@ namespace Damdor.Sequentio
         public IReadOnlyList<SequenceStep> Steps => steps;
         
         public SequenceState State => state;
-        public float Duration => runner.Duration;
-        public float CurrentTime => runner.CurrentTime;
-        private SequenceRunner runner
-        {
-            get
-            {
-                if (innerRunner != null) return innerRunner;
-                innerRunner = SequentioPooling.PopRunner();
-                return innerRunner;
-            }
-        }
+        public float Duration => runner?.Duration ?? 0f;
+        public float CurrentTime => runner?.CurrentTime ?? 0f;
         
         [SerializeField] private VarioStorage storage = new();
         [SerializeReference] private List<SequenceStep> steps = new();
         [SerializeField] private SequenceSettings settings;
 
         private SequenceState state;
-        private SequenceRunner innerRunner;
+        private SequenceRunner runner;
 
         public void Init()
         {
@@ -46,8 +37,8 @@ namespace Damdor.Sequentio
             switch (state)
             {
                 case SequenceState.Idle:
-                    runner.Setup(Application.isPlaying, storage, steps, settings.Loop, settings.Direction);
-                    runner.Init();
+                    runner = SequentioPooling.PopRunner();
+                    runner.Setup(Application.isPlaying, storage, steps, settings);
                     state = SequenceState.Playing;
                     break;
                 case SequenceState.Playing:
@@ -68,7 +59,7 @@ namespace Damdor.Sequentio
         public UniTask PlayAndWait()
         {
             Play();
-            return UniTask.WaitUntil(() => State == SequenceState.Finished);
+            return UniTask.WaitUntil(() => State == SequenceState.Finished || State == SequenceState.Idle);
         }
         
         #endif
@@ -83,10 +74,15 @@ namespace Damdor.Sequentio
 
         public void Stop()
         {
-            if (state != SequenceState.Idle)
-            {
-                ReturnToInitialState();
-            }
+            Stop(Settings.DefaultStopBehaviour);
+        }
+
+        public void Stop(StopBehaviour stopBehaviour)
+        {
+            if (state == SequenceState.Idle) return;
+            if(stopBehaviour == StopBehaviour.ReturnToInitialState) runner?.ReturnToInitialState();
+            ReleaseRunner();
+            state = SequenceState.Idle;
         }
         
         public void Release(){}
@@ -98,12 +94,6 @@ namespace Damdor.Sequentio
             if (state == SequenceState.Idle) return;
             
             runner.SetTime(time);
-        }
-
-        private void ReturnToInitialState()
-        {
-            runner.ReturnToInitialState();
-            state = SequenceState.Idle;
         }
 
         protected virtual void Update()
@@ -143,8 +133,7 @@ namespace Damdor.Sequentio
 
         private void OnDestroy()
         {
-            if (innerRunner != null) SequentioPooling.ReleaseRunner(innerRunner);
-            innerRunner = null;
+            ReleaseRunner();
         }
 
         private void UpdateTime(float dt)
@@ -152,6 +141,13 @@ namespace Damdor.Sequentio
             if (state != SequenceState.Playing) return;
             var result = runner.Update(dt);
             if (result == SequenceRunnerUpdateResult.Finished) state = SequenceState.Finished;
+        }
+
+        private void ReleaseRunner()
+        {
+            if (runner == null) return;
+            SequentioPooling.ReleaseRunner(runner);
+            runner = null;
         }
         
     }
