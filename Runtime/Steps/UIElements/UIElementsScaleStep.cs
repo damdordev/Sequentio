@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 namespace Damdor.Sequentio
 {
     [Serializable]
-    [SequentioStep("UiElements/Style/Translate/Value")]
+    [SequentioStep("UiElements/Style/Scale/Value")]
     public class UIElementsScaleStep : UIElementsTweenStep<VisualElement, Vector3>
     {
         protected override Vector3 GetValue(VisualElement target) =>

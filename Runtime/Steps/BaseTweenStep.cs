@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
 {
     public abstract class BaseTweenStep<TComponent, TComponentPointer, TValue> : SequenceStep
     {
-        public VarioValue<TComponentPointer> Target
+        public TComponentPointer Target
         {
             get => target;
             set => target = value;
@@ -37,7 +37,7 @@ namespace Damdor.Sequentio
             set => end = value;
         }
         
-        [SerializeField] private VarioValue<TComponentPointer> target;
+        [SerializeField] private TComponentPointer target;
         [SerializeField] private VarioValue<float> duration;
         [SerializeField] private VarioValue<AnimationCurve> easing = AnimationCurve.Linear(0, 0, 1, 1);
         [SerializeField] private TweenPoint<TComponent, TValue> start;
@@ -54,7 +54,7 @@ namespace Damdor.Sequentio
         public override void Init()
         {
             base.Init();
-            v_target = GetComponent(target.Evaluate(Storage));
+            v_target = GetComponent(target);
             v_start = Evaluate(start);
             v_end = Evaluate(end);
             v_easing = easing.Evaluate(Storage);

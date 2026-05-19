@@ -41,17 +41,26 @@ namespace Damdor.Sequentio
         {
             var sequence = SequentioPooling.PopRawSequence();
             sequence.Setup(sequenceAsset);
-            SequentioInternalHelper.PutRoot(sequence.Storage, uiDocument);
+            VarioHelper.PutRoot(sequence.Storage, uiDocument);
             sequence.TryAutoPlay();
             return sequence;
         }
         
-        public static RawSequence Create(ISequenceAsset sequenceAsset, UIDocument uiDocument, UiToolkitQuery root)
+        public static RawSequence Create(ISequenceAsset sequenceAsset, VisualElement root)
         {
             var sequence = SequentioPooling.PopRawSequence();
             sequence.Setup(sequenceAsset);
-            SequentioInternalHelper.PutRoot(sequence.Storage, uiDocument);
-            SequentioInternalHelper.PutRoot(sequence.Storage, uiDocument, root);
+            VarioHelper.PutRoot(sequence.Storage, root);
+            sequence.TryAutoPlay();
+            return sequence;
+        }
+        
+        public static RawSequence Create(ISequenceAsset sequenceAsset, UIDocument uiDocument, UiElementsQuery root)
+        {
+            var sequence = SequentioPooling.PopRawSequence();
+            sequence.Setup(sequenceAsset);
+            VarioHelper.PutRoot(sequence.Storage, uiDocument);
+            VarioHelper.PutRoot(sequence.Storage, uiDocument, root);
             sequence.TryAutoPlay();
             return sequence;
         }
