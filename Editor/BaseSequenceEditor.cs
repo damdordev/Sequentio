@@ -164,7 +164,10 @@ namespace Damdor.Sequentio.Editor
                 {
                     property.InsertArrayElementAtIndex(property.arraySize);
                     var element = property.GetArrayElementAtIndex(property.arraySize - 1);
-                    element.managedReferenceValue = Activator.CreateInstance(type);
+                    var step = (SequenceStep) Activator.CreateInstance(type);
+                    var resetMethod = typeof(SequenceStep).GetMethod("Reset", BindingFlags.Instance | BindingFlags.NonPublic);
+                    resetMethod.Invoke(step, null);
+                    element.managedReferenceValue = step;
                     property.serializedObject.ApplyModifiedProperties();
                 }).Show(new Rect(rect.x - 300, rect.y, rect.width + 300, rect.height));
             };

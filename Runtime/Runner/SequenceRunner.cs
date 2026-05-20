@@ -109,19 +109,23 @@ namespace Damdor.Sequentio
         public void SetTime(float newTime)
         {
             CurrentTime = Mathf.Clamp(newTime, 0f, Duration);
-            
-            foreach (var stepData in data)
+
+            for (var index = 0; index < data.Count; index++)
             {
-                if(CurrentTime < stepData.StartTime) continue;
-                
+                var stepData = data[index];
+                if (CurrentTime < stepData.StartTime) continue;
+
                 if (!stepData.ValuesApplied)
                 {
                     // TODO: error handling
+                    Debug.Log($"[Sequentio] Init step {index}");
                     stepData.Step.Init();
                     stepData.ValuesApplied = true;
                 }
-                
+
                 var t = Mathf.InverseLerp(stepData.StartTime, stepData.EndTime, CurrentTime);
+                if (CurrentTime >= stepData.EndTime) t = 1f;
+                Debug.Log($"[Sequentio] SetProgres({index}, {t})");
                 stepData.Step.SetProgress(t);
             }
         }
@@ -189,11 +193,14 @@ namespace Damdor.Sequentio
 
         private void InitSteps()
         {
-            foreach (var stepData in data)
+            for (var index = 0; index < data.Count; index++)
             {
+                var stepData = data[index];
                 if (!stepData.InitOnStart) continue;
+                Debug.Log($"[Sequentio] Init step {index}");
                 stepData.Step.Init();
                 stepData.ValuesApplied = true;
+                Debug.Log($"[Sequentio] SetProgres({index}, 0)");
                 stepData.Step.SetProgress(0f);
             }
         }

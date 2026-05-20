@@ -77,7 +77,7 @@ namespace Damdor.Sequentio
         {
             base.Reset();
             target = default;
-            duration = default;
+            duration = 1f;
             easing = AnimationCurve.Linear(0, 0, 1, 1);
             start = default;
             end = default;
