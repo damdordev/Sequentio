@@ -1,15 +1,17 @@
+using System;
 using Damdor.Foundation;
 using Damdor.Vario;
 using UnityEngine;
 
 namespace Damdor.Sequentio
 {
+    [Serializable]
     public abstract class Vector3TweenStep<TComponent> : TweenStep<TComponent, Vector3> 
     {
-        public VarioValue<Vector3AxisFilter> Filter
+        public VarioValue<Vector3AxisFilter> AxisFilter
         {
-            get => filter;
-            set => filter = value;
+            get => axisFilter;
+            set => axisFilter = value;
         }
 
         private Vector3AxisFilter v_filter;
@@ -17,7 +19,7 @@ namespace Damdor.Sequentio
         public override void Init()
         {
             base.Init();
-            v_filter = filter.Evaluate(Storage);
+            v_filter = axisFilter.Evaluate(Storage);
         }
 
         protected override Vector3 TransformValue(TComponent target, Vector3 value)
@@ -26,16 +28,16 @@ namespace Damdor.Sequentio
         internal override void Reset()
         {
             base.Reset();
-            filter = default;
+            axisFilter = default;
         }
 
         internal override void CopyFrom(SequenceStep otherStep)
         {
             base.CopyFrom(otherStep);
             if (otherStep is not Vector3TweenStep<TComponent> other) return;
-            filter = other.filter;
+            axisFilter = other.axisFilter;
         }
 
-        [SerializeField] private VarioValue<Vector3AxisFilter> filter;
+        [SerializeField] private VarioValue<Vector3AxisFilter> axisFilter;
     }
 }

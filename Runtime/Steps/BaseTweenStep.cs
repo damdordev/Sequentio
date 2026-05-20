@@ -64,7 +64,7 @@ namespace Damdor.Sequentio
         public override void ReturnToInitialState()
         {
             base.ReturnToInitialState();
-            SetValue(v_target, initialValue);
+            SetValue(v_target, TransformValue(v_target, initialValue));
         }
 
         public override void SetProgress(float t)

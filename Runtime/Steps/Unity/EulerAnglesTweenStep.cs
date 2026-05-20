@@ -9,6 +9,12 @@ namespace Damdor.Sequentio
     [SequentioStep("Transform/EulerAngles")]
     public class EulerAnglesTweenStep : Vector3TweenStep<Transform>
     {
+        public VarioValue<bool> Global
+        {
+            get => global;
+            set => global = value;
+        }
+        
         private bool v_global;
         
         protected override Vector3 GetValue(Transform target) => v_global ? target.localEulerAngles : target.eulerAngles;
@@ -28,14 +34,14 @@ namespace Damdor.Sequentio
         internal override void Reset()
         {
             base.Reset();
-            global = default;
+            Global = default;
         }
 
         internal override void CopyFrom(SequenceStep otherStep)
         {
             base.CopyFrom(otherStep);
-            if (otherStep is not PositionTweenStep other) return;
-            global = other.global;
+            if (otherStep is not EulerAnglesTweenStep other) return;
+            Global = other.Global;
         }
         
         [SerializeField] private VarioValue<bool> global;

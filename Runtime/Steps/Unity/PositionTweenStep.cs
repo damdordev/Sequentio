@@ -9,6 +9,12 @@ namespace Damdor.Sequentio
     [SequentioStep("Transform/Position")]
     public class PositionTweenStep : Vector3TweenStep<Transform>
     {
+        public VarioValue<bool> Global
+        {
+            get => global;
+            set => global = value;
+        }
+        
         private bool v_global;
         
         protected override Vector3 GetValue(Transform target) => v_global ? target.position : target.localPosition;
@@ -28,7 +34,7 @@ namespace Damdor.Sequentio
         internal override void Reset()
         {
             base.Reset();
-            global = default;
+            Global = default;
         }
 
         internal override void CopyFrom(SequenceStep otherStep)
