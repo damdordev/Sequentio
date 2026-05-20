@@ -70,7 +70,7 @@ namespace Damdor.Sequentio
         public override void SetProgress(float t)
         {
             base.SetProgress(t);
-            SetValue(v_target, Lerp(v_start, v_end, v_easing.Evaluate(t)));
+            SetValue(v_target, TransformValue(v_target, Lerp(v_start, v_end, v_easing.Evaluate(t))));
         }
 
         internal override void Reset()
@@ -102,6 +102,7 @@ namespace Damdor.Sequentio
         protected abstract TValue GetValue(TComponent target);
         protected abstract void SetValue(TComponent target, TValue value);
         protected abstract TComponent GetComponent(TComponentPointer pointer);
+        protected virtual TValue TransformValue(TComponent target, TValue value) => value;
 
         private TValue Evaluate(TweenPoint<TComponent, TValue> point) => point.ValueSource switch
         {
