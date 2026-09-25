@@ -78,8 +78,12 @@ namespace Damdor.Sequentio.Editor
                 EditorGUILayout.PropertyField(storageProperty);
             }
             
-            stepsProperty.isExpanded = EditorGUILayout.Foldout(stepsProperty.isExpanded, "Steps");
-            if (stepsProperty.isExpanded) stepsList.DoLayoutList();
+            stepsList.DoLayoutList();
+            EditorGUILayout.BeginVertical();
+            ++EditorGUI.indentLevel;
+            ShowSelectedSteps(stepsList);
+            --EditorGUI.indentLevel;
+            EditorGUILayout.EndVertical();
             
             if (sequence != null && sequence.State != SequenceState.Idle) GUI.enabled = wasEnabled;
             
@@ -145,17 +149,18 @@ namespace Damdor.Sequentio.Editor
             {
                 var element = property.GetArrayElementAtIndex(index);
                 var step = (SequenceStep)element.managedReferenceValue;
-                var indent = step.Append ? 30f : 10f;
-                EditorGUI.PropertyField(
-                    new Rect(rect.x + indent, rect.y, rect.width - indent, rect.height),
-                    property.GetArrayElementAtIndex(index),
-                    new GUIContent(GetStepName(step)),
-                    true
+                EditorGUI.LabelField(
+                    new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight),
+                    GetStepName(step)
+                );
+                EditorGUI.LabelField(
+                    new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing, rect.width, EditorGUIUtility.singleLineHeight),
+                    step.DynamicTitle
                 );
             };
-            
+
             reorderableList.elementHeightCallback += index 
-                => EditorGUI.GetPropertyHeight(property.GetArrayElementAtIndex(index));
+                => 2f * EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing; 
 
             reorderableList.onAddDropdownCallback += (rect, _) =>
             {
@@ -171,8 +176,11 @@ namespace Damdor.Sequentio.Editor
                     property.serializedObject.ApplyModifiedProperties();
                 }).Show(new Rect(rect.x - 300, rect.y, rect.width + 300, rect.height));
             };
-            
+
+            reorderableList.multiSelect = true;
             propertyPathToReorderableList[property.propertyPath] = reorderableList;
+            
+            reorderableList.onSelectCallback += list => property.GetArrayElementAtIndex(list.index).isExpanded = true;
             
             return reorderableList;
         }
@@ -197,6 +205,23 @@ namespace Damdor.Sequentio.Editor
             }
 
             lastTime = time;
+        }
+        
+        private void ShowSelectedSteps(ReorderableList stepsList)
+        {
+            foreach (var stepIndex in stepsList.selectedIndices)
+            {
+                var element = stepsProperty.GetArrayElementAtIndex(stepIndex);
+                var step = (SequenceStep)element.managedReferenceValue;
+                EditorGUILayout.BeginVertical(GUI.skin.box);
+                EditorGUILayout.PropertyField(
+                    element,
+                    new GUIContent(GetStepName(step)),
+                    true
+                );
+                EditorGUILayout.EndVertical();
+                EditorGUILayout.Space(10);
+            }
         }
         
         private void RetrieveSequenceAndProperties()

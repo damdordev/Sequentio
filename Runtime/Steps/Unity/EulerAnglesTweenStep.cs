@@ -1,12 +1,11 @@
 using System;
-using Damdor.Foundation;
 using Damdor.Vario;
 using UnityEngine;
 
 namespace Damdor.Sequentio
 {
     [Serializable]
-    [SequentioStep("Transform/EulerAngles")]
+    [SequentioStep("Transform/EulerAngles", "Rotate")]
     public class EulerAnglesTweenStep : Vector3TweenStep<Transform>
     {
         public VarioValue<bool> Global

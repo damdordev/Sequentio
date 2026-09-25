@@ -103,7 +103,7 @@ namespace Damdor.Sequentio
         protected abstract TComponent GetComponent(TComponentPointer pointer);
         protected virtual TValue TransformValue(TComponent target, TValue value) => value;
 
-        private TValue Evaluate(TweenPoint<TComponent, TValue> point) => point.ValueSource switch
+        protected TValue Evaluate(TweenPoint<TComponent, TValue> point) => point.ValueSource switch
         {
             TweenPointSource.Value => point.Value.Evaluate(Storage),
             TweenPointSource.Target => Sum(GetValue(v_target), point.Value.Evaluate(Storage)),

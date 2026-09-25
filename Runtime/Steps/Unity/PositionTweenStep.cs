@@ -1,12 +1,11 @@
 using System;
-using Damdor.Foundation;
 using Damdor.Vario;
 using UnityEngine;
 
 namespace Damdor.Sequentio
 {
     [Serializable]
-    [SequentioStep("Transform/Position")]
+    [SequentioStep("Transform/Position", "Move")]
     public class PositionTweenStep : Vector3TweenStep<Transform>
     {
         public VarioValue<bool> Global

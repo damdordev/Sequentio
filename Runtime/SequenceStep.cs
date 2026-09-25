@@ -34,6 +34,8 @@ namespace Damdor.Sequentio
             get => delay;
             set => delay = value;
         }
+
+        public virtual string DynamicTitle => ""; 
         
         [SerializeField] private SequentioStepVisibility visibility = new();
         [SerializeField] private bool initOnStart;
