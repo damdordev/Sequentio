@@ -9,10 +9,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/damdordev/Foundation.git"
+    "url": "https://github.com/damdordev/Sequentio.git"
   },
   "dependencies": {
-     "com.cysharp.unitask": "2.5.0",
-     "com.damdor.numerio": "1.0.0"
+    "com.damdor.vario": "1.0.0"
   }    
 }

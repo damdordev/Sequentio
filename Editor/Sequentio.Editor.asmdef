@@ -3,7 +3,7 @@
     "rootNamespace": "Damdor.Sequentio.Editor",
     "references": [
         "GUID:9ec095bbde408004c97a9bce0f26dff3",
-        "GUID:a1d795e18ee581b089339fc65ea4e4ac"
+        "GUID:024373f4263b556f388b030db4a9def6"
     ],
     "includePlatforms": [
         "Editor"

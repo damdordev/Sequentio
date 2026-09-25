@@ -3,9 +3,7 @@
     "rootNamespace": "Damdor.Sequentio",
     "references": [
         "GUID:6c0ccf302c0ade88790dbd28acea4ff3",
-        "GUID:27e601c55f5bb36b785408d5c9f7d3b1",
-        "GUID:f51ebe6a0ceec4240a699833d6309b23",
-        "GUID:ff1ca6bd0cfd87e86b097b4a249f0f3d"
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

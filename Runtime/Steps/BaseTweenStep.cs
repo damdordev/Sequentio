@@ -1,5 +1,4 @@
 using System;
-using Damdor.Numerio;
 using Damdor.Vario;
 using UnityEngine;
 
@@ -116,10 +115,10 @@ namespace Damdor.Sequentio
         };
 
         protected virtual TValue Lerp(TValue a, TValue b, float t)
-            => NumerioSettings.Get<TValue>().LerpUnclamped(a, b, t);
+            => VarioSettings.GetNumericOperations<TValue>().LerpUnclamped(a, b, t);
 
         protected virtual TValue Sum(TValue a, TValue b)
-            => NumerioSettings.Get<TValue>().Sum(a, b);
+            => VarioSettings.GetNumericOperations<TValue>().Sum(a, b);
         
     }
 }
