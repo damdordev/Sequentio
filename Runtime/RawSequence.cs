@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Damdor.Foundation;
+using System.Threading;
 #if DAMDOR_SEQUENTIO_UNITASK
 using Cysharp.Threading.Tasks;
 #endif
@@ -23,6 +23,7 @@ namespace Damdor.Sequentio
         private VarioStorage storage;
         private SequenceSettings settings;
         private bool autoRelease;
+        private CancellationToken autoReleaseCancellationToken;
 
         private SequenceState state;
         private SequenceRunner runner;
@@ -67,7 +68,7 @@ namespace Damdor.Sequentio
 
         public void Release()
         {
-            Stop();
+            Stop(StopBehaviour.LeaveInCurrentState);
             SequentioPooling.ReleaseRawSequence(this);
         }
         
@@ -76,6 +77,7 @@ namespace Damdor.Sequentio
             storage.Release();
             storage = null;
             state = SequenceState.Idle;
+            autoReleaseCancellationToken = CancellationToken.None;
             if (steps != null)
             {
                 foreach (var step in steps) SequentioPooling.ReleaseStep(step);
@@ -99,10 +101,17 @@ namespace Damdor.Sequentio
             Pause();
         }
 
-        public void AutoRelease()
+        public void AutoRelease(GameObject go = null)
         {
             autoRelease = true;
-            if(state == SequenceState.Finished) Release();
+            if (go != null) autoReleaseCancellationToken = go.GetCancellationTokenOnDestroy();
+            if(state == SequenceState.Finished || autoReleaseCancellationToken.IsCancellationRequested) Release();
+        }
+
+        public void AutoRelease(Component component = null)
+        {
+            var go = component != null ? component.gameObject : null;
+            AutoRelease(go);
         }
         
         public void Play()
@@ -133,7 +142,7 @@ namespace Damdor.Sequentio
         public UniTask PlayAndWait()
         {
             Play();
-            return UniTask.WaitUntil(() => State == SequenceState.Finished || State == SequenceState.Idle);
+            return UniTask.WaitUntil(() => State == SequenceState.Finished || State == SequenceState.Idle, cancellationToken: autoReleaseCancellationToken);
         }
         
         #endif
@@ -183,6 +192,11 @@ namespace Damdor.Sequentio
 
         private void Update(float deltaTime, float unscaledDeltaTime)
         {
+            if (autoRelease && autoReleaseCancellationToken.IsCancellationRequested)
+            {
+                Release();
+                return;
+            }
             var dt = settings.Timescale switch
             {
                 TimescaleMode.Normal => deltaTime,
