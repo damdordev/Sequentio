@@ -96,6 +96,20 @@ namespace Damdor.Sequentio
             runner.SetTime(time);
         }
 
+        public void CopyFrom(SequenceAsset sequenceAsset)
+        {
+            Clear();
+            storage = sequenceAsset.Storage.Clone();
+            settings = sequenceAsset.Settings.Clone();
+            foreach (var step in sequenceAsset.Steps) steps.Add(step.Clone());
+        }
+
+        public void Clear()
+        {
+            steps.Clear();
+            storage.Clear();
+        }
+
         protected virtual void Update()
         {
             var dt = settings.Timescale switch
