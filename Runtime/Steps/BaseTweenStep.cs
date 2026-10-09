@@ -25,13 +25,13 @@ namespace Damdor.Sequentio
             set => easing = value;
         }
 
-        public TweenPoint<TComponent, TValue> Start
+        public TweenEndpoint<TComponent, TValue> Start
         {
             get => start;
             set => start = value;
         }
 
-        public TweenPoint<TComponent, TValue> End
+        public TweenEndpoint<TComponent, TValue> End
         {
             get => end;
             set => end = value;
@@ -40,8 +40,8 @@ namespace Damdor.Sequentio
         [SerializeField] private TComponentPointer target;
         [SerializeField] private VarioValue<float> duration;
         [SerializeField] private VarioValue<AnimationCurve> easing = AnimationCurve.Linear(0, 0, 1, 1);
-        [SerializeField] private TweenPoint<TComponent, TValue> start;
-        [SerializeField] private TweenPoint<TComponent, TValue> end;
+        [SerializeField] private TweenEndpoint<TComponent, TValue> start;
+        [SerializeField] private TweenEndpoint<TComponent, TValue> end;
 
         private TValue initialValue;
         private TComponent v_target;
@@ -104,13 +104,13 @@ namespace Damdor.Sequentio
         protected abstract TComponent GetComponent(TComponentPointer pointer);
         protected virtual TValue TransformValue(TComponent target, TValue value) => value;
 
-        protected TValue Evaluate(TweenPoint<TComponent, TValue> point) => point.ValueSource switch
+        protected TValue Evaluate(TweenEndpoint<TComponent, TValue> endpoint) => endpoint.ValueSource switch
         {
-            TweenPointSource.Value => point.Value.Evaluate(Storage),
-            TweenPointSource.Target => Sum(GetValue(GetComponent(target)), point.Value.Evaluate(Storage)),
-            TweenPointSource.OtherTarget => Sum(
-                GetValue(point.OtherTarget.Evaluate(Storage) ?? GetComponent(target)),
-                point.Value.Evaluate(Storage)
+            TweenPointSource.ExplicitValue => endpoint.Value.Evaluate(Storage),
+            TweenPointSource.CurrentValue => Sum(GetValue(GetComponent(target)), endpoint.Value.Evaluate(Storage)),
+            TweenPointSource.ReferenceTarget => Sum(
+                GetValue(endpoint.OtherTarget.Evaluate(Storage) ?? GetComponent(target)),
+                endpoint.Value.Evaluate(Storage)
             ),
             _ => throw new ArgumentOutOfRangeException()
         };

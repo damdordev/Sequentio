@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Damdor.Sequentio.Editor
 {
-    [CustomPropertyDrawer(typeof(TweenPoint<,>))]
+    [CustomPropertyDrawer(typeof(TweenEndpoint<,>))]
     public class TweenPointPropertyDrawer : PropertyDrawer
     {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
@@ -17,17 +17,17 @@ namespace Damdor.Sequentio.Editor
             var source = (TweenPointSource) valueSourceProperty.enumValueIndex;
             return source switch
             {
-                TweenPointSource.Value
+                TweenPointSource.ExplicitValue
                     => EditorGUI.GetPropertyHeight(valueSourceProperty) +
                        EditorGUI.GetPropertyHeight(valueProperty) + 
                        2f * EditorGUIUtility.standardVerticalSpacing + 
                        EditorGUI.GetPropertyHeight(property, false),
-                TweenPointSource.Target 
+                TweenPointSource.CurrentValue 
                     =>  EditorGUI.GetPropertyHeight(valueSourceProperty) + 
                         EditorGUI.GetPropertyHeight(valueProperty) + 
                         2f * EditorGUIUtility.standardVerticalSpacing + 
                         EditorGUI.GetPropertyHeight(property, false),
-                TweenPointSource.OtherTarget
+                TweenPointSource.ReferenceTarget
                     => EditorGUI.GetPropertyHeight(valueSourceProperty) +  
                        EditorGUI.GetPropertyHeight(otherTargetProperty) +
                        EditorGUI.GetPropertyHeight(valueProperty) +
@@ -73,21 +73,21 @@ namespace Damdor.Sequentio.Editor
             
             switch (source)
             {
-                case TweenPointSource.Value:
+                case TweenPointSource.ExplicitValue:
                     EditorGUI.PropertyField(
                         new Rect(position.x + x, y, position.width - x, EditorGUI.GetPropertyHeight(valueProperty)),
                         valueProperty,
                         new GUIContent("Value")
                     );
                     break;
-                case TweenPointSource.Target:
+                case TweenPointSource.CurrentValue:
                     EditorGUI.PropertyField(
                         new Rect(position.x + x, y, position.width - x, EditorGUI.GetPropertyHeight(valueProperty)),
                         valueProperty,
                         new GUIContent("Shift")
                     );
                     break;
-                case TweenPointSource.OtherTarget:
+                case TweenPointSource.ReferenceTarget:
                     EditorGUI.PropertyField(
                         new Rect(position.x + x, y, position.width - x, EditorGUI.GetPropertyHeight(otherTargetProperty)),
                         otherTargetProperty,

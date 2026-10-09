@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Damdor.Sequentio
 {
     [Serializable]
-    public struct TweenPoint<TComponent, TValue>
+    public struct TweenEndpoint<TComponent, TValue>
     {
         public TweenPointSource ValueSource
         {
@@ -29,7 +29,7 @@ namespace Damdor.Sequentio
         [SerializeField] private VarioValue<TComponent> otherTarget;
         [SerializeField] private VarioValue<TValue> value;
             
-        public static implicit operator TweenPoint<TComponent, TValue>(TValue value) => new() { ValueSource = TweenPointSource.Value, Value = value };
+        public static implicit operator TweenEndpoint<TComponent, TValue>(TValue value) => new() { ValueSource = TweenPointSource.ExplicitValue, Value = value };
 
     }
 }
