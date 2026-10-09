@@ -44,7 +44,7 @@ namespace Damdor.Sequentio
         
         public SequenceRunnerUpdateResult Update(float dt)
         {
-            var factor = settings.Direction == PlayDirection.Normal ? 1f : -1f;
+            var factor = direction == PlayDirection.Normal ? 1f : -1f;
             var newTime = CurrentTime + dt * factor;
 
             if (newTime < 0f || newTime > Duration)
