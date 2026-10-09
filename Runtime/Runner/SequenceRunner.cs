@@ -160,7 +160,7 @@ namespace Damdor.Sequentio
                 var stepData = SequentioPooling.PopRunnerStepData();
                 stepData.Step = step;
                 stepData.ValuesApplied = false;
-                stepData.Append = step.Append;
+                stepData.Append = step.RunWithPreviousStep;
                 stepData.InitOnStart = step.InitOnStart;
                 stepData.Delay = step.Delay.Evaluate(storage);
                 stepData.Duration = step.CalculateDuration();

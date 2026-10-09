@@ -23,10 +23,10 @@ namespace Damdor.Sequentio
             set => initOnStart = value;
         }
         
-        public bool Append
+        public bool RunWithPreviousStep
         {
-            get => append;
-            set => append = value;
+            get => runWithPreviousStep;
+            set => runWithPreviousStep = value;
         }
 
         public VarioValue<float> Delay
@@ -39,7 +39,7 @@ namespace Damdor.Sequentio
         
         [SerializeField] private SequentioStepVisibility visibility = new();
         [SerializeField] private bool initOnStart;
-        [SerializeField] private bool append;
+        [SerializeField] private bool runWithPreviousStep;
         [SerializeField] private VarioValue<float> delay;
 
         public bool IsEnabled(bool runtime) => visibility.IsEnabled(runtime);
@@ -56,7 +56,7 @@ namespace Damdor.Sequentio
             Storage = null;
             visibility.Reset();
             initOnStart = false;
-            append = false;
+            runWithPreviousStep = false;
             delay = default;
         }
 
@@ -64,7 +64,7 @@ namespace Damdor.Sequentio
         {
             visibility.CopyFrom(otherStep.visibility);
             initOnStart = otherStep.initOnStart;
-            append = otherStep.append;
+            runWithPreviousStep = otherStep.runWithPreviousStep;
             delay = otherStep.delay;
         }
 
