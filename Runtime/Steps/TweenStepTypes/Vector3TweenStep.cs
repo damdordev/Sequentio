@@ -6,6 +6,7 @@ namespace Damdor.Sequentio
 {
     [Serializable]
     public abstract class Vector3TweenStep<TComponent> : TweenStep<TComponent, Vector3> 
+        where TComponent : class
     {
         public VarioValue<Vector3AxisFilter> AxisFilter
         {

@@ -5,6 +5,7 @@ using UnityEngine;
 namespace Damdor.Sequentio
 {
     public abstract class BaseTweenStep<TComponent, TComponentPointer, TValue> : SequenceStep
+        where TComponent : class
     {
         public TComponentPointer Target
         {
@@ -106,9 +107,9 @@ namespace Damdor.Sequentio
         protected TValue Evaluate(TweenPoint<TComponent, TValue> point) => point.ValueSource switch
         {
             TweenPointSource.Value => point.Value.Evaluate(Storage),
-            TweenPointSource.Target => Sum(GetValue(v_target), point.Value.Evaluate(Storage)),
+            TweenPointSource.Target => Sum(GetValue(GetComponent(target)), point.Value.Evaluate(Storage)),
             TweenPointSource.OtherTarget => Sum(
-                GetValue(point.OtherTarget.Evaluate(Storage)),
+                GetValue(point.OtherTarget.Evaluate(Storage) ?? GetComponent(target)),
                 point.Value.Evaluate(Storage)
             ),
             _ => throw new ArgumentOutOfRangeException()

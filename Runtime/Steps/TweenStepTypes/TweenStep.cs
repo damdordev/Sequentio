@@ -4,6 +4,7 @@ using UnityEngine;
 namespace Damdor.Sequentio
 {
     public abstract class TweenStep<TComponent, TValue> : BaseTweenStep<TComponent, VarioValue<TComponent>, TValue>
+        where TComponent : class
     {
         protected override TComponent GetComponent(VarioValue<TComponent> pointer) => pointer.Evaluate(Storage);
 

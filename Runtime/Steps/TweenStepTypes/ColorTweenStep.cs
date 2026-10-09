@@ -6,6 +6,7 @@ namespace Damdor.Sequentio
 {
     [Serializable]
     public abstract class ColorTweenStep<TComponent> : TweenStep<TComponent, Color> 
+        where TComponent : class
     {
         public VarioValue<ColorChannelFilter> ChannelFilter
         {
