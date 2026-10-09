@@ -33,8 +33,8 @@ namespace Damdor.Sequentio.Editor
             RetrieveSequenceAndProperties();
             if (sequenceAsset != null)
             {
-                playButtonContent = EditorGUIUtility.IconContent("PlayButton On");
-                stopButtonContent = EditorGUIUtility.IconContent("animationdopesheetkeyframe");
+                playButtonContent = EditorGUIUtility.IconContent("PlayButton");
+                stopButtonContent = EditorGUIUtility.IconContent("StopButton");
                 pauseButtonContent = EditorGUIUtility.IconContent("PauseButton On");
                 EditorApplication.update += EditorUpdate;
                 attachedToUpdate = true;
@@ -50,6 +50,7 @@ namespace Damdor.Sequentio.Editor
                 attachedToUpdate = true;
             }
 
+            sequence?.Stop(StopBehaviour.ReturnToInitialState);
             sequence = null;
             sequenceAsset = null;
         }
@@ -107,7 +108,7 @@ namespace Damdor.Sequentio.Editor
                 if (GUILayout.Button(pauseButtonContent)) sequence.Pause();
             }
 
-            if (GUILayout.Button(stopButtonContent)) sequence.Stop();
+            if (GUILayout.Button(stopButtonContent)) sequence.Stop(StopBehaviour.ReturnToInitialState);
             
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndHorizontal();
@@ -205,6 +206,7 @@ namespace Damdor.Sequentio.Editor
             }
 
             lastTime = time;
+            Repaint();
         }
         
         private void ShowSelectedSteps(ReorderableList stepsList)
