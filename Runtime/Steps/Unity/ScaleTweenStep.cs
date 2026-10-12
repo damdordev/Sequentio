@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Damdor.Sequentio
 {
     [Serializable]
-    [SequentioStep("Transform/Scale", "Scale")]
+    [SequentioStep("Transform/Scale", "Scale", "Packages/com.damdor.sequentio/Editor/StepsIcons/scale.png")]
     public class ScaleTweenStep : TweenStep<Transform, Vector3>
     {
         protected override Vector3 GetValue(Transform target) => target.localScale;

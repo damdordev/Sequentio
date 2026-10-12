@@ -35,12 +35,20 @@ namespace Damdor.Sequentio
 
         private static List<Type> supportedStepTypes;
         private static readonly Dictionary<Type, string> stepTypeToName = new();
+        private static readonly Dictionary<Type, string> stepToIcon = new();
        
         public static string GetStepName(Type type)
         {
             EnsureSupportedTypesInit();
             var name = stepTypeToName.GetValueOrDefault(type, "");
             return name;
+        }
+        
+        public static string GetStepIcon(Type type)
+        {
+            EnsureSupportedTypesInit();
+            var icon = stepToIcon.GetValueOrDefault(type, "");
+            return icon;
         }
         
         private static void EnsureSupportedTypesInit()
@@ -58,17 +66,18 @@ namespace Damdor.Sequentio
                     var attr = type.GetCustomAttribute<SequentioStepAttribute>();
                     if(attr == null) continue;
                     
-                    RegisterStepType(type, attr.Name);
+                    RegisterStepType(type, attr.Name, attr.Icon);
                 }
             }
 
         }
         
-        private static void RegisterStepType(Type type, string name)
+        private static void RegisterStepType(Type type, string name, string icon)
         {
             if(supportedStepTypes.Contains(type)) return;
             supportedStepTypes.Add(type);
             stepTypeToName[type] = name;
+            stepToIcon[type] = icon;
         }
         
     }

@@ -17,7 +17,7 @@ namespace Damdor.Sequentio
             if (component != null) targetName = component.name;
             else if (Target.Source == ValueSource.Storage) targetName = ":" + Target.Name;
 
-            return $"{targetName}, {Evaluate(Start)} -> {Evaluate(End)}, {Duration.Evaluate(Storage)}s";
+            return $"{targetName}";
         }
     }
 }

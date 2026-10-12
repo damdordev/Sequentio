@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Damdor.Sequentio
 {
     [Serializable]
-    [SequentioStep("Transform/EulerAngles", "Rotate")]
+    [SequentioStep("Transform/EulerAngles", "Rotate", "Packages/com.damdor.sequentio/Editor/StepsIcons/rotation.png")]
     public class EulerAnglesTweenStep : Vector3TweenStep<Transform>
     {
         public VarioValue<bool> Global

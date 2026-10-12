@@ -146,22 +146,10 @@ namespace Damdor.Sequentio.Editor
                 EditorGUI.LabelField(rect, "Steps");
             };
 
-            reorderableList.drawElementCallback += (rect, index, _, _) =>
-            {
-                var element = property.GetArrayElementAtIndex(index);
-                var step = (SequenceStep)element.managedReferenceValue;
-                EditorGUI.LabelField(
-                    new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight),
-                    GetStepName(step)
-                );
-                EditorGUI.LabelField(
-                    new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing, rect.width, EditorGUIUtility.singleLineHeight),
-                    step.DynamicTitle
-                );
-            };
+            reorderableList.drawElementCallback += (Rect rect, int index, bool isActive, bool isFocused) =>
+                DrawStep(property, rect, index, isActive, isFocused);
 
-            reorderableList.elementHeightCallback += index 
-                => 2f * EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing; 
+            reorderableList.elementHeightCallback += _ => 32f; 
 
             reorderableList.onAddDropdownCallback += (rect, _) =>
             {
@@ -185,7 +173,91 @@ namespace Damdor.Sequentio.Editor
             
             return reorderableList;
         }
-        
+
+        private void DrawStep(SerializedProperty property, Rect rect, int index, bool isActive, bool isFocused)
+        {
+            var element = property.GetArrayElementAtIndex(index);
+            var step = element.managedReferenceValue as SequenceStep;
+
+            if (step == null)
+                return;
+
+            var type = step.GetType();
+
+            const float iconSize = 32f;
+            const float valuesWidth = 210f;
+            const float spacing = 6f;
+            const float timeWidth = 60f;
+            const float progressWidth = 100f;
+            const float progressHeight = 12f;
+
+            if (step.RunWithPreviousStep)
+            {
+                rect.x += 20f;
+                rect.width -= 20f;
+            }
+
+            var iconPath = SequentioSettings.GetStepIcon(type);
+            if (iconPath != null)
+            {
+                var icon = AssetDatabase.LoadAssetAtPath<Texture2D>(iconPath);
+                if (icon != null)
+                {
+                    GUI.DrawTexture(new Rect(
+                            rect.x,
+                            rect.y,
+                            iconSize,
+                            iconSize),
+                        icon,
+                        ScaleMode.ScaleToFit,
+                        true
+                    );
+                }
+            }
+
+            GUI.Label(
+                new Rect(
+                    rect.x + iconSize,
+                    rect.y,
+                    valuesWidth,
+                    rect.height),
+                new GUIContent(
+                    $"<b>{GetStepName(step)}</b>  <color=#B8B8B8>{step.DynamicTitle}</color>"
+                ),
+                new GUIStyle(EditorStyles.label)
+                {
+                    richText = true,
+                    alignment = TextAnchor.MiddleLeft,
+                    clipping = TextClipping.Clip
+                }
+            );
+
+            GUI.Label(
+                new Rect(
+                    rect.xMax - timeWidth - spacing,
+                    rect.y,
+                    timeWidth,
+                    rect.height),
+                $"{step.CalculateDuration()}s",
+                new GUIStyle(EditorStyles.miniLabel)
+                {
+                    alignment = TextAnchor.MiddleRight,
+                    clipping = TextClipping.Clip
+                }
+            );
+
+            if (sequence != null)
+            {
+                EditorGUI.ProgressBar(new Rect(
+                        rect.xMax - timeWidth - 2f * spacing - progressWidth,
+                        rect.y + (rect.height - progressHeight) / 2f,
+                        progressWidth,
+                        progressHeight),
+                    0.5f,
+                    "");
+            }
+        }
+
         private void EditorUpdate()
         {
             if (Application.isPlaying) return;
@@ -194,11 +266,12 @@ namespace Damdor.Sequentio.Editor
 
             if (updateTimeMethod == null)
             {
-                updateTimeMethod = typeof(Sequence).GetMethod("UpdateTime", BindingFlags.NonPublic | BindingFlags.Instance);
+                updateTimeMethod =
+                    typeof(Sequence).GetMethod("UpdateTime", BindingFlags.NonPublic | BindingFlags.Instance);
             }
-            
+
             var time = Time.realtimeSinceStartup;
-            if(lastTime > 0f)
+            if (lastTime > 0f)
             {
                 var dt = time - lastTime;
                 updateTimeMethodParameters[0] = dt;
@@ -208,7 +281,7 @@ namespace Damdor.Sequentio.Editor
             lastTime = time;
             Repaint();
         }
-        
+
         private void ShowSelectedSteps(ReorderableList stepsList)
         {
             foreach (var stepIndex in stepsList.selectedIndices)

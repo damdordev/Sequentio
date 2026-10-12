@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Damdor.Sequentio
 {
     [Serializable]
-    [SequentioStep("Transform/Position", "Move")]
+    [SequentioStep("Transform/Position", "Move", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
     public class PositionTweenStep : Vector3TweenStep<Transform>
     {
         public VarioValue<bool> Global
