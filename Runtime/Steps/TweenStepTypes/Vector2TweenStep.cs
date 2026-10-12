@@ -1,12 +1,13 @@
 using System;
 using Damdor.Vario;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Damdor.Sequentio
 {
     [Serializable]
     public abstract class Vector2TweenStep<TComponent> : TweenStep<TComponent, Vector2> 
-        where TComponent : class
+        where TComponent : Object
     {
         public VarioValue<Vector2AxisFilter> AxisFilter
         {

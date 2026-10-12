@@ -1,6 +1,7 @@
 using System;
 using Damdor.Vario;
 using UnityEngine;
+using Object = System.Object;
 
 namespace Damdor.Sequentio
 {
@@ -35,7 +36,7 @@ namespace Damdor.Sequentio
             set => delay = value;
         }
 
-        public virtual string DynamicTitle => ""; 
+        public virtual string TargetNameInEditor => ""; 
         
         [SerializeField] private SequentioStepVisibility visibility = new();
         [SerializeField] private bool initOnStart;
@@ -51,6 +52,25 @@ namespace Damdor.Sequentio
         public virtual void ReturnToInitialState() {}
         public virtual void SetProgress(float t){}
 
+        protected string GetTargetName<T>(VarioValue<T> target) where T : UnityEngine.Object
+        {
+            var targetName = "";
+            if (typeof(T) == typeof(GameObject))
+            {
+                var targetGO = target.Evaluate(Storage) as GameObject;
+                if (targetGO != null) targetName = targetGO.name;
+                else if (target.Source == ValueSource.Storage) targetName = ":" + target.Name;
+            }
+            else
+            {
+                var targetComponent = target.Evaluate(Storage) as Component;
+                if (targetComponent != null) targetName = targetComponent.name;
+                else if (target.Source == ValueSource.Storage) targetName = ":" + target.Name;
+            }
+
+            return $"{targetName}";
+        }
+        
         internal virtual void Reset()
         {
             Storage = null;

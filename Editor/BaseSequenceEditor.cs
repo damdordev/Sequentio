@@ -222,7 +222,7 @@ namespace Damdor.Sequentio.Editor
                     valuesWidth,
                     rect.height),
                 new GUIContent(
-                    $"<b>{GetStepName(step)}</b>  <color=#B8B8B8>{step.DynamicTitle}</color>"
+                    $"<b>{GetStepName(step)}</b>  <color=#B8B8B8>{step.TargetNameInEditor}</color>"
                 ),
                 new GUIStyle(EditorStyles.label)
                 {

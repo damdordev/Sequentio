@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
+    [Serializable]
     public abstract class BaseTweenStep<TComponent, TComponentPointer, TValue> : SequenceStep
         where TComponent : class
     {
