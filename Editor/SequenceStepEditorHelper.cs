@@ -51,13 +51,19 @@ namespace Damdor.Sequentio.Editor
         
         public static void ShowIcon(Rect rect, Type type)
         {
-            var iconPath = SequentioSettings.GetStepIcon(type);
-            if (iconPath == null) return;
-            
-            var icon = AssetDatabase.LoadAssetAtPath<Texture2D>(iconPath);
+            var icon = GetIcon(type);
             if (icon == null) return;
 
             GUI.DrawTexture(rect, icon, ScaleMode.ScaleToFit, true);
+        }
+
+        private static Texture2D GetIcon(Type type)
+        {
+            var iconPath = SequentioSettings.GetStepIcon(type);
+            if (iconPath == null) return null;
+            
+            var icon = AssetDatabase.LoadAssetAtPath<Texture2D>(iconPath);
+            return icon;
         }
 
         public static void ShowLabel(Rect rect, SequenceStep step)
@@ -87,6 +93,57 @@ namespace Damdor.Sequentio.Editor
                     clipping = TextClipping.Clip
                 }
             );
+        }
+
+        public static void ShowStepDetails(SerializedProperty property)
+        {
+            var step = (SequenceStep)property.managedReferenceValue;
+            
+            EditorGUILayout.BeginVertical(GUI.skin.box);
+            
+            EditorGUILayout.BeginHorizontal();
+
+            var icon = GetIcon(step.GetType());
+            if (icon != null)
+            {
+                GUILayout.Label(icon, GUILayout.Width(IconSize), GUILayout.Height(IconSize));
+            }
+            else
+            {
+                GUILayout.Label("", GUILayout.Width(IconSize), GUILayout.Height(IconSize));
+            }
+
+            var titleStyle = new GUIStyle(EditorStyles.boldLabel)
+            {
+                fontSize = 18,
+                alignment = TextAnchor.MiddleLeft,
+                richText = true
+            };
+            
+            GUILayout.Label(
+                new GUIContent(
+                    $"<b>{GetStepName(step)}</b>  <color=#B8B8B8>{step.TargetNameInEditor}</color>"
+                ),
+                titleStyle,
+                GUILayout.Height(32)
+            );
+
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space(4);
+
+            var iterator = property.Copy();
+            var end = iterator.GetEndProperty();
+            var enterChildren = true;
+
+            while (iterator.NextVisible(enterChildren) &&
+                   !SerializedProperty.EqualContents(iterator, end))
+            {
+                enterChildren = false;
+                EditorGUILayout.PropertyField(iterator, true);
+            }
+
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.Space(10);
         }
 
         public static void ShowProgress(Rect rect, ISequence sequence, int stepNumber)

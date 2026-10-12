@@ -164,7 +164,6 @@ namespace Damdor.Sequentio.Editor
                 }).Show(new Rect(rect.x - 300, rect.y, rect.width + 300, rect.height));
             };
 
-            reorderableList.multiSelect = true;
             propertyPathToReorderableList[property.propertyPath] = reorderableList;
             
             reorderableList.onSelectCallback += list => property.GetArrayElementAtIndex(list.index).isExpanded = true;
@@ -200,16 +199,7 @@ namespace Damdor.Sequentio.Editor
         {
             foreach (var stepIndex in stepsList.selectedIndices)
             {
-                var element = stepsProperty.GetArrayElementAtIndex(stepIndex);
-                var step = (SequenceStep)element.managedReferenceValue;
-                EditorGUILayout.BeginVertical(GUI.skin.box);
-                EditorGUILayout.PropertyField(
-                    element,
-                    new GUIContent(SequenceStepEditorHelper.GetStepName(step)),
-                    true
-                );
-                EditorGUILayout.EndVertical();
-                EditorGUILayout.Space(10);
+                SequenceStepEditorHelper.ShowStepDetails(stepsProperty.GetArrayElementAtIndex(stepIndex));
             }
         }
         
