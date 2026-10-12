@@ -126,7 +126,7 @@ namespace Damdor.Sequentio
                 var t = Mathf.InverseLerp(stepData.StartTime, stepData.EndTime, CurrentTime);
                 if (CurrentTime >= stepData.EndTime) t = 1f;
                 // Debug.Log($"[Sequentio] SetProgres({index}, {t})");
-                stepData.Step.SetProgress(t);
+                stepData.SetProgress(t);
             }
         }
 
@@ -139,6 +139,12 @@ namespace Damdor.Sequentio
             ClearStepData();
 
             CurrentTime = 0f;
+        }
+
+        public float GetProgress(int stepNumber)
+        {
+            if(stepNumber < 0 || stepNumber >= data.Count) return 0f;
+            return data[stepNumber].Progress;
         }
         
         private void ClearStepData()
@@ -201,7 +207,7 @@ namespace Damdor.Sequentio
                 stepData.Step.Init();
                 stepData.ValuesApplied = true;
                 // Debug.Log($"[Sequentio] SetProgres({index}, 0)");
-                stepData.Step.SetProgress(0f);
+                stepData.SetProgress(0f);
             }
         }
         

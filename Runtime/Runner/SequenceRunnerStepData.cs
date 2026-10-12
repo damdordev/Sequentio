@@ -10,10 +10,18 @@ namespace Damdor.Sequentio
         public bool Append;
         public bool InitOnStart;
         public float Delay;
+        public float Progress;
 
+        public void SetProgress(float progress)
+        {
+            Progress = progress;
+            Step.SetProgress(progress);
+        }
+        
         internal void Reset()
         {
             Step = null;
+            Progress = 0f;
         }
     }
 }

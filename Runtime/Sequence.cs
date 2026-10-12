@@ -54,6 +54,12 @@ namespace Damdor.Sequentio
             }
         }
         
+        public float GetProgress(int stepNumber)
+        {
+            if (runner == null) return 0f;
+            return runner.GetProgress(stepNumber);
+        }
+        
         #if DAMDOR_SEQUENTIO_UNITASK
 
         public UniTask PlayAndWait()

@@ -146,10 +146,8 @@ namespace Damdor.Sequentio.Editor
                 EditorGUI.LabelField(rect, "Steps");
             };
 
-            reorderableList.drawElementCallback += (Rect rect, int index, bool isActive, bool isFocused) =>
-                DrawStep(property, rect, index, isActive, isFocused);
-
             reorderableList.elementHeightCallback += _ => 32f; 
+            reorderableList.drawElementCallback += (rect, index, _, _) => SequenceStepEditorHelper.DrawQuickPreview(property, sequence, rect, index);
 
             reorderableList.onAddDropdownCallback += (rect, _) =>
             {
@@ -172,90 +170,6 @@ namespace Damdor.Sequentio.Editor
             reorderableList.onSelectCallback += list => property.GetArrayElementAtIndex(list.index).isExpanded = true;
             
             return reorderableList;
-        }
-
-        private void DrawStep(SerializedProperty property, Rect rect, int index, bool isActive, bool isFocused)
-        {
-            var element = property.GetArrayElementAtIndex(index);
-            var step = element.managedReferenceValue as SequenceStep;
-
-            if (step == null)
-                return;
-
-            var type = step.GetType();
-
-            const float iconSize = 32f;
-            const float valuesWidth = 210f;
-            const float spacing = 6f;
-            const float timeWidth = 60f;
-            const float progressWidth = 100f;
-            const float progressHeight = 12f;
-
-            if (step.RunWithPreviousStep)
-            {
-                rect.x += 20f;
-                rect.width -= 20f;
-            }
-
-            var iconPath = SequentioSettings.GetStepIcon(type);
-            if (iconPath != null)
-            {
-                var icon = AssetDatabase.LoadAssetAtPath<Texture2D>(iconPath);
-                if (icon != null)
-                {
-                    GUI.DrawTexture(new Rect(
-                            rect.x,
-                            rect.y,
-                            iconSize,
-                            iconSize),
-                        icon,
-                        ScaleMode.ScaleToFit,
-                        true
-                    );
-                }
-            }
-
-            GUI.Label(
-                new Rect(
-                    rect.x + iconSize,
-                    rect.y,
-                    valuesWidth,
-                    rect.height),
-                new GUIContent(
-                    $"<b>{GetStepName(step)}</b>  <color=#B8B8B8>{step.TargetNameInEditor}</color>"
-                ),
-                new GUIStyle(EditorStyles.label)
-                {
-                    richText = true,
-                    alignment = TextAnchor.MiddleLeft,
-                    clipping = TextClipping.Clip
-                }
-            );
-
-            GUI.Label(
-                new Rect(
-                    rect.xMax - timeWidth - spacing,
-                    rect.y,
-                    timeWidth,
-                    rect.height),
-                $"{step.CalculateDuration()}s",
-                new GUIStyle(EditorStyles.miniLabel)
-                {
-                    alignment = TextAnchor.MiddleRight,
-                    clipping = TextClipping.Clip
-                }
-            );
-
-            if (sequence != null)
-            {
-                EditorGUI.ProgressBar(new Rect(
-                        rect.xMax - timeWidth - 2f * spacing - progressWidth,
-                        rect.y + (rect.height - progressHeight) / 2f,
-                        progressWidth,
-                        progressHeight),
-                    0.5f,
-                    "");
-            }
         }
 
         private void EditorUpdate()
@@ -291,7 +205,7 @@ namespace Damdor.Sequentio.Editor
                 EditorGUILayout.BeginVertical(GUI.skin.box);
                 EditorGUILayout.PropertyField(
                     element,
-                    new GUIContent(GetStepName(step)),
+                    new GUIContent(SequenceStepEditorHelper.GetStepName(step)),
                     true
                 );
                 EditorGUILayout.EndVertical();
@@ -309,10 +223,7 @@ namespace Damdor.Sequentio.Editor
             settingsProperty = serializedObject.FindProperty("settings");
         }
 
-        private string GetStepName(SequenceStep step)
-        {
-            return SequentioSettings.GetStepName(step.GetType());
-        }
+
 
     }
     

@@ -28,6 +28,7 @@ namespace Damdor.Sequentio
         void MoveToTime(float time);
         void Release();
         void AddStep(SequenceStep step);
+        float GetProgress(int stepNumber);
 
 #if DAMDOR_SEQUENTIO_UNITASK
         UniTask PlayAndWait();
