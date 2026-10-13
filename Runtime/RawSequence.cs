@@ -184,7 +184,7 @@ namespace Damdor.Sequentio
             UpdateTime(dt);
         }
         
-        private void UpdateTime(float dt)
+        public void UpdateTime(float dt)
         {
             if (state != SequenceState.Playing) return;
             var result = runner.Update(dt);
