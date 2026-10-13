@@ -1,7 +1,6 @@
 using System;
 using Damdor.Vario;
 using UnityEngine;
-using Object = System.Object;
 
 namespace Damdor.Sequentio
 {
