@@ -134,6 +134,7 @@ namespace Damdor.Sequentio
         {
             for (var index = data.Count - 1; index >= 0; index--)
             {
+                if(!data[index].ValuesApplied)continue;
                 data[index].Step.ReturnToInitialState();
             }
             ClearStepData();

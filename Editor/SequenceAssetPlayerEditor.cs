@@ -31,7 +31,7 @@ namespace Damdor.Sequentio.Editor
 
             if (!attachedToUpdate)
             {
-
+                attachedToUpdate = true;
                 EditorApplication.update += EditorUpdate;
             }
         }
@@ -41,7 +41,7 @@ namespace Damdor.Sequentio.Editor
             if (attachedToUpdate)
             {
                 EditorApplication.update -= EditorUpdate;
-                attachedToUpdate = true;
+                attachedToUpdate = false;
             }
         }
 

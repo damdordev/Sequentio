@@ -88,6 +88,7 @@ namespace Damdor.Sequentio
             if (asset == null) return;
             rawSequence = RawSequence.Create(asset);
             rawSequence.Storage.CopyFrom(overrideStorage);
+            if(rawSequence.Settings.AutoPlay != AutoPlayMode.None) rawSequence.Play();
         }
         
         private void OnDisable()

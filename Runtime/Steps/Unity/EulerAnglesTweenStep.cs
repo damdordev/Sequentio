@@ -16,7 +16,7 @@ namespace Damdor.Sequentio
         
         private bool v_global;
         
-        protected override Vector3 GetValue(Transform target) => v_global ? target.localEulerAngles : target.eulerAngles;
+        protected override Vector3 GetValue(Transform target) => v_global ? target.eulerAngles : target.localEulerAngles;
 
         protected override void SetValue(Transform target, Vector3 value)
         {

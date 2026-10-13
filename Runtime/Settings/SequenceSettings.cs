@@ -50,6 +50,7 @@ namespace Damdor.Sequentio
             clone.Timescale = Timescale;
             clone.Direction = Direction;
             clone.DefaultStopBehaviour = DefaultStopBehaviour;
+            clone.speed = speed;
             return clone;
         }
 

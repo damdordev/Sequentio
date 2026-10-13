@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Damdor.Sequentio
 {
@@ -11,7 +12,7 @@ namespace Damdor.Sequentio
             get => stepsPoolSize;
             set
             {
-                stepsPoolSize = value;
+                stepsPoolSize = Mathf.Max(value, 0);
                 foreach (var pool in stepsPools.Values) ApplyMaxPoolSize(pool, runnerPoolSize);
             }
         }
@@ -21,7 +22,7 @@ namespace Damdor.Sequentio
             get => runnerPoolSize;
             set
             {
-                runnerPoolSize = value;
+                runnerPoolSize = Mathf.Max(value, 0);
                 ApplyMaxPoolSize(runnerPool, runnerPoolSize);
             }
         }
@@ -31,7 +32,7 @@ namespace Damdor.Sequentio
             get => rawSequencePoolSize;
             set
             {
-                rawSequencePoolSize = value;
+                rawSequencePoolSize = Mathf.Max(value, 0);
                 ApplyMaxPoolSize(rawSequencePool, rawSequencePoolSize);
             }
         }
@@ -41,7 +42,7 @@ namespace Damdor.Sequentio
             get => settingsPoolSize;
             set
             {
-                settingsPoolSize = value;
+                settingsPoolSize = Mathf.Max(value, 0);
                 ApplyMaxPoolSize(settingsPool, settingsPoolSize);
             }
         }
@@ -51,7 +52,7 @@ namespace Damdor.Sequentio
             get => runnerStepDataPoolSize;
             set
             {
-                runnerStepDataPoolSize = value;
+                runnerStepDataPoolSize = Mathf.Max(value, 0);
                 ApplyMaxPoolSize(runnerStepDataPool, runnerStepDataPoolSize);
             }
         }

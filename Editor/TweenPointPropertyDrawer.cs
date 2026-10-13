@@ -110,6 +110,8 @@ namespace Damdor.Sequentio.Editor
             {
                 property.serializedObject.ApplyModifiedProperties();
             }
+            
+            EditorGUI.EndProperty();
         }
     }
 }

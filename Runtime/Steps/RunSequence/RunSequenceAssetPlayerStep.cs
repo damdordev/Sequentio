@@ -58,6 +58,15 @@ namespace Damdor.Sequentio.RunSequence
 
             sequence = other.sequence;
         }
+        
+        internal override void Reset()
+        {
+            base.Reset();
+
+            sequence = null;
+            v_sequence = null;
+            duringAnimation = false;
+        }
 
         private void InitSequenceIfNeeded()
         {

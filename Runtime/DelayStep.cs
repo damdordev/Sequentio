@@ -11,5 +11,19 @@ namespace Damdor.Sequentio
         public override float CalculateDuration() => duration.Evaluate(Storage);
 
         [SerializeField] private VarioValue<float> duration;
+
+        internal override void CopyFrom(SequenceStep otherStep)
+        {
+            base.CopyFrom(otherStep);
+            if (otherStep is not DelayStep other) return;
+
+            duration = other.duration;
+        }
+
+        public override void Init()
+        {
+            base.Init();
+            duration = 0f;
+        }
     }
 }

@@ -30,11 +30,11 @@ namespace Damdor.Sequentio
 
         internal RawSequence() { }
         
-        public static RawSequence Create(ISequenceAsset sequenceAsset)
+        public static RawSequence Create(ISequenceAsset sequenceAsset, bool allowAutoplay = true)
         {
             var sequence = SequentioPooling.PopRawSequence();
             sequence.Setup(sequenceAsset);
-            sequence.TryAutoPlay();
+            if(allowAutoplay) sequence.TryAutoPlay();
             return sequence;
         }
         
@@ -91,7 +91,7 @@ namespace Damdor.Sequentio
             switch (state)
             {
                 case SequenceState.Idle:
-                    runner = new SequenceRunner();
+                    runner = SequentioPooling.PopRunner();
                     runner.Setup(Application.isPlaying, storage, steps, settings);
                     state = SequenceState.Playing;
                     SequentioUpdateProvider.Register(Update);

@@ -85,8 +85,8 @@ namespace Damdor.Sequentio
 
         public void Stop(StopBehaviour stopBehaviour)
         {
-            state = SequenceState.Idle;
             if (state == SequenceState.Idle) return;
+            state = SequenceState.Idle;
             if(stopBehaviour == StopBehaviour.ReturnToInitialState) runner?.ReturnToInitialState();
             ReleaseRunner();
         }
