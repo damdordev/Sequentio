@@ -38,11 +38,11 @@ namespace Damdor.Sequentio
             set => end = value;
         }
         
-        [SerializeField] private TComponentPointer target;
-        [SerializeField] private VarioValue<float> duration;
-        [SerializeField] private VarioValue<AnimationCurve> easing = AnimationCurve.Linear(0, 0, 1, 1);
-        [SerializeField] private TweenEndpoint<TComponent, TValue> start;
-        [SerializeField] private TweenEndpoint<TComponent, TValue> end;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private TComponentPointer target;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private VarioValue<float> duration;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private VarioValue<AnimationCurve> easing = AnimationCurve.Linear(0, 0, 1, 1);
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private TweenEndpoint<TComponent, TValue> start;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private TweenEndpoint<TComponent, TValue> end;
 
         private TValue initialValue;
         private TComponent v_target;

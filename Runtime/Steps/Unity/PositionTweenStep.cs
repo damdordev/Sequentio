@@ -43,6 +43,6 @@ namespace Damdor.Sequentio
             global = other.global;
         }
         
-        [SerializeField] private VarioValue<bool> global;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Default, -1)] private VarioValue<bool> global;
     }
 }

@@ -38,10 +38,10 @@ namespace Damdor.Sequentio
 
         public virtual string TargetNameInEditor => ""; 
         
-        [SerializeField] private SequentioStepVisibility visibility = new();
-        [SerializeField] private bool initOnStart;
-        [SerializeField] private bool runWithPreviousStep;
-        [SerializeField] private VarioValue<float> delay;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.General)] private SequentioStepVisibility visibility = new();
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.General)] private bool initOnStart;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.General)] private bool runWithPreviousStep;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.General)] private VarioValue<float> delay;
 
         public bool IsEnabled(bool runtime) => visibility.IsEnabled(runtime);
         

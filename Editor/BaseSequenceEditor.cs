@@ -213,8 +213,6 @@ namespace Damdor.Sequentio.Editor
             settingsProperty = serializedObject.FindProperty("settings");
         }
 
-
-
     }
     
 }

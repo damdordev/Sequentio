@@ -39,6 +39,6 @@ namespace Damdor.Sequentio
             axisFilter = other.axisFilter;
         }
 
-        [SerializeField] private VarioValue<Vector3AxisFilter> axisFilter;
+        [SerializeField, SequenceStepParameterGroup("Other")] private VarioValue<Vector3AxisFilter> axisFilter;
     }
 }
