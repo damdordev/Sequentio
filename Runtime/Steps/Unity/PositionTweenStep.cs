@@ -33,7 +33,7 @@ namespace Damdor.Sequentio
         internal override void Reset()
         {
             base.Reset();
-            Global = default;
+            Global = false;
         }
 
         internal override void CopyFrom(SequenceStep otherStep)
