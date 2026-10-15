@@ -206,6 +206,7 @@ namespace Damdor.Sequentio.Editor
         {
             foreach (var stepIndex in stepsList.selectedIndices)
             {
+                if(stepIndex < 0 || stepIndex >= stepsProperty.arraySize) continue;
                 SequenceStepEditorHelper.ShowStepDetails(stepsProperty.GetArrayElementAtIndex(stepIndex));
             }
         }
