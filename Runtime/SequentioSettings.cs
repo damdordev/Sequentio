@@ -1,19 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace Damdor.Sequentio
 {
     public static class SequentioSettings
     {
-        public static IReadOnlyList<Type> SupportedStepTypes
-        {
-            get
-            {
-                EnsureSupportedTypesInit();
-                return supportedStepTypes;
-            }
-        }
+        public static IReadOnlyList<Type> SupportedStepTypes => supportedStepTypes;
 
         public static int StepsPoolSize
         {
@@ -33,51 +25,28 @@ namespace Damdor.Sequentio
             set => SequentioPooling.SettingsPoolSize = value;
         }
 
-        private static List<Type> supportedStepTypes;
+        private static readonly List<Type> supportedStepTypes = new();
         private static readonly Dictionary<Type, string> stepTypeToName = new();
         private static readonly Dictionary<Type, string> stepToIcon = new();
-       
+        
+        public static void RegisterStepType(Type type, string name, string icon)
+        {
+            if(supportedStepTypes.Contains(type)) return;
+            supportedStepTypes.Add(type);
+            stepTypeToName[type] = name;
+            stepToIcon[type] = icon;
+        }
+        
         public static string GetStepName(Type type)
         {
-            EnsureSupportedTypesInit();
             var name = stepTypeToName.GetValueOrDefault(type, "");
             return name;
         }
         
         public static string GetStepIcon(Type type)
         {
-            EnsureSupportedTypesInit();
             var icon = stepToIcon.GetValueOrDefault(type, "");
             return icon;
-        }
-        
-        private static void EnsureSupportedTypesInit()
-        {
-            if (supportedStepTypes != null) return;
-            
-            var baseType = typeof(SequenceStep);
-
-            supportedStepTypes = new();
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                foreach (var type in assembly.GetTypes())
-                {
-                    if(type.IsInterface || type.IsAbstract || !type.IsSerializable || !baseType.IsAssignableFrom(type)) continue;
-                    var attr = type.GetCustomAttribute<SequentioStepAttribute>();
-                    if(attr == null) continue;
-                    
-                    RegisterStepType(type, attr.Name, attr.Icon);
-                }
-            }
-
-        }
-        
-        private static void RegisterStepType(Type type, string name, string icon)
-        {
-            if(supportedStepTypes.Contains(type)) return;
-            supportedStepTypes.Add(type);
-            stepTypeToName[type] = name;
-            stepToIcon[type] = icon;
         }
         
     }

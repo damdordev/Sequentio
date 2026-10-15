@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>10.0</LangVersion>
+        <!-- Ważne, aby nie dołączać zależności do pliku wyjściowego dll -->
+        <IncludeBuildOutput>true</IncludeBuildOutput>        
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.0" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" PrivateAssets="all" />
+    </ItemGroup>
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <!-- Przykładowa ścieżka dla Opcji 1 (kopiuje o jeden folder wyżej do katalogu Plugins) -->
+        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir).." />
+    </Target>    
+</Project>
