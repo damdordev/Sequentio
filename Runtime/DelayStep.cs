@@ -20,9 +20,9 @@ namespace Damdor.Sequentio
             duration = other.duration;
         }
 
-        public override void Init()
+        internal override void Reset()
         {
-            base.Init();
+            base.Reset();
             duration = 0f;
         }
     }

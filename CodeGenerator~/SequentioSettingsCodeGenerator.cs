@@ -18,7 +18,7 @@ namespace Damdor.Sequentio.CodeGenerator
             {
                 sb.AppendLine("    private static void RegisterStep(System.Type type, Damdor.Sequentio.SequentioStepAttribute attribute)");
                 sb.AppendLine("    {");
-                sb.AppendLine($"        global::Damdor.Sequentio.SequentioSettings.RegisterStepType(type, attribute.Name, attribute.Icon);");
+                sb.AppendLine($"        global::Damdor.Sequentio.SequentioSettings.RegisterStepType(type, attribute.Path, attribute.Name, attribute.Icon);");
                 
                 sb.AppendLine("    }");
             });

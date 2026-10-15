@@ -42,6 +42,32 @@ namespace Damdor.Sequentio
         [SerializeField] private VarioStorage overrideStorage;
         
         private RawSequence rawSequence;
+
+        private void Awake()
+        {
+            if(asset != null && asset.Settings.AutoPlay == AutoPlayMode.Awake)
+            {
+                PrepareSequence();
+            }
+        }
+        
+        private void Start()
+        {
+            if(asset != null && asset.Settings.AutoPlay == AutoPlayMode.Start)
+            {
+                PrepareSequence();
+            }
+        }
+        
+        private void OnEnable()
+        {
+            if(asset != null && asset.Settings.AutoPlay == AutoPlayMode.OnEnable)
+            {
+                if(rawSequence == null) PrepareSequence();
+                else rawSequence?.Play();
+            }
+        }
+        
         public void Init()
         {
             if(NeedRebuildRawSequenceOnInit()) PrepareSequence();
@@ -86,7 +112,7 @@ namespace Damdor.Sequentio
         {
             ReleaseSequence();
             if (asset == null) return;
-            rawSequence = RawSequence.Create(asset);
+            rawSequence = RawSequence.Create(asset, false);
             rawSequence.Storage.CopyFrom(overrideStorage);
             if(rawSequence.Settings.AutoPlay != AutoPlayMode.None) rawSequence.Play();
         }

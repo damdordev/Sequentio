@@ -55,7 +55,12 @@ namespace Damdor.Sequentio.Editor
                 false
             );
 
-            if (!property.isExpanded) return;
+            if (!property.isExpanded)
+            {
+                if (EditorGUI.EndChangeCheck()) property.serializedObject.ApplyModifiedProperties();
+                EditorGUI.EndProperty();
+                return;
+            }
             
             x += 20f;
             y += EditorGUI.GetPropertyHeight(valueSourceProperty);

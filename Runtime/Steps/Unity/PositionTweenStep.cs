@@ -26,8 +26,8 @@ namespace Damdor.Sequentio
 
         public override void Init()
         {
-            base.Init();
             v_global = global.Evaluate(Storage);
+            base.Init();
         }
 
         internal override void Reset()

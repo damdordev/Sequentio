@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Damdor.Vario;
 using UnityEditor;
 using UnityEditorInternal;
@@ -25,6 +26,7 @@ namespace Damdor.Sequentio.Editor
         public bool Draw(IReadOnlyList<SequenceStep> steps, VarioStorage storage, bool runtime, ISequenceAsset sequenceAsset, ReorderableList stepsList)
         {
             sequenceRunnerData = SequenceRunnerData.Create(steps, storage, runtime);
+            rowCount = 1+ sequenceRunnerData.StepsData.Max(s => s.IndexInGroup);
             var oldScrollPosition = scrollPosition;
             var oldPixelsPerSecond = pixelsPerSecond;
             var selectedIndex = stepsList.selectedIndices.Count > 0 ? stepsList.index : -1;
@@ -190,7 +192,7 @@ namespace Damdor.Sequentio.Editor
             var visibleRect = new Rect(scrollPosition.x, scrollPosition.y, viewportWidth, viewportHeight);
             foreach (var step in sequenceRunnerData.StepsData)
             {
-                if(step.Duration <= 0f) continue;
+                if(step.Duration <= 0f && step.Delay <= 0f) continue;
                 var rect = new Rect(Padding + step.StartTime * pixelsPerSecond, Padding + step.IndexInGroup * RowHeight,
                     Mathf.Max(1f, step.Duration * pixelsPerSecond), RowHeight - 4f);
                 var delayRect = new Rect(rect.x - step.Delay * pixelsPerSecond, rect.y,

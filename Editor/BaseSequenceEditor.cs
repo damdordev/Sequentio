@@ -87,7 +87,7 @@ namespace Damdor.Sequentio.Editor
                 EditorGUILayout.PropertyField(storageProperty);
             }
             
-            if (timelineHelper.Draw(sequenceAsset.Steps, sequence.Storage, false , sequenceAsset, stepsList)) Repaint();
+            if (timelineHelper.Draw(sequenceAsset.Steps, sequenceAsset.Storage, false , sequenceAsset, stepsList)) Repaint();
 
             stepsList.DoLayoutList();
             EditorGUILayout.BeginVertical();
@@ -167,7 +167,7 @@ namespace Damdor.Sequentio.Editor
             reorderableList.onAddDropdownCallback += (rect, _) =>
             {
                 var types = SequentioSettings.SupportedStepTypes.OrderBy(t => t.Name).ToList();
-                new HierarchicalDropdown<Type>(types, SequentioSettings.GetStepName, type =>
+                new HierarchicalDropdown<Type>(types, SequentioSettings.GetStepPath, type =>
                 {
                     property.InsertArrayElementAtIndex(property.arraySize);
                     var element = property.GetArrayElementAtIndex(property.arraySize - 1);

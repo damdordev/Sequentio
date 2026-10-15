@@ -39,7 +39,16 @@ namespace Damdor.Sequentio
             }
         }
 
-        public float CalculatedDuration => fullDurationValid ? v_fullDuration : v_fullDuration = CalculateDuration();
+        public float CalculatedDuration
+        {
+            get
+            {
+                if (fullDurationValid) return v_fullDuration;
+                v_fullDuration = CalculateDuration();
+                fullDurationValid = true;
+                return v_fullDuration;
+            }
+        }
 
         public virtual string TargetNameInEditor => ""; 
         
@@ -53,7 +62,7 @@ namespace Damdor.Sequentio
         private VarioStorage storage;
         private bool fullDurationValid;
         private float v_fullDuration;
-        
+
         protected virtual float CalculateDuration() => 0f;
         
         public virtual void Init() {}

@@ -163,7 +163,7 @@ namespace Damdor.Sequentio
         private void ReleaseRunner()
         {
             if (runner == null) return;
-            SequentioPooling.ReleaseRunner(runner);
+            runner.Release();
             runner = null;
         }
         
