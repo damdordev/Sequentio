@@ -20,6 +20,7 @@ namespace Damdor.Sequentio.RunSequence
 
         private SequenceAssetPlayer v_sequence;
         private float v_duration;
+        private float v_speed;
         private bool duringAnimation;
         
         protected override float CalculateDuration()
@@ -54,7 +55,7 @@ namespace Damdor.Sequentio.RunSequence
         public override void SetProgress(float t)
         {
             base.SetProgress(t);
-            v_sequence?.MoveToTime(t*v_duration);
+            v_sequence?.MoveToTime(t*v_duration*v_speed);
         }
 
         internal override void CopyFrom(SequenceStep otherStep)
@@ -90,7 +91,8 @@ namespace Damdor.Sequentio.RunSequence
 
             var isIdle = v_sequence.State == SequenceState.Idle;
             if(isIdle) v_sequence.Init();
-            v_duration = v_sequence.Duration;
+            v_speed = v_sequence.Settings.Speed;
+            v_duration = v_speed > Mathf.Epsilon ? v_sequence.Duration / v_speed : 0f;
             if(isIdle && !duringAnimation) v_sequence.Stop(StopBehaviour.ReturnToInitialState);
         }
         

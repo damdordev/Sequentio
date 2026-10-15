@@ -44,6 +44,7 @@ namespace Damdor.Sequentio
         
         public SequenceRunnerUpdateResult Update(float dt)
         {
+            dt *= settings.Speed;
             var factor = direction == PlayDirection.Normal ? 1f : -1f;
             var newTime = CurrentTime + dt * factor;
 
@@ -118,14 +119,12 @@ namespace Damdor.Sequentio
                 if (!stepData.ValuesApplied)
                 {
                     // TODO: error handling
-                    // Debug.Log($"[Sequentio] Init step {index}");
                     stepData.Step.Init();
                     stepData.ValuesApplied = true;
                 }
 
                 var t = Mathf.InverseLerp(stepData.StartTime, stepData.EndTime, CurrentTime);
                 if (CurrentTime >= stepData.EndTime) t = 1f;
-                // Debug.Log($"[Sequentio] SetProgres({index}, {t})");
                 stepData.SetProgress(t);
             }
         }
@@ -219,10 +218,8 @@ namespace Damdor.Sequentio
             {
                 var stepData = data[index];
                 if (!stepData.InitOnStart) continue;
-                // Debug.Log($"[Sequentio] Init step {index}");
                 stepData.Step.Init();
                 stepData.ValuesApplied = true;
-                // Debug.Log($"[Sequentio] SetProgres({index}, 0)");
                 stepData.SetProgress(0f);
             }
         }
