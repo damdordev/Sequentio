@@ -51,7 +51,7 @@ namespace Damdor.Sequentio.Editor
 
             if (sequence != null)
             {
-                ShowProgress(processRect, sequence, index);
+                ShowProgress(processRect, sequence, step);
             }
         }
 
@@ -102,7 +102,7 @@ namespace Damdor.Sequentio.Editor
         {
             GUI.Label(
                 rect,
-                $"{step.FullDuration}s",
+                $"{step.CalculatedDuration}s",
                 new GUIStyle(EditorStyles.miniLabel)
                 {
                     alignment = TextAnchor.MiddleRight,
@@ -164,9 +164,9 @@ namespace Damdor.Sequentio.Editor
             EditorGUILayout.Space(10);
         }
 
-        public static void ShowProgress(Rect rect, ISequence sequence, int stepNumber)
+        public static void ShowProgress(Rect rect, ISequence sequence, SequenceStep step)
         {
-            EditorGUI.ProgressBar(rect, sequence.GetProgress(stepNumber), "");
+            EditorGUI.ProgressBar(rect, sequence.GetProgress(step), "");
         }
 
         public static void ShowStepFields(SerializedProperty property)

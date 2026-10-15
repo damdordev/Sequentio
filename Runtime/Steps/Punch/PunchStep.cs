@@ -95,7 +95,7 @@ namespace Damdor.Sequentio.Punch
         {
             base.SetProgress(t);
             
-            if(t <= 0f || t >= 1 || FullDuration <= Mathf.Epsilon)
+            if(t <= 0f || t >= 1 || CalculatedDuration <= Mathf.Epsilon)
             {
                 SetValue(v_target, initialValue);
                 return;
@@ -125,12 +125,12 @@ namespace Damdor.Sequentio.Punch
 
         private void PrepareInternalLists()
         {
-            if (FullDuration < Mathf.Epsilon) return;
+            if (CalculatedDuration < Mathf.Epsilon) return;
             
             // taken from DOTtween
             v_elasticity = Mathf.Clamp(v_elasticity, 0f, 1f);
             var magnitude = v_direction.magnitude;
-            var length = Math.Max((int)(v_vibrato * FullDuration), 2);
+            var length = Math.Max((int)(v_vibrato * CalculatedDuration), 2);
             var num1 = magnitude / length;
             durations = ListPool<float>.Get();
             durations.Add(0f);
@@ -139,12 +139,12 @@ namespace Damdor.Sequentio.Punch
             for(var index = 0; index < length; ++index)
             {
                 var num3 = (index + 1) / (float)length;
-                var num4 = FullDuration * num3;
+                var num4 = CalculatedDuration * num3;
                 num2 += num4;
                 durations[index+1] = num4;
             }
 
-            var num5 = FullDuration / num2;
+            var num5 = CalculatedDuration / num2;
             for(var index = 0; index < durations.Count; ++index)
                 durations[index] *= num5;
             for(var i = 1; i < durations.Count; ++i) durations[i] += durations[i - 1];

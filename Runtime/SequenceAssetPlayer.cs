@@ -76,7 +76,7 @@ namespace Damdor.Sequentio
             rawSequence.MoveToTime(time);
         }
 
-        public float GetProgress(int stepNumber) => rawSequence.GetProgress(stepNumber);
+        public float GetProgress(SequenceStep step) => rawSequence.GetProgress(step);
 
 #if DAMDOR_SEQUENTIO_UNITASK
         public UniTask PlayAndWait() => rawSequence.PlayAndWait();

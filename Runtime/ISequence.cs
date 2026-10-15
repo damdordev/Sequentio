@@ -26,7 +26,7 @@ namespace Damdor.Sequentio
         void Stop();
         void Stop(StopBehaviour stopBehaviour);
         void MoveToTime(float time);
-        float GetProgress(int stepNumber);
+        float GetProgress(SequenceStep step);
 
 #if DAMDOR_SEQUENTIO_UNITASK
         UniTask PlayAndWait();

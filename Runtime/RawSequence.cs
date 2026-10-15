@@ -6,7 +6,6 @@ using Cysharp.Threading.Tasks;
 #endif
 using Damdor.Vario;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Damdor.Sequentio
 {
@@ -109,13 +108,9 @@ namespace Damdor.Sequentio
             }
         }
         
-        public float GetProgress(int stepNumber)
-        {
-            if (runner == null) return 0f;
-            return runner.GetProgress(stepNumber);
-        }
-        
-        #if DAMDOR_SEQUENTIO_UNITASK
+        public float GetProgress(SequenceStep step) => runner?.GetProgress(step) ?? 0f;
+
+#if DAMDOR_SEQUENTIO_UNITASK
 
         public UniTask PlayAndWait()
         {

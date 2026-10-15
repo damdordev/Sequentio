@@ -152,10 +152,14 @@ namespace Damdor.Sequentio
             ClearStepData();
         }
 
-        public float GetProgress(int stepNumber)
+        public float GetProgress(SequenceStep step)
         {
-            if(stepNumber < 0 || stepNumber >= data.Count) return 0f;
-            return data[stepNumber].Progress;
+            foreach (var stepData in data)
+            {
+                if(stepData.Step == step) return stepData.Progress;
+            }
+
+            return 0f;
         }
         
         private void ClearStepData()
@@ -181,7 +185,7 @@ namespace Damdor.Sequentio
                 stepData.Append = step.RunWithPreviousStep;
                 stepData.InitOnStart = step.InitOnStart;
                 stepData.Delay = step.Delay.Evaluate(storage);
-                stepData.Duration = step.FullDuration;
+                stepData.Duration = step.CalculatedDuration;
                 
                 data.Add(stepData);
             }
@@ -196,7 +200,7 @@ namespace Damdor.Sequentio
             {
                 if (data[i].Append)
                 {
-                    groupDuration = Mathf.Max(groupDuration, data[i].Duration);
+                    groupDuration = Mathf.Max(groupDuration, data[i].Duration + data[i].Delay);
                 }
                 else
                 {

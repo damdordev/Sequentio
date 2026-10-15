@@ -39,7 +39,7 @@ namespace Damdor.Sequentio
             }
         }
 
-        public float FullDuration => fullDurationValid ? v_fullDuration : v_fullDuration = CalculateDuration();
+        public float CalculatedDuration => fullDurationValid ? v_fullDuration : v_fullDuration = CalculateDuration();
 
         public virtual string TargetNameInEditor => ""; 
         
