@@ -26,6 +26,7 @@ namespace Damdor.Sequentio.Editor
         private bool attachedToUpdate;
         
         private readonly Dictionary<string, ReorderableList> propertyPathToReorderableList = new();
+        private readonly SequenceTimelineHelper timelineHelper = new();
         private object[] updateTimeMethodParameters = new object[1];
 
         private void OnEnable()
@@ -86,6 +87,8 @@ namespace Damdor.Sequentio.Editor
                 EditorGUILayout.PropertyField(storageProperty);
             }
             
+            if (timelineHelper.Draw(stepsProperty, sequenceAsset, stepsList)) Repaint();
+
             stepsList.DoLayoutList();
             EditorGUILayout.BeginVertical();
             ++EditorGUI.indentLevel;
@@ -98,6 +101,11 @@ namespace Damdor.Sequentio.Editor
             serializedObject.ApplyModifiedProperties();
         }
         
+        public override bool RequiresConstantRepaint()
+        {
+            return sequence != null && sequence.State == SequenceState.Playing;
+        }
+
         private void ShowPlayControls()
         {
             serializedObject.Update();
