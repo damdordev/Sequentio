@@ -6,40 +6,32 @@ namespace Damdor.Sequentio
 {
     internal class SequenceRunner
     {
-        public float Duration { get; private set; }
+        public float Duration => data?.Duration ?? 0f;
         public float CurrentTime { get; private set; }
         
-        private List<SequenceStep> steps = new();
         private SequenceSettings settings;
-        private readonly List<SequenceRunnerStepData> data = new();
-        private VarioStorage storage;
-        private bool runtime;
+        private SequenceRunnerData data;
         private PlayDirection direction;
         
         public void Setup(bool runtime, VarioStorage storage, List<SequenceStep> steps, SequenceSettings settings)
         {
-            this.runtime = runtime;
-            this.storage = storage;
-            this.steps = steps;
             this.settings = settings.Clone();
             direction = settings.Direction;
             
-            ClearStepData();
-            CreateStepData();
-            RecalculateStepsTimes();
+            data = SequentioPooling.PopRunnerData();
+            data.Setup(steps, storage, runtime);
+            
             InitSteps();
-            CalculateDurationAndInitialTime();
+            CurrentTime = direction == PlayDirection.Normal ? 0f : Duration;
         }
 
         internal void Reset()
         {
-            Duration = 0f;
             CurrentTime = 0f;
-            storage = null;
-            steps = null;
             SequentioPooling.ReleaseSettings(settings);
             settings = null;
-            ClearStepData();
+            data?.Release();
+            data = null;
         }
         
         public SequenceRunnerUpdateResult Update(float dt)
@@ -111,9 +103,9 @@ namespace Damdor.Sequentio
         {
             CurrentTime = Mathf.Clamp(newTime, 0f, Duration);
 
-            for (var index = 0; index < data.Count; index++)
+            for (var index = 0; index < data.StepsData.Count; index++)
             {
-                var stepData = data[index];
+                var stepData = data.StepsData[index];
                 if (CurrentTime < stepData.StartTime) continue;
 
                 if (!stepData.ValuesApplied)
@@ -131,10 +123,10 @@ namespace Damdor.Sequentio
 
         public void ReturnToInitialState()
         {
-            for (var index = data.Count - 1; index >= 0; index--)
+            for (var index = data.StepsData.Count - 1; index >= 0; index--)
             {
-                if (!data[index].ValuesApplied) continue;
-                data[index].Step.ReturnToInitialState();
+                if (!data.StepsData[index].ValuesApplied) continue;
+                data.StepsData[index].Step.ReturnToInitialState();
             }
 
             CurrentTime = 0f;
@@ -142,93 +134,35 @@ namespace Damdor.Sequentio
 
         public void Release()
         {
-            for (var index = data.Count - 1; index >= 0; index--)
+            for (var index = data.StepsData.Count - 1; index >= 0; index--)
             {
-                if (!data[index].ValuesApplied) continue;
-                data[index].Step.Release();
+                if (!data.StepsData[index].ValuesApplied) continue;
+                data.StepsData[index].Step.Release();
             }
 
-            ClearStepData();
+            data?.Release();
+            data = null;
         }
 
         public float GetProgress(SequenceStep step)
         {
-            foreach (var stepData in data)
+            foreach (var stepData in data.StepsData)
             {
                 if(stepData.Step == step) return stepData.Progress;
             }
 
             return 0f;
         }
-        
-        private void ClearStepData()
-        {
-            foreach (var stepData in data)
-            {
-                SequentioPooling.ReleaseRunnerStepData(stepData);
-            }
-            data.Clear();
-        }
-
-        private void CreateStepData()
-        {
-            foreach (var step in steps)
-            {
-                step.Storage = storage;
-                if (!step.IsEnabled(runtime)) continue;
-                
-                var stepData = SequentioPooling.PopRunnerStepData();
-                step.InvalidateDuration();
-                stepData.Step = step;
-                stepData.ValuesApplied = false;
-                stepData.Append = step.RunWithPreviousStep;
-                stepData.InitOnStart = step.InitOnStart;
-                stepData.Delay = step.Delay.Evaluate(storage);
-                stepData.Duration = step.CalculatedDuration;
-                
-                data.Add(stepData);
-            }
-        }
-
-        private void RecalculateStepsTimes()
-        {
-            var groupStartTime = 0f;
-            var groupDuration = 0f;
-            
-            for (var i = 0; i < data.Count; i++)
-            {
-                if (data[i].Append)
-                {
-                    groupDuration = Mathf.Max(groupDuration, data[i].Duration + data[i].Delay);
-                }
-                else
-                {
-                    groupStartTime += groupDuration;
-                    groupDuration = data[i].Duration + data[i].Delay;
-                }
-
-                data[i].StartTime = groupStartTime + data[i].Delay;
-                data[i].EndTime = groupStartTime + data[i].Duration + data[i].Delay;
-            }
-        }
 
         private void InitSteps()
         {
-            for (var index = 0; index < data.Count; index++)
+            foreach (var stepData in data.StepsData)
             {
-                var stepData = data[index];
                 if (!stepData.InitOnStart) continue;
                 stepData.Step.Init();
                 stepData.ValuesApplied = true;
                 stepData.SetProgress(0f);
             }
-        }
-        
-        private void CalculateDurationAndInitialTime()
-        {
-            Duration = 0f;
-            foreach (var stepData in data) Duration = Mathf.Max(Duration, stepData.EndTime);
-            CurrentTime = direction == PlayDirection.Normal ? 0f : Duration;
         }
         
     }
