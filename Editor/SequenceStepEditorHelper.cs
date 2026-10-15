@@ -102,7 +102,7 @@ namespace Damdor.Sequentio.Editor
         {
             GUI.Label(
                 rect,
-                $"{step.CalculateDuration()}s",
+                $"{step.FullDuration}s",
                 new GUIStyle(EditorStyles.miniLabel)
                 {
                     alignment = TextAnchor.MiddleRight,

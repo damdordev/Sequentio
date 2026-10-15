@@ -17,7 +17,11 @@ namespace Damdor.Sequentio
         public VarioValue<float> Duration
         {
             get => duration;
-            set => duration = value;
+            set
+            {
+                duration = value;
+                InvalidateDuration();
+            }
         }
 
         public VarioValue<AnimationCurve> Easing
@@ -50,7 +54,7 @@ namespace Damdor.Sequentio
         private TValue v_end;
         private AnimationCurve v_easing;
 
-        public override float CalculateDuration() => duration.Evaluate(Storage);
+        protected override float CalculateDuration() => duration.Evaluate(Storage);
         
         public override void Init()
         {

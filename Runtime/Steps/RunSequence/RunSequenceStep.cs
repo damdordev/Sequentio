@@ -22,7 +22,7 @@ namespace Damdor.Sequentio.RunSequence
         private float v_duration;
         private bool duringAnimation;
         
-        public override float CalculateDuration()
+        protected override float CalculateDuration()
         {
             InitSequenceIfNeeded();
 
@@ -37,6 +37,12 @@ namespace Damdor.Sequentio.RunSequence
             InitSequenceIfNeeded();
         }
 
+        public override void Release()
+        {
+            base.Release();
+            v_sequence = null;
+        }
+
         public override void ReturnToInitialState()
         {
             base.ReturnToInitialState();
@@ -49,6 +55,12 @@ namespace Damdor.Sequentio.RunSequence
         {
             base.SetProgress(t);
             v_sequence?.MoveToTime(t*v_duration);
+        }
+
+        public override void InvalidateDuration()
+        {
+            base.InvalidateDuration();
+            v_sequence = null;
         }
 
         internal override void CopyFrom(SequenceStep otherStep)
@@ -72,7 +84,6 @@ namespace Damdor.Sequentio.RunSequence
         {
             var newSequence = sequence.Evaluate(Storage);
             if (newSequence == v_sequence) return;
-             
             v_sequence?.Stop(StopBehaviour.ReturnToInitialState);
             v_sequence = newSequence;
 

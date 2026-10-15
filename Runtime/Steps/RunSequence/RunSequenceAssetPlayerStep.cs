@@ -22,7 +22,7 @@ namespace Damdor.Sequentio.RunSequence
         private float v_duration;
         private bool duringAnimation;
         
-        public override float CalculateDuration()
+        protected override float CalculateDuration()
         {
             InitSequenceIfNeeded();
 
@@ -35,6 +35,12 @@ namespace Damdor.Sequentio.RunSequence
             duringAnimation = true;
             v_sequence = null;
             InitSequenceIfNeeded();
+        }
+
+        public override void Release()
+        {
+            base.Release();
+            v_sequence = null;
         }
 
         public override void ReturnToInitialState()

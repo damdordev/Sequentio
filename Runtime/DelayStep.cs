@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     [SequentioStep("Delay", "Delay")]
     public class DelayStep : SequenceStep
     {
-        public override float CalculateDuration() => duration.Evaluate(Storage);
+        protected override float CalculateDuration() => duration.Evaluate(Storage);
 
         [SerializeField] private VarioValue<float> duration;
 

@@ -50,7 +50,6 @@ namespace Damdor.Sequentio.Punch
         [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private VarioValue<float> elasticity;
 
         private TComponent v_target;
-        private float v_duration;
         private int v_vibrato;
         private Vector3 v_direction;
         private float v_elasticity;
@@ -59,19 +58,13 @@ namespace Damdor.Sequentio.Punch
         private List<Vector3> endValues;
         private Vector3 initialValue;
 
-        public override float CalculateDuration()
-        {
-            v_duration = duration.Evaluate(Storage);
-
-            return v_duration;
-        }
+        protected override float CalculateDuration() => duration.Evaluate(Storage);
 
         public override void Init()
         {
             base.Init();
             
             v_target = target.Evaluate(Storage);
-            v_duration = duration.Evaluate(Storage);
             v_direction = direction.Evaluate(Storage);
             v_vibrato = vibrato.Evaluate(Storage);
             v_elasticity = elasticity.Evaluate(Storage);
@@ -81,15 +74,20 @@ namespace Damdor.Sequentio.Punch
             PrepareInternalLists();
         }
 
-        public override void ReturnToInitialState()
+        public override void Release()
         {
-            base.ReturnToInitialState();
+            base.Release();
             
             if(durations != null) ListPool<float>.Release(durations);
             durations = null;
             if(endValues != null) ListPool<Vector3>.Release(endValues);
             endValues = null;
+        }
 
+        public override void ReturnToInitialState()
+        {
+            base.ReturnToInitialState();
+            
             SetValue(v_target, initialValue);
         }
 
@@ -97,7 +95,7 @@ namespace Damdor.Sequentio.Punch
         {
             base.SetProgress(t);
             
-            if(t <= 0f || t >= 1 || v_duration <= Mathf.Epsilon)
+            if(t <= 0f || t >= 1 || FullDuration <= Mathf.Epsilon)
             {
                 SetValue(v_target, initialValue);
                 return;
@@ -127,45 +125,31 @@ namespace Damdor.Sequentio.Punch
 
         private void PrepareInternalLists()
         {
-            if (v_duration < Mathf.Epsilon) return;
+            if (FullDuration < Mathf.Epsilon) return;
             
             // taken from DOTtween
             v_elasticity = Mathf.Clamp(v_elasticity, 0f, 1f);
             var magnitude = v_direction.magnitude;
-            var length = Math.Max((int)(v_vibrato * v_duration), 2);
+            var length = Math.Max((int)(v_vibrato * FullDuration), 2);
             var num1 = magnitude / length;
-            if(durations == null)
-            {
-                durations = ListPool<float>.Get();
-            }
-            else
-            {
-                durations.Clear();
-            }
+            durations = ListPool<float>.Get();
             durations.Add(0f);
             for(var i = 0; i < length; ++i) durations.Add(0f);
             var num2 = 0.0f;
             for(var index = 0; index < length; ++index)
             {
                 var num3 = (index + 1) / (float)length;
-                var num4 = v_duration * num3;
+                var num4 = FullDuration * num3;
                 num2 += num4;
                 durations[index+1] = num4;
             }
 
-            var num5 = v_duration / num2;
+            var num5 = FullDuration / num2;
             for(var index = 0; index < durations.Count; ++index)
                 durations[index] *= num5;
             for(var i = 1; i < durations.Count; ++i) durations[i] += durations[i - 1];
-            
-            if(endValues == null)
-            {
-                endValues = ListPool<Vector3>.Get();
-            }
-            else
-            {
-                endValues.Clear();
-            }
+
+            endValues = ListPool<Vector3>.Get();
             endValues.Add(Vector3.zero);
             for(var i = 0; i < length; ++i) endValues.Add(Vector3.zero);
             for(var index = 0; index < length; ++index)

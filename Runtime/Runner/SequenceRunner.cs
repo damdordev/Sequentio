@@ -134,12 +134,22 @@ namespace Damdor.Sequentio
         {
             for (var index = data.Count - 1; index >= 0; index--)
             {
-                if(!data[index].ValuesApplied)continue;
+                if (!data[index].ValuesApplied) continue;
                 data[index].Step.ReturnToInitialState();
             }
-            ClearStepData();
 
             CurrentTime = 0f;
+        }
+
+        public void Release()
+        {
+            for (var index = data.Count - 1; index >= 0; index--)
+            {
+                if (!data[index].ValuesApplied) continue;
+                data[index].Step.Release();
+            }
+
+            ClearStepData();
         }
 
         public float GetProgress(int stepNumber)
@@ -165,12 +175,13 @@ namespace Damdor.Sequentio
                 if (!step.IsEnabled(runtime)) continue;
                 
                 var stepData = SequentioPooling.PopRunnerStepData();
+                step.InvalidateDuration();
                 stepData.Step = step;
                 stepData.ValuesApplied = false;
                 stepData.Append = step.RunWithPreviousStep;
                 stepData.InitOnStart = step.InitOnStart;
                 stepData.Delay = step.Delay.Evaluate(storage);
-                stepData.Duration = step.CalculateDuration();
+                stepData.Duration = step.FullDuration;
                 
                 data.Add(stepData);
             }

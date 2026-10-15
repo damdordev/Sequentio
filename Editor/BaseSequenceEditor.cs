@@ -40,6 +40,13 @@ namespace Damdor.Sequentio.Editor
                 attachedToUpdate = true;
                 lastTime = -1f;
             }
+
+            for (var i = 0; i < stepsProperty.arraySize; ++i)
+            {
+                var element = stepsProperty.GetArrayElementAtIndex(i);
+                if (element.managedReferenceValue is not SequenceStep step) continue;
+                step.InvalidateDuration();
+            }
         }
 
         private void OnDisable()

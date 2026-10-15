@@ -27,7 +27,7 @@ namespace Damdor.Sequentio
         public float Speed
         {
             get => speed;
-            set => speed = speed;
+            set => speed = value;
         }
 
         public PlayDirection Direction
