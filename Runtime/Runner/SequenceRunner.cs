@@ -19,7 +19,6 @@ namespace Damdor.Sequentio
             direction = settings.Direction;
 
             data = SequenceRunnerData.Create(steps, storage, runtime);
-            data.Setup(steps, storage, runtime);
             
             InitSteps();
             CurrentTime = direction == PlayDirection.Normal ? 0f : Duration;

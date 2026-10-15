@@ -30,8 +30,6 @@ namespace Damdor.Sequentio.Editor
             var selectedIndex = stepsList.selectedIndices.Count > 0 ? stepsList.index : -1;
 
             EditorGUILayout.Space(8f);
-            EditorGUILayout.LabelField("Timeline (seconds)", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("Mouse wheel: zoom   |   Middle drag: pan", EditorStyles.miniLabel);
 
             var horizontalScrollbarHeight = GUI.skin.horizontalScrollbar.fixedHeight;
             var verticalScrollbarWidth = GUI.skin.verticalScrollbar.fixedWidth;
@@ -184,13 +182,15 @@ namespace Damdor.Sequentio.Editor
                 alignment = TextAnchor.MiddleLeft,
                 clipping = TextClipping.Clip,
                 padding = new RectOffset(5, 5, 0, 0),
-                normal = { textColor = Color.white }
+                normal = { textColor = Color.white },
+                richText = true
             };
 
             var selectionChanged = false;
             var visibleRect = new Rect(scrollPosition.x, scrollPosition.y, viewportWidth, viewportHeight);
             foreach (var step in sequenceRunnerData.StepsData)
             {
+                if(step.Duration <= 0f) continue;
                 var rect = new Rect(Padding + step.StartTime * pixelsPerSecond, Padding + step.IndexInGroup * RowHeight,
                     Mathf.Max(1f, step.Duration * pixelsPerSecond), RowHeight - 4f);
                 var delayRect = new Rect(rect.x - step.Delay * pixelsPerSecond, rect.y,
@@ -210,8 +210,8 @@ namespace Damdor.Sequentio.Editor
                 }
 
                 var selected = stepsList.IsSelected(step.OriginalIndex);
-                var name = $"{SequenceStepEditorHelper.GetStepName(step.Step)}";
-                var tooltip = $"{name} {step.Step.TargetNameInEditor}\n" +
+                var name = $"<b>{SequenceStepEditorHelper.GetStepName(step.Step)}</b> <color=#B8B8B8>{step.Step.TargetNameInEditor}</color>";
+                var tooltip = $"{name}\n" +
                               $"Start: {step.StartTime:0.###} s\nDuration: {step.Duration:0.###} s\nDelay: {step.Delay:0.###} s";
                 var borderColor = selected ? new Color(0.45f, 0.8f, 1f) : new Color(0.3f, 0.4f, 0.5f);
                 var fillColor = selected ? new Color(0.15f, 0.45f, 0.7f) : new Color(0.22f, 0.3f, 0.38f);
@@ -219,13 +219,13 @@ namespace Damdor.Sequentio.Editor
                 if (step.Delay > 0f)
                 {
                     var delayBorderColor = borderColor;
-                    delayBorderColor.a = 0.35f;
+                    delayBorderColor.a = 0.2f;
                     var delayFillColor = fillColor;
-                    delayFillColor.a = 0.35f;
+                    delayFillColor.a = 0.2f;
                     EditorGUI.DrawRect(delayRect, delayBorderColor);
                     EditorGUI.DrawRect(new Rect(delayRect.x + 1f, delayRect.y + 1f,
                         Mathf.Max(0f, delayRect.width - 2f), delayRect.height - 2f), delayFillColor);
-                    GUI.Label(delayRect, new GUIContent("Delay", tooltip), stepLabelStyle);
+                    GUI.Label(delayRect, new GUIContent("", tooltip), stepLabelStyle);
                 }
 
                 EditorGUI.DrawRect(rect, borderColor);
