@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Globalization;
+using Damdor.Vario;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -14,26 +15,16 @@ namespace Damdor.Sequentio.Editor
         private const float MinPixelsPerSecond = 1f;
         private const float MaxPixelsPerSecond = 2000f;
 
-        private readonly List<TimelineStep> steps = new();
+        private SequenceRunnerData sequenceRunnerData;
         private int rowCount;
         private Vector2 scrollPosition;
         private float pixelsPerSecond = 100f;
         private int lastSelectedIndex = -1;
         private GUIStyle stepLabelStyle;
 
-        private struct TimelineStep
+        public bool Draw(IReadOnlyList<SequenceStep> steps, VarioStorage storage, bool runtime, ISequenceAsset sequenceAsset, ReorderableList stepsList)
         {
-            public int Index;
-            public int Row;
-            public SequenceStep Step;
-            public float StartTime;
-            public float Duration;
-            public float Delay;
-        }
-
-        public bool Draw(SerializedProperty stepsProperty, ISequenceAsset sequenceAsset, ReorderableList stepsList)
-        {
-            var duration = BuildSteps(stepsProperty, sequenceAsset);
+            sequenceRunnerData = SequenceRunnerData.Create(steps, storage, runtime);
             var oldScrollPosition = scrollPosition;
             var oldPixelsPerSecond = pixelsPerSecond;
             var selectedIndex = stepsList.selectedIndices.Count > 0 ? stepsList.index : -1;
@@ -55,7 +46,7 @@ namespace Damdor.Sequentio.Editor
             HandleInput(rect, controlId);
 
             var contentRect = new Rect(0f, 0f,
-                Mathf.Max(viewportWidth, duration * pixelsPerSecond + Padding * 2f + 60f),
+                Mathf.Max(viewportWidth, sequenceRunnerData.Duration * pixelsPerSecond + Padding * 2f + 60f),
                 Mathf.Max(viewportHeight, rowCount * RowHeight + Padding * 2f));
 
             if (selectedIndex != lastSelectedIndex)
@@ -84,62 +75,10 @@ namespace Damdor.Sequentio.Editor
             DrawRuler(new Rect(rect.x, rect.y, viewportWidth, RulerHeight));
             DrawPlayhead(new Rect(rect.x, rect.y, viewportWidth, RulerHeight + viewportHeight),
                 sequenceAsset as ISequence);
+            
+            sequenceRunnerData.Release();
             return selectionChanged || scrollPosition != oldScrollPosition ||
                    !Mathf.Approximately(pixelsPerSecond, oldPixelsPerSecond);
-        }
-
-        private float BuildSteps(SerializedProperty stepsProperty, ISequenceAsset sequenceAsset)
-        {
-            steps.Clear();
-            rowCount = 0;
-            var groupStartTime = 0f;
-            var groupDuration = 0f;
-            var groupRowCount = 0;
-            var totalDuration = 0f;
-
-            for (var index = 0; index < stepsProperty.arraySize; index++)
-            {
-                if (stepsProperty.GetArrayElementAtIndex(index).managedReferenceValue is not SequenceStep step)
-                    continue;
-
-                step.Storage = sequenceAsset?.Storage;
-                step.InvalidateDuration();
-                var duration = step.CalculatedDuration;
-                var delay = step.Delay.Evaluate(step.Storage);
-                if (float.IsNaN(duration) || float.IsInfinity(duration) ||
-                    float.IsNaN(delay) || float.IsInfinity(delay)) continue;
-
-                // Match the runner's parallel groups, using authored seconds without settings.Speed.
-                if (step.RunWithPreviousStep)
-                {
-                    groupDuration = Mathf.Max(groupDuration, duration + delay);
-                }
-                else
-                {
-                    groupStartTime += groupDuration;
-                    groupDuration = duration + delay;
-                    groupRowCount = 0;
-                }
-
-                var startTime = groupStartTime + delay;
-                totalDuration = Mathf.Max(totalDuration, startTime + duration);
-
-                // Instantaneous steps still affect group timing, but have no rectangle or row.
-                if (duration <= 0f) continue;
-
-                steps.Add(new TimelineStep
-                {
-                    Index = index,
-                    Row = groupRowCount++,
-                    Step = step,
-                    StartTime = startTime,
-                    Duration = duration,
-                    Delay = Mathf.Max(0f, delay)
-                });
-                rowCount = Mathf.Max(rowCount, groupRowCount);
-            }
-
-            return totalDuration;
         }
 
         private void HandleInput(Rect rect, int controlId)
@@ -173,16 +112,16 @@ namespace Damdor.Sequentio.Editor
 
         private void RevealSelection(int selectedIndex, float viewportWidth, float viewportHeight)
         {
-            foreach (var step in steps)
+            foreach (var step in sequenceRunnerData.StepsData)
             {
-                if (step.Index != selectedIndex) continue;
+                if (step.OriginalIndex != selectedIndex) continue;
 
                 var startX = Padding + (step.StartTime - step.Delay) * pixelsPerSecond;
                 var endX = Padding + (step.StartTime + step.Duration) * pixelsPerSecond;
                 if (startX < scrollPosition.x || endX > scrollPosition.x + viewportWidth)
                     scrollPosition.x = Mathf.Max(0f, startX - Padding);
 
-                var startY = Padding + step.Row * RowHeight;
+                var startY = Padding + step.IndexInGroup * RowHeight;
                 if (startY < scrollPosition.y)
                     scrollPosition.y = startY - Padding;
                 else if (startY + RowHeight > scrollPosition.y + viewportHeight)
@@ -250,9 +189,9 @@ namespace Damdor.Sequentio.Editor
 
             var selectionChanged = false;
             var visibleRect = new Rect(scrollPosition.x, scrollPosition.y, viewportWidth, viewportHeight);
-            foreach (var step in steps)
+            foreach (var step in sequenceRunnerData.StepsData)
             {
-                var rect = new Rect(Padding + step.StartTime * pixelsPerSecond, Padding + step.Row * RowHeight,
+                var rect = new Rect(Padding + step.StartTime * pixelsPerSecond, Padding + step.IndexInGroup * RowHeight,
                     Mathf.Max(1f, step.Duration * pixelsPerSecond), RowHeight - 4f);
                 var delayRect = new Rect(rect.x - step.Delay * pixelsPerSecond, rect.y,
                     step.Delay * pixelsPerSecond, rect.height);
@@ -262,16 +201,16 @@ namespace Damdor.Sequentio.Editor
                 if (GUI.enabled && Event.current.type == EventType.MouseDown && Event.current.button == 0 &&
                     fullRect.Contains(Event.current.mousePosition))
                 {
-                    stepsList.Select(step.Index);
+                    stepsList.Select(step.OriginalIndex);
                     stepsList.GrabKeyboardFocus();
                     stepsList.onSelectCallback?.Invoke(stepsList);
-                    lastSelectedIndex = step.Index;
+                    lastSelectedIndex = step.OriginalIndex;
                     selectionChanged = true;
                     Event.current.Use();
                 }
 
-                var selected = stepsList.IsSelected(step.Index);
-                var name = $"{step.Index + 1}. {SequenceStepEditorHelper.GetStepName(step.Step)}";
+                var selected = stepsList.IsSelected(step.OriginalIndex);
+                var name = $"{SequenceStepEditorHelper.GetStepName(step.Step)}";
                 var tooltip = $"{name} {step.Step.TargetNameInEditor}\n" +
                               $"Start: {step.StartTime:0.###} s\nDuration: {step.Duration:0.###} s\nDelay: {step.Delay:0.###} s";
                 var borderColor = selected ? new Color(0.45f, 0.8f, 1f) : new Color(0.3f, 0.4f, 0.5f);

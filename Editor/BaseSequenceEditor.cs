@@ -87,7 +87,7 @@ namespace Damdor.Sequentio.Editor
                 EditorGUILayout.PropertyField(storageProperty);
             }
             
-            if (timelineHelper.Draw(stepsProperty, sequenceAsset, stepsList)) Repaint();
+            if (timelineHelper.Draw(sequenceAsset.Steps, sequence.Storage, false , sequenceAsset, stepsList)) Repaint();
 
             stepsList.DoLayoutList();
             EditorGUILayout.BeginVertical();

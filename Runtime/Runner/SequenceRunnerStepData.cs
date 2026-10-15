@@ -11,6 +11,8 @@ namespace Damdor.Sequentio
         public bool InitOnStart;
         public float Delay;
         public float Progress;
+        public int OriginalIndex;
+        public int IndexInGroup;
 
         public void SetProgress(float progress)
         {
@@ -23,5 +25,6 @@ namespace Damdor.Sequentio
             Step = null;
             Progress = 0f;
         }
+        
     }
 }

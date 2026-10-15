@@ -7,15 +7,15 @@ namespace Damdor.Sequentio
     public class SequenceRunnerData
     {
         public float Duration { get; private set; }
-        public List<SequenceRunnerStepData> StepsData => stepsData;
+        public IReadOnlyList<SequenceRunnerStepData> StepsData => stepsData;
         
         private readonly List<SequenceRunnerStepData> stepsData = new();
 
-        private List<SequenceStep> steps;
+        private IReadOnlyList<SequenceStep> steps;
         private VarioStorage storage;
         private bool runtime;
         
-        public void Setup(List<SequenceStep> steps, VarioStorage storage, bool runtime)
+        public void Setup(IReadOnlyList<SequenceStep> steps, VarioStorage storage, bool runtime)
         {
             this.steps = steps;
             this.storage = storage;
@@ -24,6 +24,13 @@ namespace Damdor.Sequentio
             CreateStepData();
             RecalculateStepsTimes();
             CalculateDurationAndInitialTime();
+        }
+
+        public static SequenceRunnerData Create(IReadOnlyList<SequenceStep> steps, VarioStorage storage, bool runtime)
+        {
+            var data = SequentioPooling.PopRunnerData();
+            data.Setup(steps, storage, runtime);
+            return data;
         }
 
         public void Release()
@@ -47,11 +54,12 @@ namespace Damdor.Sequentio
         
         private void CreateStepData()
         {
-            foreach (var step in steps)
+            for (var index = 0; index < steps.Count; index++)
             {
+                var step = steps[index];
                 step.Storage = storage;
                 if (!step.IsEnabled(runtime)) continue;
-                
+
                 var stepData = SequentioPooling.PopRunnerStepData();
                 step.InvalidateDuration();
                 stepData.Step = step;
@@ -60,7 +68,8 @@ namespace Damdor.Sequentio
                 stepData.InitOnStart = step.InitOnStart;
                 stepData.Delay = step.Delay.Evaluate(storage);
                 stepData.Duration = step.CalculatedDuration;
-                
+                stepData.OriginalIndex = index;
+
                 stepsData.Add(stepData);
             }
         }
@@ -69,6 +78,7 @@ namespace Damdor.Sequentio
         {
             var groupStartTime = 0f;
             var groupDuration = 0f;
+            var groupSize = 0;
             
             for (var i = 0; i < stepsData.Count; i++)
             {
@@ -78,12 +88,14 @@ namespace Damdor.Sequentio
                 }
                 else
                 {
+                    groupSize = 0;
                     groupStartTime += groupDuration;
                     groupDuration = stepsData[i].Duration + stepsData[i].Delay;
                 }
 
                 stepsData[i].StartTime = groupStartTime + stepsData[i].Delay;
                 stepsData[i].EndTime = groupStartTime + stepsData[i].Duration + stepsData[i].Delay;
+                stepsData[i].IndexInGroup = groupSize++;
             }
         }
         

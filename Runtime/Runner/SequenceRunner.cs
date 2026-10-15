@@ -17,8 +17,8 @@ namespace Damdor.Sequentio
         {
             this.settings = settings.Clone();
             direction = settings.Direction;
-            
-            data = SequentioPooling.PopRunnerData();
+
+            data = SequenceRunnerData.Create(steps, storage, runtime);
             data.Setup(steps, storage, runtime);
             
             InitSteps();
