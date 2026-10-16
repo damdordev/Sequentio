@@ -13,7 +13,7 @@ namespace Damdor.Sequentio
             set
             {
                 stepsPoolSize = Mathf.Max(value, 0);
-                foreach (var pool in stepsPools.Values) ApplyMaxPoolSize(pool, sequenceExecutionPlayerPoolSize);
+                foreach (var pool in stepsPools.Values) ApplyMaxPoolSize(pool, stepsPoolSize);
             }
         }
         
@@ -188,7 +188,7 @@ namespace Damdor.Sequentio
         {
             if (data == null) return;
             data.Reset();
-            if(sequenceStepExecutionDataPool.Count < sequenceStepExecutionDataPoolSize) sequenceExecutionDataPool.Push(data);
+            if(sequenceStepExecutionDataPool.Count < sequenceExecutionDataPoolSize) sequenceExecutionDataPool.Push(data);
         }
         
         public static SequencePlaybackController PopSequencePlaybackController()

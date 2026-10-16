@@ -94,15 +94,16 @@ namespace Damdor.Sequentio
             hasReleaseWatch = true;
             releaseWatch = go;
         }
-        
-        public void Init() => playbackController?.Init();
+
+        public void Init()
+        {
+            BeforePlay();
+            playbackController?.Init();
+        }
 
         public void Play()
         {
-            if(playbackController.State == SequenceState.Idle)
-            {
-                SequentioUpdateProvider.Register(Update);
-            };
+            BeforePlay();
             playbackController?.Play();
         }
 
@@ -115,12 +116,16 @@ namespace Damdor.Sequentio
             SequentioUpdateProvider.Unregister(Update);
         }
 
-        public void MoveToTime(float time) =>playbackController?.MoveToTime(time);
+        public void MoveToTime(float time) => playbackController?.MoveToTime(time);
         public float GetProgress(SequenceStep step) => playbackController?.GetProgress(step) ?? 0f;
         
         #if DAMDOR_SEQUENTIO_UNITASK
-        public UniTask PlayAndWait() => playbackController?.PlayAndWait() ?? UniTask.CompletedTask;
-        #endif
+        public UniTask PlayAndWait()
+        {
+            BeforePlay();
+            return playbackController?.PlayAndWait() ?? UniTask.CompletedTask;
+        }
+#endif
         
         public void AddStep(SequenceStep step) => steps.Add(step);
 
@@ -132,7 +137,7 @@ namespace Damdor.Sequentio
 
         private void Update(float deltaTime, float unscaledDeltaTime)
         {
-            if (CheckAutoReleaseWatcher())
+            if (CheckAutoRelease())
             {
                 Release();
                 return;
@@ -148,6 +153,20 @@ namespace Damdor.Sequentio
         
         public void UpdateTime(float dt) => playbackController?.UpdateTime(dt);
 
-        private bool CheckAutoReleaseWatcher() => autoRelease && hasReleaseWatch && releaseWatch == null;
+        private void BeforePlay()
+        {
+            if(playbackController.State == SequenceState.Idle)
+            {
+                SequentioUpdateProvider.Register(Update);
+            };
+        }
+        
+        private bool CheckAutoRelease()
+        {
+            if (!autoRelease) return false;
+            if (hasReleaseWatch && releaseWatch == null) return true;
+            if (playbackController?.State == SequenceState.Finished) return true;
+            return false;
+        }
     }
 }

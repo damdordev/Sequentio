@@ -135,6 +135,8 @@ namespace Damdor.Sequentio
             player.ReleaseSteps();
             player.Release();
             player = null;
+            data?.Release();
+            data = null;
         }
         
     }

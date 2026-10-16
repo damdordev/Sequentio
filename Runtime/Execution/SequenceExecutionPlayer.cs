@@ -111,7 +111,6 @@ namespace Damdor.Sequentio
         {
             CurrentTime = Mathf.Clamp(newTime, 0f, Duration);
 
-            // Rewind later steps first so they cannot overwrite earlier steps on the same target.
             for (var index = data.StepsData.Count - 1; index >= 0; index--)
             {
                 var stepData = data.StepsData[index];

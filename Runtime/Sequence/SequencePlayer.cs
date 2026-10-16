@@ -26,7 +26,9 @@ namespace Damdor.Sequentio
         public void Stop(StopBehaviour stopBehaviour) => PlaybackController?.Stop(stopBehaviour);
         public void MoveToTime(float time) =>PlaybackController?.MoveToTime(time);
         public float GetProgress(SequenceStep step) => PlaybackController?.GetProgress(step) ?? 0f;
+        #if DAMDOR_SEQUENTIO_UNITASK
         public UniTask PlayAndWait() => PlaybackController?.PlayAndWait() ?? UniTask.CompletedTask;
+        #endif
 
         [SerializeField] private VarioStorage storage = new();
         [SerializeReference] private List<SequenceStep> steps = new();

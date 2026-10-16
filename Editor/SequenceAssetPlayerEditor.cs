@@ -43,6 +43,7 @@ namespace Damdor.Sequentio.Editor
                 EditorApplication.update -= EditorUpdate;
                 attachedToUpdate = false;
             }
+            sequencePlayer?.Stop(StopBehaviour.ReturnToInitialState);
         }
 
         public override void OnInspectorGUI()

@@ -26,7 +26,9 @@ namespace Damdor.Sequentio.Editor
         public bool Draw(IReadOnlyList<SequenceStep> steps, VarioStorage storage, bool runtime, ISequenceDefinition sequenceDefinition, ReorderableList stepsList)
         {
             sequenceExecutionData = SequenceExecutionData.Create(steps, storage, runtime);
-            rowCount = 1+ sequenceExecutionData.StepsData.Max(s => s.IndexInGroup);
+            rowCount = sequenceExecutionData.StepsData.Count > 0
+                ? 1 + sequenceExecutionData.StepsData.Max(s => s.IndexInGroup)
+                : 1;
             var oldScrollPosition = scrollPosition;
             var oldPixelsPerSecond = pixelsPerSecond;
             var selectedIndex = stepsList.selectedIndices.Count > 0 ? stepsList.index : -1;
