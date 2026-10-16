@@ -67,12 +67,23 @@ namespace Damdor.Sequentio
             }
         }
         
+        public static int SequenceStateManagerPoolSize
+        {
+            get => sequenceStateManagerSize;
+            set
+            {
+                sequenceStateManagerSize = Mathf.Max(value, 0);
+                ApplyMaxPoolSize(sequenceStateManagerPool, sequenceStateManagerSize);
+            }
+        }
+        
         private static readonly Dictionary<Type, Stack<SequenceStep>> stepsPools = new();
         private static readonly Stack<SequenceRunner> runnerPool = new();
         private static readonly Stack<RawSequence> rawSequencePool = new();
         private static readonly Stack<SequenceSettings> settingsPool = new();
         private static readonly Stack<SequenceRunnerStepData> runnerStepDataPool = new();
         private static readonly Stack<SequenceRunnerData> runnerDataPool = new();
+        private static readonly Stack<SequenceStateManager> sequenceStateManagerPool = new();
         
         private static int stepsPoolSize = 100;
         private static int runnerPoolSize = 100;
@@ -80,6 +91,7 @@ namespace Damdor.Sequentio
         private static int settingsPoolSize = 100;
         private static int runnerStepDataPoolSize = 100;
         private static int runnerDataPoolSize = 100;
+        private static int sequenceStateManagerSize = 100;
         
         public static SequenceRunner PopRunner()
         {
@@ -177,6 +189,20 @@ namespace Damdor.Sequentio
             if (data == null) return;
             data.Reset();
             if(runnerStepDataPool.Count < runnerStepDataPoolSize) runnerDataPool.Push(data);
+        }
+        
+        public static SequenceStateManager PopSequenceStateManager()
+        {
+            return sequenceStateManagerPool.Count > 0 
+                ? sequenceStateManagerPool.Pop() 
+                : new SequenceStateManager();
+        }
+
+        public static void ReleaseSequenceStateManager(SequenceStateManager manager)
+        {
+            if (manager == null) return;
+            manager.Reset();
+            if(sequenceStateManagerPool.Count < sequenceStateManagerSize) sequenceStateManagerPool.Push(manager);
         }
         
         private static void ApplyMaxPoolSize<T>(Stack<T> pool, int maxSize)

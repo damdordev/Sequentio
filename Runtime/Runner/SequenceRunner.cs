@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
-    internal class SequenceRunner
+    public class SequenceRunner
     {
         public float Duration => data?.Duration ?? 0f;
         public float CurrentTime { get; private set; }

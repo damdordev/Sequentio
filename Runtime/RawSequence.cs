@@ -14,9 +14,9 @@ namespace Damdor.Sequentio
     {
         public SequenceSettings Settings => settings;
         public VarioStorage Storage => storage;
-        public SequenceState State => state;
-        public float Duration => runner?.Duration ?? 0f;
-        public float CurrentTime => runner?.CurrentTime ?? 0f;
+        public SequenceState State => stateManager?.State ?? SequenceState.Idle;
+        public float Duration => stateManager?.Duration ?? 0f;
+        public float CurrentTime => stateManager?.CurrentTime ?? 0f;
 
         private readonly List<SequenceStep> steps = new();
         private VarioStorage storage;
@@ -24,8 +24,7 @@ namespace Damdor.Sequentio
         private bool autoRelease;
         private CancellationToken autoReleaseCancellationToken;
 
-        private SequenceState state;
-        private SequenceRunner runner;
+        private SequenceStateManager stateManager;
 
         internal RawSequence() { }
         
@@ -47,15 +46,14 @@ namespace Damdor.Sequentio
         {
             storage.Release();
             storage = null;
-            state = SequenceState.Idle;
+            stateManager?.Release();
+            stateManager = null;
             autoReleaseCancellationToken = CancellationToken.None;
             if (steps != null)
             {
                 foreach (var step in steps) SequentioPooling.ReleaseStep(step);
                 steps.Clear();
             }
-
-            ReleaseRunner();
 
             if (settings != null)
             {
@@ -65,18 +63,12 @@ namespace Damdor.Sequentio
             
             autoRelease = false;
         }
-        
-        public void Init()
-        {
-            Play();
-            Pause();
-        }
 
         public void AutoRelease(GameObject go = null)
         {
             autoRelease = true;
             if (go != null) autoReleaseCancellationToken = go.GetCancellationTokenOnDestroy();
-            if(state == SequenceState.Finished || autoReleaseCancellationToken.IsCancellationRequested) Release();
+            if(stateManager.State == SequenceState.Finished || autoReleaseCancellationToken.IsCancellationRequested) Release();
         }
 
         public void AutoRelease(Component component = null)
@@ -85,77 +77,39 @@ namespace Damdor.Sequentio
             AutoRelease(go);
         }
         
+        public void Init() => stateManager?.Init();
+
         public void Play()
         {
-            switch (state)
+            if(stateManager.State == SequenceState.Idle)
             {
-                case SequenceState.Idle:
-                    runner = SequentioPooling.PopRunner();
-                    runner.Setup(Application.isPlaying, storage, steps, settings);
-                    state = SequenceState.Playing;
-                    SequentioUpdateProvider.Register(Update);
-                    break;
-                case SequenceState.Playing:
-                    break;
-                case SequenceState.Paused:
-                    // resume, should I have separate method Resume?
-                    state = SequenceState.Playing;
-                    break;
-                case SequenceState.Finished:
-                    Stop();
-                    Play();
-                    break;
-            }
-        }
-        
-        public float GetProgress(SequenceStep step) => runner?.GetProgress(step) ?? 0f;
-
-#if DAMDOR_SEQUENTIO_UNITASK
-
-        public UniTask PlayAndWait()
-        {
-            Play();
-            return UniTask.WaitUntil(() => State == SequenceState.Finished || State == SequenceState.Idle, cancellationToken: autoReleaseCancellationToken);
-        }
-        
-        #endif
-
-        public void Pause()
-        {
-            if (state == SequenceState.Playing)
-            {
-                state = SequenceState.Paused;
-            }
+                
+                SequentioUpdateProvider.Register(Update);
+            };
+            stateManager?.Play();
         }
 
-        public void Stop()
-        {
-            Stop(Settings.DefaultStopBehaviour);
-        }
+        public void Pause() => stateManager?.Pause();
+        public void Stop() => Stop(settings.DefaultStopBehaviour);
 
         public void Stop(StopBehaviour stopBehaviour)
         {
-            if (state == SequenceState.Idle) return;
-            if(stopBehaviour == StopBehaviour.ReturnToInitialState) runner?.ReturnToInitialState();
-            runner?.Release();
-            ReleaseRunner();
-            state = SequenceState.Idle;
+            stateManager?.Stop(stopBehaviour);
+            SequentioUpdateProvider.Unregister(Update);
         }
 
+        public void MoveToTime(float time) =>stateManager?.MoveToTime(time);
+        public float GetProgress(SequenceStep step) => stateManager?.GetProgress(step) ?? 0f;
+        public UniTask PlayAndWait() => stateManager?.PlayAndWait() ?? UniTask.CompletedTask;
+        
         public void AddStep(SequenceStep step) => steps.Add(step);
-
-        public void MoveToTime(float time)
-        {
-            if (state == SequenceState.Idle) return;
-            
-            runner.SetTime(time);
-        }
         
         private void Setup(ISequenceAsset sequenceAsset)
         {
             storage = sequenceAsset.Storage.Clone();
             settings = sequenceAsset.Settings.Clone();
             foreach (var step in sequenceAsset.Steps) steps.Add(step.Clone());
+            stateManager = SequenceStateManager.Create(storage, settings, steps);
         }
 
         private void TryAutoPlay()
@@ -180,24 +134,7 @@ namespace Damdor.Sequentio
             UpdateTime(dt);
         }
         
-        public void UpdateTime(float dt)
-        {
-            if (state != SequenceState.Playing) return;
-            var result = runner.Update(dt);
-            if (result == SequenceRunnerUpdateResult.Finished)
-            {
-                state = SequenceState.Finished;
-                if (autoRelease) Release();
-            }
-        }
-        
-        private void ReleaseRunner()
-        {
-            if (runner == null) return;
-            SequentioPooling.ReleaseRunner(runner);
-            SequentioUpdateProvider.Unregister(Update);
-            runner = null;
-        }
+        public void UpdateTime(float dt) => stateManager?.UpdateTime(dt);
         
     }
 }
