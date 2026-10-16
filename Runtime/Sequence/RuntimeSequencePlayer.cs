@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 #if DAMDOR_SEQUENTIO_UNITASK
 using Cysharp.Threading.Tasks;
 #endif
@@ -22,7 +21,8 @@ namespace Damdor.Sequentio
         private VarioStorage storage;
         private SequenceSettings settings;
         private bool autoRelease;
-        private CancellationToken autoReleaseCancellationToken;
+        private bool hasReleaseWatch;
+        private GameObject releaseWatch;
 
         private SequencePlaybackController playbackController;
 
@@ -58,7 +58,9 @@ namespace Damdor.Sequentio
             storage = null;
             playbackController?.Release();
             playbackController = null;
-            autoReleaseCancellationToken = CancellationToken.None;
+            autoRelease = false;
+            hasReleaseWatch = false;
+            releaseWatch = null;
             if (steps != null)
             {
                 foreach (var step in steps) SequentioPooling.ReleaseStep(step);
@@ -75,20 +77,22 @@ namespace Damdor.Sequentio
         }
 
         #endregion
-        
-    
 
-        public void AutoRelease(GameObject go = null)
+        public void AutoRelease()
         {
             autoRelease = true;
-            if (go != null) autoReleaseCancellationToken = go.GetCancellationTokenOnDestroy();
-            if(playbackController.State == SequenceState.Finished || autoReleaseCancellationToken.IsCancellationRequested) Release();
         }
-
-        public void AutoRelease(Component component = null)
+        
+        public void AutoRelease(GameObject go)
         {
-            var go = component != null ? component.gameObject : null;
-            AutoRelease(go);
+            AutoRelease();
+            if (go == null)
+            {
+                Release();
+                return;
+            }
+            hasReleaseWatch = true;
+            releaseWatch = go;
         }
         
         public void Init() => playbackController?.Init();
@@ -97,7 +101,6 @@ namespace Damdor.Sequentio
         {
             if(playbackController.State == SequenceState.Idle)
             {
-                
                 SequentioUpdateProvider.Register(Update);
             };
             playbackController?.Play();
@@ -114,7 +117,10 @@ namespace Damdor.Sequentio
 
         public void MoveToTime(float time) =>playbackController?.MoveToTime(time);
         public float GetProgress(SequenceStep step) => playbackController?.GetProgress(step) ?? 0f;
+        
+        #if DAMDOR_SEQUENTIO_UNITASK
         public UniTask PlayAndWait() => playbackController?.PlayAndWait() ?? UniTask.CompletedTask;
+        #endif
         
         public void AddStep(SequenceStep step) => steps.Add(step);
 
@@ -126,7 +132,7 @@ namespace Damdor.Sequentio
 
         private void Update(float deltaTime, float unscaledDeltaTime)
         {
-            if (autoRelease && autoReleaseCancellationToken.IsCancellationRequested)
+            if (CheckAutoReleaseWatcher())
             {
                 Release();
                 return;
@@ -141,6 +147,7 @@ namespace Damdor.Sequentio
         }
         
         public void UpdateTime(float dt) => playbackController?.UpdateTime(dt);
-        
+
+        private bool CheckAutoReleaseWatcher() => autoRelease && hasReleaseWatch && releaseWatch == null;
     }
 }

@@ -9,25 +9,24 @@ namespace Damdor.Sequentio
         public float Duration => data?.Duration ?? 0f;
         public float CurrentTime { get; private set; }
         
-        private SequenceSettings settings;
         private SequenceExecutionData data;
+        private SequenceSettings settings;
         private PlayDirection direction;
 
         #region Pooling
 
-        public static SequenceExecutionPlayer Create(VarioStorage storage, List<SequenceStep> steps, SequenceSettings settings, bool runtime)
+        public static SequenceExecutionPlayer Create(SequenceExecutionData data, SequenceSettings settings)
         {
             var executionPlayer = SequentioPooling.PopSequenceExecutionPlayer();
-            executionPlayer.Setup(runtime, storage, steps, settings);
+            executionPlayer.Setup(data, settings);
             return executionPlayer;
         }
         
-        private void Setup(bool runtime, VarioStorage storage, List<SequenceStep> steps, SequenceSettings settings)
+        private void Setup(SequenceExecutionData data, SequenceSettings settings)
         {
-            this.settings = settings.Clone();
+            this.settings = settings;
+            this.data = data;
             direction = settings.Direction;
-
-            data = SequenceExecutionData.Create(steps, storage, runtime);
             
             InitSteps();
             CurrentTime = direction == PlayDirection.Normal ? 0f : Duration;
@@ -40,11 +39,9 @@ namespace Damdor.Sequentio
         
         internal void Reset()
         {
-            
             CurrentTime = 0f;
-            settings = null;
-            data?.Release();
             data = null;
+            settings = null;
         }
 
         #endregion
@@ -83,13 +80,9 @@ namespace Damdor.Sequentio
                         if (Duration > 0f)
                         {
                             direction = direction == PlayDirection.Normal ? PlayDirection.Reverse : PlayDirection.Normal;
-                            if (newTime > Duration)
+                            if (newTime > Duration || newTime < 0f)
                             {
-                                newTime = Duration - (newTime - Duration);
-                            }
-                            else if (newTime < 0f)
-                            {
-                                newTime = -newTime;
+                                newTime = Mathf.PingPong(newTime, Duration);
                             }
                         }
                         else
@@ -117,6 +110,15 @@ namespace Damdor.Sequentio
         public void SetTime(float newTime)
         {
             CurrentTime = Mathf.Clamp(newTime, 0f, Duration);
+
+            // Rewind later steps first so they cannot overwrite earlier steps on the same target.
+            for (var index = data.StepsData.Count - 1; index >= 0; index--)
+            {
+                var stepData = data.StepsData[index];
+                if (CurrentTime >= stepData.StartTime || !stepData.ValuesApplied) continue;
+
+                stepData.SetProgress(0f);
+            }
 
             foreach (var stepData in data.StepsData)
             {

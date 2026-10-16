@@ -29,7 +29,6 @@ namespace Damdor.Sequentio
             this.steps = steps;
             this.storage = storage;
             this.runtime = runtime;
-
             CreateStepData();
             RecalculateStepsTimes();
             CalculateDurationAndInitialTime();
