@@ -3,7 +3,7 @@ using Damdor.Vario;
 
 namespace Damdor.Sequentio
 {
-    public interface ISequenceAsset
+    public interface ISequenceDefinition
     {
         SequenceSettings Settings { get; }
         IReadOnlyList<SequenceStep> Steps { get; }

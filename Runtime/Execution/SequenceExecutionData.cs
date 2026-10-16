@@ -4,18 +4,27 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
-    public class SequenceRunnerData
+    public class SequenceExecutionData
     {
         public float Duration { get; private set; }
-        public IReadOnlyList<SequenceRunnerStepData> StepsData => stepsData;
+        public IReadOnlyList<SequenceStepExecutionData> StepsData => stepsData;
         
-        private readonly List<SequenceRunnerStepData> stepsData = new();
+        private readonly List<SequenceStepExecutionData> stepsData = new();
 
         private IReadOnlyList<SequenceStep> steps;
         private VarioStorage storage;
         private bool runtime;
+
+        #region Pooling
         
-        public void Setup(IReadOnlyList<SequenceStep> steps, VarioStorage storage, bool runtime)
+        public static SequenceExecutionData Create(IReadOnlyList<SequenceStep> steps, VarioStorage storage, bool runtime)
+        {
+            var data = SequentioPooling.PopSequenceExecutionData();
+            data.Setup(steps, storage, runtime);
+            return data;
+        }
+        
+        private void Setup(IReadOnlyList<SequenceStep> steps, VarioStorage storage, bool runtime)
         {
             this.steps = steps;
             this.storage = storage;
@@ -25,17 +34,10 @@ namespace Damdor.Sequentio
             RecalculateStepsTimes();
             CalculateDurationAndInitialTime();
         }
-
-        public static SequenceRunnerData Create(IReadOnlyList<SequenceStep> steps, VarioStorage storage, bool runtime)
-        {
-            var data = SequentioPooling.PopRunnerData();
-            data.Setup(steps, storage, runtime);
-            return data;
-        }
-
+        
         public void Release()
         {
-            SequentioPooling.ReleaseRunnerData(this);
+            SequentioPooling.ReleaseSequenceExecutionData(this);
         }
 
         internal void Reset()
@@ -46,11 +48,13 @@ namespace Damdor.Sequentio
             
             foreach (var stepData in stepsData)
             {
-                SequentioPooling.ReleaseRunnerStepData(stepData);
+                SequentioPooling.ReleaseSequenceStepExecutionData(stepData);
             }
             
             stepsData.Clear();
         }
+        
+        #endregion
         
         private void CreateStepData()
         {
@@ -60,13 +64,13 @@ namespace Damdor.Sequentio
                 step.Storage = storage;
                 if (!step.IsEnabled(runtime)) continue;
 
-                var stepData = SequentioPooling.PopRunnerStepData();
+                var stepData = SequentioPooling.PopSequenceStepExecutionData();
                 step.InvalidateDuration();
                 stepData.Step = step;
                 stepData.ValuesApplied = false;
                 stepData.Append = step.RunWithPreviousStep;
                 stepData.InitOnStart = step.InitOnStart;
-                stepData.Delay = step.Delay.Evaluate(storage);
+                stepData.Delay = step.CalculatedDelay;
                 stepData.Duration = step.CalculatedDuration;
                 stepData.OriginalIndex = index;
 
@@ -77,25 +81,25 @@ namespace Damdor.Sequentio
         private void RecalculateStepsTimes()
         {
             var groupStartTime = 0f;
-            var groupDuration = 0f;
+            var groupDuration = 0f; 
             var groupSize = 0;
             
-            for (var i = 0; i < stepsData.Count; i++)
+            foreach (var stepExecutionData in stepsData)
             {
-                if (stepsData[i].Append)
+                if (stepExecutionData.Append)
                 {
-                    groupDuration = Mathf.Max(groupDuration, stepsData[i].Duration + stepsData[i].Delay);
+                    groupDuration = Mathf.Max(groupDuration, stepExecutionData.Duration + stepExecutionData.Delay);
                 }
                 else
                 {
                     groupSize = 0;
                     groupStartTime += groupDuration;
-                    groupDuration = stepsData[i].Duration + stepsData[i].Delay;
+                    groupDuration = stepExecutionData.Duration + stepExecutionData.Delay;
                 }
 
-                stepsData[i].StartTime = groupStartTime + stepsData[i].Delay;
-                stepsData[i].EndTime = groupStartTime + stepsData[i].Duration + stepsData[i].Delay;
-                stepsData[i].IndexInGroup = groupSize++;
+                stepExecutionData.StartTime = groupStartTime + stepExecutionData.Delay;
+                stepExecutionData.EndTime = groupStartTime + stepExecutionData.Duration + stepExecutionData.Delay;
+                stepExecutionData.IndexInGroup = groupSize++;
             }
         }
         

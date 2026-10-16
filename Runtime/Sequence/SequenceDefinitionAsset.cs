@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Damdor.Sequentio
 {
     [CreateAssetMenu(fileName = "sequence", menuName = "Damdor/Sequntio/Sequence asset")]
-    public class SequenceAsset : ScriptableObject, ISequenceAsset, IVarioStorageSource
+    public class SequenceDefinitionAsset : ScriptableObject, ISequenceDefinition, IVarioStorageSource
     {
         public SequenceSettings Settings => settings;
         public IReadOnlyList<SequenceStep> Steps => steps;

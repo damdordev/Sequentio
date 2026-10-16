@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
-    public class SequenceAssetPlayer : MonoBehaviour, ISequence
+    public class SequenceAssetPlayer : MonoBehaviour, ISequencePlayer
     {
         public VarioStorage Storage => overrideStorage;
 
@@ -14,16 +14,16 @@ namespace Damdor.Sequentio
         {
             get
             {
-                if(rawSequence == null) PrepareSequence();
-                return rawSequence?.State ?? SequenceState.Idle;   
+                if(runtimeSequencePlayer == null) PrepareSequence();
+                return runtimeSequencePlayer?.State ?? SequenceState.Idle;   
             }
         }
         public SequenceSettings Settings
         {
             get
             {
-                if(rawSequence == null) PrepareSequence();
-                return rawSequence?.Settings;
+                if(runtimeSequencePlayer == null) PrepareSequence();
+                return runtimeSequencePlayer?.Settings;
             }
         }
 
@@ -31,17 +31,17 @@ namespace Damdor.Sequentio
         {
             get
             {
-                if(rawSequence == null) PrepareSequence();
-                return rawSequence?.Duration ?? 0f;
+                if(runtimeSequencePlayer == null) PrepareSequence();
+                return runtimeSequencePlayer?.Duration ?? 0f;
             }
         }
 
-        public float CurrentTime => rawSequence?.CurrentTime ?? 0f;
+        public float CurrentTime => runtimeSequencePlayer?.CurrentTime ?? 0f;
 
-        [SerializeField] private SequenceAsset asset;
+        [SerializeField] private SequenceDefinitionAsset asset;
         [SerializeField] private VarioStorage overrideStorage;
         
-        private RawSequence rawSequence;
+        private RuntimeSequencePlayer runtimeSequencePlayer;
 
         private void Awake()
         {
@@ -63,58 +63,58 @@ namespace Damdor.Sequentio
         {
             if(asset != null && asset.Settings.AutoPlay == AutoPlayMode.OnEnable)
             {
-                if(rawSequence == null) PrepareSequence();
-                else rawSequence?.Play();
+                if(runtimeSequencePlayer == null) PrepareSequence();
+                else runtimeSequencePlayer?.Play();
             }
         }
         
         public void Init()
         {
             if(NeedRebuildRawSequenceOnInit()) PrepareSequence();
-            rawSequence.Init();
+            runtimeSequencePlayer.Init();
         }
 
         public void Play()
         {
             if(NeedRebuildRawSequenceOnInit()) PrepareSequence();
-            rawSequence?.Play();
+            runtimeSequencePlayer?.Play();
         }
         
         public void Pause()
         {
-            rawSequence?.Pause();
+            runtimeSequencePlayer?.Pause();
         }
 
         public void Stop()
         {
-            rawSequence?.Stop();
+            runtimeSequencePlayer?.Stop();
             ReleaseSequence();
         }
 
         public void Stop(StopBehaviour stopBehaviour)
         {
-            rawSequence?.Stop(stopBehaviour);
+            runtimeSequencePlayer?.Stop(stopBehaviour);
             ReleaseSequence();
         }
 
         public void MoveToTime(float time)
         {
-            rawSequence.MoveToTime(time);
+            runtimeSequencePlayer.MoveToTime(time);
         }
 
-        public float GetProgress(SequenceStep step) => rawSequence.GetProgress(step);
+        public float GetProgress(SequenceStep step) => runtimeSequencePlayer.GetProgress(step);
 
 #if DAMDOR_SEQUENTIO_UNITASK
-        public UniTask PlayAndWait() => rawSequence.PlayAndWait();
+        public UniTask PlayAndWait() => runtimeSequencePlayer.PlayAndWait();
 #endif
 
         private void PrepareSequence()
         {
             ReleaseSequence();
             if (asset == null) return;
-            rawSequence = RawSequence.Create(asset, false);
-            rawSequence.Storage.CopyFrom(overrideStorage);
-            if(rawSequence.Settings.AutoPlay != AutoPlayMode.None) rawSequence.Play();
+            runtimeSequencePlayer = RuntimeSequencePlayer.Create(asset, false);
+            runtimeSequencePlayer.Storage.CopyFrom(overrideStorage);
+            if(runtimeSequencePlayer.Settings.AutoPlay != AutoPlayMode.None) runtimeSequencePlayer.Play();
         }
         
         private void OnDisable()
@@ -129,19 +129,19 @@ namespace Damdor.Sequentio
         
         private void ReleaseSequence()
         {
-            rawSequence?.Release();
-            rawSequence = null;
+            runtimeSequencePlayer?.Release();
+            runtimeSequencePlayer = null;
         }
         
         private void UpdateTime(float dt)
         {
-            rawSequence?.UpdateTime(dt);
+            runtimeSequencePlayer?.UpdateTime(dt);
         }
         
         private bool NeedRebuildRawSequenceOnInit()
         {
-            if (rawSequence == null) return true;
-            if (rawSequence.State == SequenceState.Playing || rawSequence.State == SequenceState.Paused) return false;
+            if (runtimeSequencePlayer == null) return true;
+            if (runtimeSequencePlayer.State == SequenceState.Playing || runtimeSequencePlayer.State == SequenceState.Paused) return false;
             return true;
         }
         

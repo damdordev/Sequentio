@@ -1,6 +1,6 @@
 namespace Damdor.Sequentio
 {
-    public class SequenceRunnerStepData
+    public class SequenceStepExecutionData
     {
         public SequenceStep Step;
         public bool ValuesApplied;

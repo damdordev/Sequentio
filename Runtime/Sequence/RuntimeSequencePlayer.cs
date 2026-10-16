@@ -10,13 +10,13 @@ using UnityEngine;
 namespace Damdor.Sequentio
 {
     
-    public class RawSequence : ISequence, IVarioStorageSource
+    public class RuntimeSequencePlayer : ISequencePlayer, IVarioStorageSource
     {
         public SequenceSettings Settings => settings;
         public VarioStorage Storage => storage;
-        public SequenceState State => stateManager?.State ?? SequenceState.Idle;
-        public float Duration => stateManager?.Duration ?? 0f;
-        public float CurrentTime => stateManager?.CurrentTime ?? 0f;
+        public SequenceState State => playbackController?.State ?? SequenceState.Idle;
+        public float Duration => playbackController?.Duration ?? 0f;
+        public float CurrentTime => playbackController?.CurrentTime ?? 0f;
 
         private readonly List<SequenceStep> steps = new();
         private VarioStorage storage;
@@ -24,30 +24,40 @@ namespace Damdor.Sequentio
         private bool autoRelease;
         private CancellationToken autoReleaseCancellationToken;
 
-        private SequenceStateManager stateManager;
+        private SequencePlaybackController playbackController;
 
-        internal RawSequence() { }
-        
-        public static RawSequence Create(ISequenceAsset sequenceAsset, bool allowAutoplay = true)
+        internal RuntimeSequencePlayer() { }
+
+        #region Pooling
+
+        public static RuntimeSequencePlayer Create(ISequenceDefinition sequenceDefinition, bool allowAutoplay = true)
         {
-            var sequence = SequentioPooling.PopRawSequence();
-            sequence.Setup(sequenceAsset);
+            var sequence = SequentioPooling.PopRuntimeSequencePlayer();
+            sequence.Setup(sequenceDefinition);
             if(allowAutoplay) sequence.TryAutoPlay();
             return sequence;
+        }
+        
+        private void Setup(ISequenceDefinition sequenceDefinition)
+        {
+            storage = sequenceDefinition.Storage.Clone();
+            settings = sequenceDefinition.Settings.Clone();
+            foreach (var step in sequenceDefinition.Steps) steps.Add(step.Clone());
+            playbackController = SequencePlaybackController.Create(storage, settings, steps);
         }
         
         public void Release()
         {
             Stop(StopBehaviour.LeaveInCurrentState);
-            SequentioPooling.ReleaseRawSequence(this);
+            SequentioPooling.ReleaseRuntimeSequencePlayer(this);
         }
         
         internal void Reset()
         {
             storage.Release();
             storage = null;
-            stateManager?.Release();
-            stateManager = null;
+            playbackController?.Release();
+            playbackController = null;
             autoReleaseCancellationToken = CancellationToken.None;
             if (steps != null)
             {
@@ -57,18 +67,22 @@ namespace Damdor.Sequentio
 
             if (settings != null)
             {
-                SequentioPooling.ReleaseSettings(settings);
+                SequentioPooling.ReleaseSequenceSettings(settings);
                 settings = null;
             }
             
             autoRelease = false;
         }
 
+        #endregion
+        
+    
+
         public void AutoRelease(GameObject go = null)
         {
             autoRelease = true;
             if (go != null) autoReleaseCancellationToken = go.GetCancellationTokenOnDestroy();
-            if(stateManager.State == SequenceState.Finished || autoReleaseCancellationToken.IsCancellationRequested) Release();
+            if(playbackController.State == SequenceState.Finished || autoReleaseCancellationToken.IsCancellationRequested) Release();
         }
 
         public void AutoRelease(Component component = null)
@@ -77,40 +91,32 @@ namespace Damdor.Sequentio
             AutoRelease(go);
         }
         
-        public void Init() => stateManager?.Init();
+        public void Init() => playbackController?.Init();
 
         public void Play()
         {
-            if(stateManager.State == SequenceState.Idle)
+            if(playbackController.State == SequenceState.Idle)
             {
                 
                 SequentioUpdateProvider.Register(Update);
             };
-            stateManager?.Play();
+            playbackController?.Play();
         }
 
-        public void Pause() => stateManager?.Pause();
+        public void Pause() => playbackController?.Pause();
         public void Stop() => Stop(settings.DefaultStopBehaviour);
 
         public void Stop(StopBehaviour stopBehaviour)
         {
-            stateManager?.Stop(stopBehaviour);
+            playbackController?.Stop(stopBehaviour);
             SequentioUpdateProvider.Unregister(Update);
         }
 
-        public void MoveToTime(float time) =>stateManager?.MoveToTime(time);
-        public float GetProgress(SequenceStep step) => stateManager?.GetProgress(step) ?? 0f;
-        public UniTask PlayAndWait() => stateManager?.PlayAndWait() ?? UniTask.CompletedTask;
+        public void MoveToTime(float time) =>playbackController?.MoveToTime(time);
+        public float GetProgress(SequenceStep step) => playbackController?.GetProgress(step) ?? 0f;
+        public UniTask PlayAndWait() => playbackController?.PlayAndWait() ?? UniTask.CompletedTask;
         
         public void AddStep(SequenceStep step) => steps.Add(step);
-        
-        private void Setup(ISequenceAsset sequenceAsset)
-        {
-            storage = sequenceAsset.Storage.Clone();
-            settings = sequenceAsset.Settings.Clone();
-            foreach (var step in sequenceAsset.Steps) steps.Add(step.Clone());
-            stateManager = SequenceStateManager.Create(storage, settings, steps);
-        }
 
         private void TryAutoPlay()
         {
@@ -134,7 +140,7 @@ namespace Damdor.Sequentio
             UpdateTime(dt);
         }
         
-        public void UpdateTime(float dt) => stateManager?.UpdateTime(dt);
+        public void UpdateTime(float dt) => playbackController?.UpdateTime(dt);
         
     }
 }

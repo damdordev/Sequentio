@@ -28,7 +28,7 @@ namespace Damdor.Sequentio.Editor
             public readonly List<StepParameterEntry> Entries = new();
         }
 
-        public static void DrawQuickPreview(SerializedProperty property, ISequence sequence, Rect rect, int index)
+        public static void DrawQuickPreview(SerializedProperty property, ISequencePlayer sequencePlayer, Rect rect, int index)
         {
             var element = property.GetArrayElementAtIndex(index);
             if (element.managedReferenceValue is not SequenceStep step) return;
@@ -49,9 +49,9 @@ namespace Damdor.Sequentio.Editor
             ShowLabel(labelRect, step);
             ShowDuration(durationRect, step);
 
-            if (sequence != null)
+            if (sequencePlayer != null)
             {
-                ShowProgress(processRect, sequence, step);
+                ShowProgress(processRect, sequencePlayer, step);
             }
         }
 
@@ -164,9 +164,9 @@ namespace Damdor.Sequentio.Editor
             EditorGUILayout.Space(10);
         }
 
-        public static void ShowProgress(Rect rect, ISequence sequence, SequenceStep step)
+        public static void ShowProgress(Rect rect, ISequencePlayer sequencePlayer, SequenceStep step)
         {
-            EditorGUI.ProgressBar(rect, sequence.GetProgress(step), "");
+            EditorGUI.ProgressBar(rect, sequencePlayer.GetProgress(step), "");
         }
 
         public static void ShowStepFields(SerializedProperty property)

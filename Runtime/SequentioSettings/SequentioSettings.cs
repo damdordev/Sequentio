@@ -15,14 +15,14 @@ namespace Damdor.Sequentio
         
         public static int RawSequencePoolSize
         {
-            get => SequentioPooling.RawSequencePoolSize;
-            set => SequentioPooling.RawSequencePoolSize = value;
+            get => SequentioPooling.RuntimeSequencePlayerPoolSize;
+            set => SequentioPooling.RuntimeSequencePlayerPoolSize = value;
         }
         
         public static int SettingsPoolSize
         {
-            get => SequentioPooling.SettingsPoolSize;
-            set => SequentioPooling.SettingsPoolSize = value;
+            get => SequentioPooling.SequenceSettingsPoolSize;
+            set => SequentioPooling.SequenceSettingsPoolSize = value;
         }
 
         private static readonly List<Type> supportedStepTypes = new();

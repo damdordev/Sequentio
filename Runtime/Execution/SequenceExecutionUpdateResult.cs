@@ -1,6 +1,6 @@
 namespace Damdor.Sequentio
 {
-    public enum SequenceRunnerUpdateResult
+    public enum SequenceExecutionUpdateResult
     {
         NotFinished,
         Finished

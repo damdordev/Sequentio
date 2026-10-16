@@ -4,36 +4,52 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
-    public class SequenceRunner
+    internal class SequenceExecutionPlayer
     {
         public float Duration => data?.Duration ?? 0f;
         public float CurrentTime { get; private set; }
         
         private SequenceSettings settings;
-        private SequenceRunnerData data;
+        private SequenceExecutionData data;
         private PlayDirection direction;
+
+        #region Pooling
+
+        public static SequenceExecutionPlayer Create(VarioStorage storage, List<SequenceStep> steps, SequenceSettings settings, bool runtime)
+        {
+            var executionPlayer = SequentioPooling.PopSequenceExecutionPlayer();
+            executionPlayer.Setup(runtime, storage, steps, settings);
+            return executionPlayer;
+        }
         
-        public void Setup(bool runtime, VarioStorage storage, List<SequenceStep> steps, SequenceSettings settings)
+        private void Setup(bool runtime, VarioStorage storage, List<SequenceStep> steps, SequenceSettings settings)
         {
             this.settings = settings.Clone();
             direction = settings.Direction;
 
-            data = SequenceRunnerData.Create(steps, storage, runtime);
+            data = SequenceExecutionData.Create(steps, storage, runtime);
             
             InitSteps();
             CurrentTime = direction == PlayDirection.Normal ? 0f : Duration;
         }
 
+        public void Release()
+        {
+            SequentioPooling.ReleaseSequenceExecutionPlayer(this);
+        }
+        
         internal void Reset()
         {
+            
             CurrentTime = 0f;
-            SequentioPooling.ReleaseSettings(settings);
             settings = null;
             data?.Release();
             data = null;
         }
+
+        #endregion
         
-        public SequenceRunnerUpdateResult Update(float dt)
+        public SequenceExecutionUpdateResult Update(float dt)
         {
             dt *= settings.Speed;
             var factor = direction == PlayDirection.Normal ? 1f : -1f;
@@ -87,29 +103,27 @@ namespace Damdor.Sequentio
 
             if (settings.Loop == LoopMode.None && direction == PlayDirection.Normal && newTime >= Duration)
             {
-                return SequenceRunnerUpdateResult.Finished;
+                return SequenceExecutionUpdateResult.Finished;
             }
             
             if (settings.Loop == LoopMode.None && direction == PlayDirection.Reverse && newTime <= 0f)
             {
-                return SequenceRunnerUpdateResult.Finished;
+                return SequenceExecutionUpdateResult.Finished;
             }
 
-            return SequenceRunnerUpdateResult.NotFinished;
+            return SequenceExecutionUpdateResult.NotFinished;
         }
 
         public void SetTime(float newTime)
         {
             CurrentTime = Mathf.Clamp(newTime, 0f, Duration);
 
-            for (var index = 0; index < data.StepsData.Count; index++)
+            foreach (var stepData in data.StepsData)
             {
-                var stepData = data.StepsData[index];
                 if (CurrentTime < stepData.StartTime) continue;
 
                 if (!stepData.ValuesApplied)
                 {
-                    // TODO: error handling
                     stepData.Step.Init();
                     stepData.ValuesApplied = true;
                 }
@@ -131,18 +145,15 @@ namespace Damdor.Sequentio
             CurrentTime = 0f;
         }
 
-        public void Release()
+        public void ReleaseSteps()
         {
             for (var index = data.StepsData.Count - 1; index >= 0; index--)
             {
                 if (!data.StepsData[index].ValuesApplied) continue;
                 data.StepsData[index].Step.Release();
             }
-
-            data?.Release();
-            data = null;
         }
-
+        
         public float GetProgress(SequenceStep step)
         {
             foreach (var stepData in data.StepsData)

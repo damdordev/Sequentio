@@ -13,7 +13,7 @@ namespace Damdor.Sequentio
         Finished
     }
     
-    public interface ISequence
+    public interface ISequencePlayer
     {
         VarioStorage Storage { get; }
         SequenceState State { get; }

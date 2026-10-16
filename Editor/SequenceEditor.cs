@@ -2,7 +2,7 @@ using UnityEditor;
 
 namespace Damdor.Sequentio.Editor
 {
-    [CustomEditor(typeof(Sequence))]
+    [CustomEditor(typeof(SequencePlayer))]
     public class SequenceEditor : BaseSequenceEditor
     {
         

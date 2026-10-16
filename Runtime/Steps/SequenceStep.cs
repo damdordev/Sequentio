@@ -43,10 +43,19 @@ namespace Damdor.Sequentio
         {
             get
             {
-                if (fullDurationValid) return v_fullDuration;
-                v_fullDuration = CalculateDuration();
-                fullDurationValid = true;
-                return v_fullDuration;
+                if (durationValid) return v_duration;
+                CalculateDurationAndDelay();
+                return v_duration;
+            }
+        }
+        
+        public float CalculatedDelay
+        {
+            get
+            {
+                if (durationValid) return v_delay;
+                CalculateDurationAndDelay();
+                return v_delay;
             }
         }
 
@@ -60,8 +69,9 @@ namespace Damdor.Sequentio
         public bool IsEnabled(bool runtime) => visibility.IsEnabled(runtime);
         
         private VarioStorage storage;
-        private bool fullDurationValid;
-        private float v_fullDuration;
+        private bool durationValid;
+        private float v_duration;
+        private float v_delay;
 
         protected virtual float CalculateDuration() => 0f;
         
@@ -72,7 +82,7 @@ namespace Damdor.Sequentio
         
         public virtual void InvalidateDuration()
         {
-            fullDurationValid = false;
+            durationValid = false;
         }
         
         protected string GetTargetName<T>(VarioValue<T> target) where T : UnityEngine.Object
@@ -125,5 +135,12 @@ namespace Damdor.Sequentio
         
         public static T Create<T>() where T : SequenceStep, new()
             => SequentioPooling.PopStep<T>();
+
+        private void CalculateDurationAndDelay()
+        {
+            v_duration = CalculateDuration();
+            v_delay = delay.Evaluate(Storage);
+            durationValid = true;
+        }
     }
 }

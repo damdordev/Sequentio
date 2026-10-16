@@ -44,7 +44,7 @@ namespace Damdor.Sequentio
 
         internal SequenceSettings Clone()
         {
-            var clone = SequentioPooling.PopSettings();
+            var clone = SequentioPooling.PopSequenceSettings();
             clone.AutoPlay = AutoPlay;
             clone.Loop = Loop;
             clone.Timescale = Timescale;
@@ -66,7 +66,7 @@ namespace Damdor.Sequentio
 
         internal void Release()
         {
-            SequentioPooling.ReleaseSettings(this);
+            SequentioPooling.ReleaseSequenceSettings(this);
         }
 
         [SerializeField] private AutoPlayMode autoPlay;

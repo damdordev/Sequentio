@@ -15,7 +15,7 @@ namespace Damdor.Sequentio.Editor
         private GUIContent pauseButtonContent;
 
         private bool attachedToUpdate;
-        private SequenceAssetPlayer sequence;
+        private SequenceAssetPlayer sequencePlayer;
         private float lastTime;
         private MethodInfo updateTimeMethod;
         private object[] updateTimeMethodParameters = new object[1];
@@ -47,8 +47,8 @@ namespace Damdor.Sequentio.Editor
 
         public override void OnInspectorGUI()
         {
-            sequence = (SequenceAssetPlayer)target;
-            ShowPlayControls(sequence);
+            sequencePlayer = (SequenceAssetPlayer)target;
+            ShowPlayControls(sequencePlayer);
             
             EditorGUILayout.PropertyField(assetProperty);
             EditorGUILayout.PropertyField(storageProperty);
@@ -56,7 +56,7 @@ namespace Damdor.Sequentio.Editor
             serializedObject.ApplyModifiedProperties();
         }
         
-        private void ShowPlayControls(SequenceAssetPlayer sequence)
+        private void ShowPlayControls(SequenceAssetPlayer sequencePlayer)
         {
             serializedObject.Update();
             EditorGUILayout.BeginVertical();
@@ -64,42 +64,42 @@ namespace Damdor.Sequentio.Editor
             EditorGUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
 
-            if (sequence.State != SequenceState.Playing)
+            if (sequencePlayer.State != SequenceState.Playing)
             {
-                if (GUILayout.Button(playButtonContent)) sequence.Play();
+                if (GUILayout.Button(playButtonContent)) sequencePlayer.Play();
             }
             else
             {
-                if (GUILayout.Button(pauseButtonContent)) sequence.Pause();
+                if (GUILayout.Button(pauseButtonContent)) sequencePlayer.Pause();
             }
 
-            if (GUILayout.Button(stopButtonContent)) sequence.Stop(StopBehaviour.ReturnToInitialState);
+            if (GUILayout.Button(stopButtonContent)) sequencePlayer.Stop(StopBehaviour.ReturnToInitialState);
             
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndHorizontal();
 
-            ShowProgress(sequence);
+            ShowProgress(sequencePlayer);
             GUILayout.Space(50f);
             EditorGUILayout.EndVertical();
             
             serializedObject.ApplyModifiedProperties();
         }
         
-        private void ShowProgress(SequenceAssetPlayer sequence)
+        private void ShowProgress(SequenceAssetPlayer sequencePlayer)
         {
-            var newTime = GUILayout.HorizontalSlider(sequence.CurrentTime, 0.0f, sequence.Duration, GUILayout.ExpandWidth(true));
-            if (!Mathf.Approximately(newTime, sequence.CurrentTime))
+            var newTime = GUILayout.HorizontalSlider(sequencePlayer.CurrentTime, 0.0f, sequencePlayer.Duration, GUILayout.ExpandWidth(true));
+            if (!Mathf.Approximately(newTime, sequencePlayer.CurrentTime))
             {
-                sequence.MoveToTime(newTime);
-                sequence.Pause();
+                sequencePlayer.MoveToTime(newTime);
+                sequencePlayer.Pause();
             }
         }
         
         private void EditorUpdate()
         {
             if (Application.isPlaying) return;
-            var mono = (MonoBehaviour)sequence;
-            if (sequence == null || mono == null || !mono.isActiveAndEnabled) return;
+            var mono = (MonoBehaviour)sequencePlayer;
+            if (sequencePlayer == null || mono == null || !mono.isActiveAndEnabled) return;
 
             if (updateTimeMethod == null)
             {
@@ -112,7 +112,7 @@ namespace Damdor.Sequentio.Editor
             {
                 var dt = time - lastTime;
                 updateTimeMethodParameters[0] = dt;
-                updateTimeMethod.Invoke(sequence, updateTimeMethodParameters);
+                updateTimeMethod.Invoke(sequencePlayer, updateTimeMethodParameters);
             }
 
             lastTime = time;

@@ -18,7 +18,7 @@ namespace Damdor.Sequentio.RunSequence
         
         [SerializeField] private VarioValue<SequenceAssetPlayer> sequence;
 
-        private SequenceAssetPlayer v_sequence;
+        private SequenceAssetPlayer vSequencePlayer;
         private float v_duration;
         private float v_speed;
         private bool duringAnimation;
@@ -34,28 +34,28 @@ namespace Damdor.Sequentio.RunSequence
         {
             base.Init();
             duringAnimation = true;
-            v_sequence = null;
+            vSequencePlayer = null;
             InitSequenceIfNeeded();
         }
 
         public override void Release()
         {
             base.Release();
-            v_sequence = null;
+            vSequencePlayer = null;
         }
 
         public override void ReturnToInitialState()
         {
             base.ReturnToInitialState();
             duringAnimation = false;
-            if(v_sequence != null) v_sequence.Stop(StopBehaviour.ReturnToInitialState);
-            v_sequence = null;
+            if(vSequencePlayer != null) vSequencePlayer.Stop(StopBehaviour.ReturnToInitialState);
+            vSequencePlayer = null;
         }
 
         public override void SetProgress(float t)
         {
             base.SetProgress(t);
-            v_sequence?.MoveToTime(t*v_duration*v_speed);
+            vSequencePlayer?.MoveToTime(t*v_duration*v_speed);
         }
 
         internal override void CopyFrom(SequenceStep otherStep)
@@ -71,29 +71,29 @@ namespace Damdor.Sequentio.RunSequence
             base.Reset();
 
             sequence = null;
-            v_sequence = null;
+            vSequencePlayer = null;
             duringAnimation = false;
         }
 
         private void InitSequenceIfNeeded()
         {
             var newSequence = sequence.Evaluate(Storage);
-            if (newSequence == v_sequence) return;
+            if (newSequence == vSequencePlayer) return;
              
-            v_sequence?.Stop(StopBehaviour.ReturnToInitialState);
-            v_sequence = newSequence;
+            vSequencePlayer?.Stop(StopBehaviour.ReturnToInitialState);
+            vSequencePlayer = newSequence;
 
-            if (v_sequence == null)
+            if (vSequencePlayer == null)
             {
                 v_duration = 0f;
                 return; 
             }
 
-            var isIdle = v_sequence.State == SequenceState.Idle;
-            if(isIdle) v_sequence.Init();
-            v_speed = v_sequence.Settings.Speed;
-            v_duration = v_speed > Mathf.Epsilon ? v_sequence.Duration / v_speed : 0f;
-            if(isIdle && !duringAnimation) v_sequence.Stop(StopBehaviour.ReturnToInitialState);
+            var isIdle = vSequencePlayer.State == SequenceState.Idle;
+            if(isIdle) vSequencePlayer.Init();
+            v_speed = vSequencePlayer.Settings.Speed;
+            v_duration = v_speed > Mathf.Epsilon ? vSequencePlayer.Duration / v_speed : 0f;
+            if(isIdle && !duringAnimation) vSequencePlayer.Stop(StopBehaviour.ReturnToInitialState);
         }
         
     }

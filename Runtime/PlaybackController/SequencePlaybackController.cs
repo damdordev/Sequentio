@@ -7,33 +7,53 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
-    public class SequenceStateManager
+    public class SequencePlaybackController
     {
         public SequenceState State => state;
-        public float Duration => runner?.Duration ?? 0f;
-        public float CurrentTime => runner?.CurrentTime ?? 0f;
+        public float Duration => executionPlayer?.Duration ?? 0f;
+        public float CurrentTime => executionPlayer?.CurrentTime ?? 0f;
         
         private VarioStorage storage;
         private List<SequenceStep> steps;
         private SequenceSettings settings;
         
         private SequenceState state;
-        private SequenceRunner runner;
+        private SequenceExecutionPlayer executionPlayer;
 
-        public static SequenceStateManager Create(VarioStorage storage, SequenceSettings settings, List<SequenceStep> steps)
+        #region Pooling
+
+        public static SequencePlaybackController Create(VarioStorage storage, SequenceSettings settings, List<SequenceStep> steps)
         {
-            var manager = SequentioPooling.PopSequenceStateManager();
+            var manager = SequentioPooling.PopSequencePlaybackController();
             manager.Setup(storage, settings, steps);
             return manager;
         }
-        
-        public void Setup(VarioStorage storage, SequenceSettings settings, List<SequenceStep> steps)
+
+        private void Setup(VarioStorage storage, SequenceSettings settings, List<SequenceStep> steps)
         {
             this.storage = storage;
             this.settings = settings;
             this.steps = steps;
         }
 
+        public void Release()
+        {
+            SequentioPooling.ReleaseSequencePlaybackController(this);
+        }
+        
+        internal void Reset()
+        {
+            storage = null;
+            steps = null;
+            settings = null;
+
+            state = SequenceState.Idle;
+            executionPlayer?.Release();
+            executionPlayer = null;
+        }
+
+        #endregion
+        
         public void Init()
         {
             Play();
@@ -45,8 +65,7 @@ namespace Damdor.Sequentio
             switch (state)
             {
                 case SequenceState.Idle:
-                    runner = SequentioPooling.PopRunner();
-                    runner.Setup(Application.isPlaying, storage, steps, settings);
+                    executionPlayer = SequenceExecutionPlayer.Create(storage, steps, settings, Application.isPlaying);
                     state = SequenceState.Playing;
                     break;
                 case SequenceState.Playing:
@@ -89,47 +108,32 @@ namespace Damdor.Sequentio
         {
             if (state == SequenceState.Idle) return;
             state = SequenceState.Idle;
-            if(stopBehaviour == StopBehaviour.ReturnToInitialState) runner?.ReturnToInitialState();
-            ReleaseRunner();
+            if(stopBehaviour == StopBehaviour.ReturnToInitialState) executionPlayer?.ReturnToInitialState();
+            ReleaseExecutionPlayer();
         }
         
         public void MoveToTime(float time)
         {
             if (state == SequenceState.Idle) return;
             
-            runner.SetTime(time);
+            executionPlayer.SetTime(time);
         }
         
         public void UpdateTime(float dt)
         {
             if (state != SequenceState.Playing) return;
-            var result = runner.Update(dt);
-            if (result == SequenceRunnerUpdateResult.Finished) state = SequenceState.Finished;
+            var result = executionPlayer.Update(dt);
+            if (result == SequenceExecutionUpdateResult.Finished) state = SequenceState.Finished;
         }
         
-        public float GetProgress(SequenceStep step) => runner?.GetProgress(step) ?? 0f;
+        public float GetProgress(SequenceStep step) => executionPlayer?.GetProgress(step) ?? 0f;
 
-        public void Release()
+        private void ReleaseExecutionPlayer()
         {
-            
-        }
-
-        internal void Reset()
-        {
-            storage = null;
-            steps = null;
-            settings = null;
-
-            state = SequenceState.Idle;
-            runner?.Release();
-            runner = null;
-        }
-
-        private void ReleaseRunner()
-        {
-            if (runner == null) return;
-            runner.Release();
-            runner = null;
+            if (executionPlayer == null) return;
+            executionPlayer.ReleaseSteps();
+            executionPlayer.Release();
+            executionPlayer = null;
         }
         
     }

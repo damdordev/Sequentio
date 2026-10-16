@@ -16,17 +16,17 @@ namespace Damdor.Sequentio.Editor
         private const float MinPixelsPerSecond = 1f;
         private const float MaxPixelsPerSecond = 2000f;
 
-        private SequenceRunnerData sequenceRunnerData;
+        private SequenceExecutionData sequenceExecutionData;
         private int rowCount;
         private Vector2 scrollPosition;
         private float pixelsPerSecond = 100f;
         private int lastSelectedIndex = -1;
         private GUIStyle stepLabelStyle;
 
-        public bool Draw(IReadOnlyList<SequenceStep> steps, VarioStorage storage, bool runtime, ISequenceAsset sequenceAsset, ReorderableList stepsList)
+        public bool Draw(IReadOnlyList<SequenceStep> steps, VarioStorage storage, bool runtime, ISequenceDefinition sequenceDefinition, ReorderableList stepsList)
         {
-            sequenceRunnerData = SequenceRunnerData.Create(steps, storage, runtime);
-            rowCount = 1+ sequenceRunnerData.StepsData.Max(s => s.IndexInGroup);
+            sequenceExecutionData = SequenceExecutionData.Create(steps, storage, runtime);
+            rowCount = 1+ sequenceExecutionData.StepsData.Max(s => s.IndexInGroup);
             var oldScrollPosition = scrollPosition;
             var oldPixelsPerSecond = pixelsPerSecond;
             var selectedIndex = stepsList.selectedIndices.Count > 0 ? stepsList.index : -1;
@@ -46,7 +46,7 @@ namespace Damdor.Sequentio.Editor
             HandleInput(rect, controlId);
 
             var contentRect = new Rect(0f, 0f,
-                Mathf.Max(viewportWidth, sequenceRunnerData.Duration * pixelsPerSecond + Padding * 2f + 60f),
+                Mathf.Max(viewportWidth, sequenceExecutionData.Duration * pixelsPerSecond + Padding * 2f + 60f),
                 Mathf.Max(viewportHeight, rowCount * RowHeight + Padding * 2f));
 
             if (selectedIndex != lastSelectedIndex)
@@ -74,9 +74,9 @@ namespace Damdor.Sequentio.Editor
 
             DrawRuler(new Rect(rect.x, rect.y, viewportWidth, RulerHeight));
             DrawPlayhead(new Rect(rect.x, rect.y, viewportWidth, RulerHeight + viewportHeight),
-                sequenceAsset as ISequence);
+                sequenceDefinition as ISequencePlayer);
             
-            sequenceRunnerData.Release();
+            sequenceExecutionData.Release();
             return selectionChanged || scrollPosition != oldScrollPosition ||
                    !Mathf.Approximately(pixelsPerSecond, oldPixelsPerSecond);
         }
@@ -112,7 +112,7 @@ namespace Damdor.Sequentio.Editor
 
         private void RevealSelection(int selectedIndex, float viewportWidth, float viewportHeight)
         {
-            foreach (var step in sequenceRunnerData.StepsData)
+            foreach (var step in sequenceExecutionData.StepsData)
             {
                 if (step.OriginalIndex != selectedIndex) continue;
 
@@ -167,11 +167,11 @@ namespace Damdor.Sequentio.Editor
             GUI.EndGroup();
         }
 
-        private void DrawPlayhead(Rect rect, ISequence sequence)
+        private void DrawPlayhead(Rect rect, ISequencePlayer sequencePlayer)
         {
-            if (sequence == null || sequence.State == SequenceState.Idle) return;
+            if (sequencePlayer == null || sequencePlayer.State == SequenceState.Idle) return;
 
-            var x = Padding + sequence.CurrentTime * pixelsPerSecond - scrollPosition.x;
+            var x = Padding + sequencePlayer.CurrentTime * pixelsPerSecond - scrollPosition.x;
             GUI.BeginGroup(rect);
             EditorGUI.DrawRect(new Rect(x - 1f, 0f, 2f, rect.height), Color.red);
             GUI.EndGroup();
@@ -190,7 +190,7 @@ namespace Damdor.Sequentio.Editor
 
             var selectionChanged = false;
             var visibleRect = new Rect(scrollPosition.x, scrollPosition.y, viewportWidth, viewportHeight);
-            foreach (var step in sequenceRunnerData.StepsData)
+            foreach (var step in sequenceExecutionData.StepsData)
             {
                 if(step.Duration <= 0f && step.Delay <= 0f) continue;
                 var rect = new Rect(Padding + step.StartTime * pixelsPerSecond, Padding + step.IndexInGroup * RowHeight,
