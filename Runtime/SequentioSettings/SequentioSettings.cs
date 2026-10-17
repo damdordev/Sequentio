@@ -7,38 +7,24 @@ namespace Damdor.Sequentio
     {
         public static IReadOnlyList<Type> SupportedStepTypes => supportedStepTypes;
 
-        public static int StepsPoolSize
-        {
-            get => SequentioPooling.StepsPoolSize;
-            set => SequentioPooling.StepsPoolSize = value;
-        }
-        
-        public static int RawSequencePoolSize
-        {
-            get => SequentioPooling.RuntimeSequencePlayerPoolSize;
-            set => SequentioPooling.RuntimeSequencePlayerPoolSize = value;
-        }
-        
-        public static int SettingsPoolSize
-        {
-            get => SequentioPooling.SequenceSettingsPoolSize;
-            set => SequentioPooling.SequenceSettingsPoolSize = value;
-        }
-
         private static readonly List<Type> supportedStepTypes = new();
         private static readonly Dictionary<Type, string> stepTypeToPath = new();
         private static readonly Dictionary<Type, string> stepTypeToName = new();
         private static readonly Dictionary<Type, string> stepToIcon = new();
-        
-        public static void RegisterStepType(Type type, string path, string name, string icon)
+
+        public static void RegisterStep<TStepDefinition, TStepPlayer>(string path, string name, string icon)
+            where TStepDefinition : StepDefinition
+            where TStepPlayer : StepPlayer<TStepDefinition>, new()
         {
+            var type = typeof(TStepDefinition);
             if(supportedStepTypes.Contains(type)) return;
             supportedStepTypes.Add(type);
             stepTypeToPath[type] = path;
             stepTypeToName[type] = name;
             stepToIcon[type] = icon;
+            SequenceCompiler.RegisterStep<TStepDefinition, TStepPlayer>();
         }
-        
+
         public static string GetStepName(Type type)
         {
             var name = stepTypeToName.GetValueOrDefault(type, "");

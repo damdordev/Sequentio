@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.CodeAnalysis;
 
 namespace Damdor.Sequentio.CodeGenerator
@@ -11,14 +12,16 @@ namespace Damdor.Sequentio.CodeGenerator
 
         public override void Execute(GeneratorExecutionContext context)
         {
-            GenerateForAttribute(context, SequentioStepAttribute, (sb, type) =>
+            GenerateForAttribute(context, SequentioStepAttribute, (sb, type, attrData) =>
             {
-                sb.AppendLine($"        RegisterStep(typeof({type}), typeof({type}).GetCustomAttribute<Damdor.Sequentio.SequentioStepAttribute>());");
+                sb.AppendLine($"        RegisterStep<{type}, {(attrData.ConstructorArguments[0].Value as ITypeSymbol).ToDisplayString()}>(typeof({type}).GetCustomAttribute<Damdor.Sequentio.SequentioStepAttribute>());");
             }, sb =>
             {
-                sb.AppendLine("    private static void RegisterStep(System.Type type, Damdor.Sequentio.SequentioStepAttribute attribute)");
+                sb.AppendLine("    private static void RegisterStep<TStepDefinition, TStepPlayer>(Damdor.Sequentio.SequentioStepAttribute attribute)");
+                sb.AppendLine("        where TStepDefinition : Damdor.Sequentio.StepDefinition");
+                sb.AppendLine("        where TStepPlayer : Damdor.Sequentio.StepPlayer<TStepDefinition>, new()");
                 sb.AppendLine("    {");
-                sb.AppendLine($"        global::Damdor.Sequentio.SequentioSettings.RegisterStepType(type, attribute.Path, attribute.Name, attribute.Icon);");
+                sb.AppendLine($"        global::Damdor.Sequentio.SequentioSettings.RegisterStep<TStepDefinition, TStepPlayer>(attribute.Path, attribute.Name, attribute.Icon);");
                 
                 sb.AppendLine("    }");
             });

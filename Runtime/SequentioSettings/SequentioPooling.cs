@@ -1,217 +1,181 @@
+// ReSharper disable Unity.PerformanceCriticalCodeInvocation
+
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+// ReSharper disable UnusedMember.Global
 
 namespace Damdor.Sequentio
 {
     internal static class SequentioPooling
     {
-        
-        public static int StepsPoolSize
+        private static readonly Dictionary<Type, ObjectPool<StepPlayer>> stepPlayerPools = new();
+        private static int stepPlayerPoolSize = 100;
+
+        private static readonly ObjectPool<SequenceSettings> sequenceSettingsPool =
+            new(100, settings => settings.Reset());
+        private static readonly ObjectPool<StepPlan> stepDefinitionPlanPool =
+            new(200, plan => plan.Reset(), true);
+        private static readonly ObjectPool<SequencePlan> sequenceDefinitionPlanPool =
+            new(100, plan => plan.Reset(), true);
+        private static readonly ObjectPool<StepExecution> stepPlayerPlanPool =
+            new(200, plan => plan.Reset(), true);
+        private static readonly ObjectPool<SequenceExecution> sequencePlayerPlanPool =
+            new(100, plan => plan.Reset(), true);
+        private static readonly ObjectPool<SequenceExecutor> sequencePlayerPlanRunnerPool =
+            new(200, runner => runner.Reset(), true);
+        private static readonly ObjectPool<RuntimeSequence> sequencePlaybackRunnerPool =
+            new(200, runner => runner.Reset(), true);
+        private static readonly ObjectPool<SequenceDefinition> sequenceDefinitionPool =
+            new(200, runner => runner.Reset(), true);
+
+        public static int StepPlayerPoolSize
         {
-            get => stepsPoolSize;
+            get => stepPlayerPoolSize;
             set
             {
-                stepsPoolSize = Mathf.Max(value, 0);
-                foreach (var pool in stepsPools.Values) ApplyMaxPoolSize(pool, stepsPoolSize);
+                stepPlayerPoolSize = Mathf.Max(value, 0);
+                foreach (var pool in stepPlayerPools.Values) pool.MaxSize = stepPlayerPoolSize;
             }
         }
-        
-        public static int SequenceExecutionPlayerPoolSize
-        {
-            get => sequenceExecutionPlayerPoolSize;
-            set
-            {
-                sequenceExecutionPlayerPoolSize = Mathf.Max(value, 0);
-                ApplyMaxPoolSize(sequenceExecutionPlayerPool, sequenceExecutionPlayerPoolSize);
-            }
-        }
-        
-        public static int SequenceStepExecutionDataPoolSize
-        {
-            get => sequenceStepExecutionDataPoolSize;
-            set
-            {
-                sequenceStepExecutionDataPoolSize = Mathf.Max(value, 0);
-                ApplyMaxPoolSize(sequenceStepExecutionDataPool, sequenceStepExecutionDataPoolSize);
-            }
-        }
-        
-        public static int SequenceExecutionDataPoolSize
-        {
-            get => sequenceExecutionDataPoolSize;
-            set
-            {
-                sequenceExecutionDataPoolSize = Mathf.Max(value, 0);
-                ApplyMaxPoolSize(sequenceExecutionDataPool, sequenceExecutionDataPoolSize);
-            }
-        }
-        
-        public static int RuntimeSequencePlayerPoolSize
-        {
-            get => runtimeSequencePlayerPoolSize;
-            set
-            {
-                runtimeSequencePlayerPoolSize = Mathf.Max(value, 0);
-                ApplyMaxPoolSize(runtimeSequencePlayerPool, runtimeSequencePlayerPoolSize);
-            }
-        }
-        
+
         public static int SequenceSettingsPoolSize
         {
-            get => sequenceSettingsPoolSize;
-            set
-            {
-                sequenceSettingsPoolSize = Mathf.Max(value, 0);
-                ApplyMaxPoolSize(sequenceSettingsPool, sequenceSettingsPoolSize);
-            }
-        }
-        
-        public static int SequencePlaybackControllerPoolSize
-        {
-            get => sequencePlaybackControllerPoolSize;
-            set
-            {
-                sequencePlaybackControllerPoolSize = Mathf.Max(value, 0);
-                ApplyMaxPoolSize(sequencePlaybackControllerPool, sequencePlaybackControllerPoolSize);
-            }
-        }
-        
-        private static readonly Dictionary<Type, Stack<SequenceStep>> stepsPools = new();
-        private static readonly Stack<SequenceExecutionPlayer> sequenceExecutionPlayerPool = new();
-        private static readonly Stack<RuntimeSequencePlayer> runtimeSequencePlayerPool = new();
-        private static readonly Stack<SequenceSettings> sequenceSettingsPool = new();
-        private static readonly Stack<SequenceStepExecutionData> sequenceStepExecutionDataPool = new();
-        private static readonly Stack<SequenceExecutionData> sequenceExecutionDataPool = new();
-        private static readonly Stack<SequencePlaybackController> sequencePlaybackControllerPool = new();
-        
-        private static int stepsPoolSize = 100;
-        private static int sequenceExecutionPlayerPoolSize = 100;
-        private static int runtimeSequencePlayerPoolSize = 100;
-        private static int sequenceSettingsPoolSize = 100;
-        private static int sequenceStepExecutionDataPoolSize = 100;
-        private static int sequenceExecutionDataPoolSize = 100;
-        private static int sequencePlaybackControllerPoolSize = 100;
-        
-        public static SequenceExecutionPlayer PopSequenceExecutionPlayer()
-        {
-            return sequenceExecutionPlayerPool.Count > 0 
-                ? sequenceExecutionPlayerPool.Pop() 
-                : new SequenceExecutionPlayer();
+            get => sequenceSettingsPool.MaxSize;
+            set => sequenceSettingsPool.MaxSize = value;
         }
 
-        public static void ReleaseSequenceExecutionPlayer(SequenceExecutionPlayer runner)
+        public static int StepDefinitionPlan
         {
-            if (runner == null) return;
-            runner.Reset();
-            if(sequenceExecutionPlayerPool.Count < sequenceExecutionPlayerPoolSize) sequenceExecutionPlayerPool.Push(runner);
-        }
-        
-        public static RuntimeSequencePlayer PopRuntimeSequencePlayer()
-        {
-            return runtimeSequencePlayerPool.Count > 0 
-                ? runtimeSequencePlayerPool.Pop() 
-                : new RuntimeSequencePlayer();
+            get => stepDefinitionPlanPool.MaxSize;
+            set => stepDefinitionPlanPool.MaxSize = value;
         }
 
-        public static void ReleaseRuntimeSequencePlayer(RuntimeSequencePlayer sequencePlayer)
+        public static int SequenceDefinitionPlan
         {
-            if (sequencePlayer == null) return;
-            sequencePlayer.Reset();
-            if(runtimeSequencePlayerPool.Count < runtimeSequencePlayerPoolSize) runtimeSequencePlayerPool.Push(sequencePlayer);
+            get => sequenceDefinitionPlanPool.MaxSize;
+            set => sequenceDefinitionPlanPool.MaxSize = value;
         }
 
-        public static SequenceSettings PopSequenceSettings()
+        public static int StepPlayerPlan
         {
-            return sequenceSettingsPool.Count > 0 
-                ? sequenceSettingsPool.Pop() 
-                : new SequenceSettings();
+            get => stepPlayerPlanPool.MaxSize;
+            set => stepPlayerPlanPool.MaxSize = value;
         }
 
-        public static void ReleaseSequenceSettings(SequenceSettings settings)
+        public static int SequencePlayerPlan
         {
-            if (settings == null) return;
-            settings.Reset();
-            if(sequenceSettingsPool.Count < sequenceSettingsPoolSize) sequenceSettingsPool.Push(settings);
+            get => sequencePlayerPlanPool.MaxSize;
+            set => sequencePlayerPlanPool.MaxSize = value;
         }
-        
-        public static T PopStep<T>() where T : SequenceStep, new()
+
+        public static int SequencePlayerPlanRunner
         {
-            var type = typeof(T);
-            return !stepsPools.TryGetValue(type, out var pool) || pool.Count == 0
-                ? new T()
-                : (T)pool.Pop();
+            get => sequencePlayerPlanRunnerPool.MaxSize;
+            set => sequencePlayerPlanRunnerPool.MaxSize = value;
         }
-        
-        public static SequenceStep PopStep(Type type)
+
+        public static int SequencePlaybackPlayerPoolSize
         {
-            return !stepsPools.TryGetValue(type, out var pool) || pool.Count == 0
-                ? (SequenceStep) Activator.CreateInstance(type)
-                : pool.Pop();
+            get => sequencePlaybackRunnerPool.MaxSize;
+            set => sequencePlaybackRunnerPool.MaxSize = value;
         }
-        
-        public static void ReleaseStep(SequenceStep step)
+
+        public static int SequenceDefinitionPoolSize
+        {
+            get => sequenceDefinitionPool.MaxSize;
+            set => sequenceDefinitionPool.MaxSize = value;
+        }
+
+        public static T PopStepPlayer<T>() where T : StepPlayer, new()
+        {
+            return (T)GetStepPlayerPool(typeof(T)).Pop(() => new T());
+        }
+
+        public static void ReleaseStepPlayer(StepPlayer step)
         {
             if (step == null) return;
-            var type = step.GetType();
-            if (!stepsPools.TryGetValue(type, out var pool))
+            GetStepPlayerPool(step.GetType()).Release(step);
+        }
+
+        public static SequenceSettings PopSequenceSettings() => sequenceSettingsPool.Pop();
+        public static void ReleaseSequenceSettings(SequenceSettings settings) => sequenceSettingsPool.Release(settings);
+
+        public static StepPlan PopStepDefinitionPlan() => stepDefinitionPlanPool.Pop();
+        public static void ReleaseStepDefinitionPlan(StepPlan plan) => stepDefinitionPlanPool.Release(plan);
+
+        public static SequencePlan PopSequenceDefinitionPlan() => sequenceDefinitionPlanPool.Pop();
+        public static void ReleaseSequenceDefinitionPlan(SequencePlan plan) => sequenceDefinitionPlanPool.Release(plan);
+
+        public static StepExecution PopStepPlayerPlan() => stepPlayerPlanPool.Pop();
+        public static void ReleaseStepPlayerPlan(StepExecution plan) => stepPlayerPlanPool.Release(plan);
+
+        public static SequenceExecution PopSequencePlayerPlan() => sequencePlayerPlanPool.Pop();
+        public static void ReleaseSequencePlayerPlan(SequenceExecution plan) => sequencePlayerPlanPool.Release(plan);
+
+        public static SequenceExecutor PopSequencePlanPlayer() => sequencePlayerPlanRunnerPool.Pop();
+        public static void ReleaseSequencePlanPlayer(SequenceExecutor runner) => sequencePlayerPlanRunnerPool.Release(runner);
+
+        public static RuntimeSequence PopSequencePlaybackRunner() => sequencePlaybackRunnerPool.Pop();
+        public static void ReleaseSequencePlaybackRunner(RuntimeSequence runner) => sequencePlaybackRunnerPool.Release(runner);
+        
+        public static SequenceDefinition PopSequenceDefinition() => sequenceDefinitionPool.Pop();
+        public static void ReleaseSequenceDefinition(SequenceDefinition definition) => sequenceDefinitionPool.Release(definition);
+        
+        private static ObjectPool<StepPlayer> GetStepPlayerPool(Type type)
+        {
+            if (stepPlayerPools.TryGetValue(type, out var pool)) return pool;
+            pool = new ObjectPool<StepPlayer>(stepPlayerPoolSize, step => step.Reset());
+            stepPlayerPools[type] = pool;
+            return pool;
+        }
+
+        private sealed class ObjectPool<T> where T : class, new()
+        {
+            private readonly Stack<T> items = new();
+            private readonly Action<T> reset;
+            private readonly bool resetOnCreate;
+            private int maxSize;
+
+            public ObjectPool(int maxSize, Action<T> reset, bool resetOnCreate = false)
             {
-                pool = new Stack<SequenceStep>();
-                stepsPools[type] = pool;
+                this.reset = reset;
+                this.resetOnCreate = resetOnCreate;
+                MaxSize = maxSize;
             }
-            step.Reset();
-            if(pool.Count < stepsPoolSize) pool.Push(step);
-        }
-        
-        public static SequenceStepExecutionData PopSequenceStepExecutionData()
-        {
-            return sequenceStepExecutionDataPool.Count > 0 
-                ? sequenceStepExecutionDataPool.Pop() 
-                : new SequenceStepExecutionData();
-        }
 
-        public static void ReleaseSequenceStepExecutionData(SequenceStepExecutionData stepExecutionData)
-        {
-            if (stepExecutionData == null) return;
-            stepExecutionData.Reset();
-            if(sequenceStepExecutionDataPool.Count < sequenceStepExecutionDataPoolSize) sequenceStepExecutionDataPool.Push(stepExecutionData);
-        }
-        
-        public static SequenceExecutionData PopSequenceExecutionData()
-        {
-            return sequenceExecutionDataPool.Count > 0 
-                ? sequenceExecutionDataPool.Pop() 
-                : new SequenceExecutionData();
-        }
-
-        public static void ReleaseSequenceExecutionData(SequenceExecutionData data)
-        {
-            if (data == null) return;
-            data.Reset();
-            if(sequenceStepExecutionDataPool.Count < sequenceExecutionDataPoolSize) sequenceExecutionDataPool.Push(data);
-        }
-        
-        public static SequencePlaybackController PopSequencePlaybackController()
-        {
-            return sequencePlaybackControllerPool.Count > 0 
-                ? sequencePlaybackControllerPool.Pop() 
-                : new SequencePlaybackController();
-        }
-
-        public static void ReleaseSequencePlaybackController(SequencePlaybackController manager)
-        {
-            if (manager == null) return;
-            manager.Reset();
-            if(sequencePlaybackControllerPool.Count < sequencePlaybackControllerPoolSize) sequencePlaybackControllerPool.Push(manager);
-        }
-        
-        private static void ApplyMaxPoolSize<T>(Stack<T> pool, int maxSize)
-        {
-            while (pool.Count > maxSize)
+            public int MaxSize
             {
-                pool.Pop();
+                get => maxSize;
+                set
+                {
+                    maxSize = Mathf.Max(value, 0);
+                    while (items.Count > maxSize) items.Pop();
+                }
+            }
+
+            public T Pop()
+            {
+                if (items.Count > 0) return items.Pop();
+                var item = new T();
+                if (resetOnCreate) reset(item);
+                return item;
+            }
+            
+            public T Pop(Func<T> create)
+            {
+                if (items.Count > 0) return items.Pop();
+                var item = create();
+                if (resetOnCreate) reset(item);
+                return item;
+            }
+
+            public void Release(T item)
+            {
+                if (item == null) return;
+                reset(item);
+                if (items.Count < maxSize) items.Push(item);
             }
         }
-        
     }
 }

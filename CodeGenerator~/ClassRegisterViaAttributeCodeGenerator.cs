@@ -21,12 +21,12 @@ public abstract class ClassRegisterViaAttributeCodeGenerator : ISourceGenerator
     protected void GenerateForAttribute(
             GeneratorExecutionContext context, 
             string attribute, 
-            Action<StringBuilder, string> register,
+            Action<StringBuilder, string, AttributeData> register,
             Action<StringBuilder> customMethods = null)
         {
             if (context.SyntaxReceiver is not AttributeSyntaxReceiver receiver) return;
             
-             var typesToRegister = new List<string>();
+             var typesToRegister = new Dictionary<string, AttributeData>();
 
             foreach (var classDecl in receiver.CandidateClasses[attribute])
             {
@@ -34,13 +34,13 @@ public abstract class ClassRegisterViaAttributeCodeGenerator : ISourceGenerator
                 if (semanticModel.GetDeclaredSymbol(classDecl) is not INamedTypeSymbol classSymbol) continue;
                 if (classSymbol.IsAbstract || classSymbol.TypeKind == TypeKind.Interface) continue;
 
-                var hasAttribute = classSymbol.GetAttributes().Any(ad =>
+                var attrData = classSymbol.GetAttributes().FirstOrDefault(ad =>
                     ad.AttributeClass?.Name == attribute + "Attribute" ||
                     ad.AttributeClass?.Name == attribute);
 
-                if (hasAttribute)
+                if (attrData != null)
                 {
-                    typesToRegister.Add(classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+                    typesToRegister.Add(classSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), attrData);
                 }
             }
 
@@ -63,7 +63,7 @@ public abstract class ClassRegisterViaAttributeCodeGenerator : ISourceGenerator
             sb.AppendLine("    private static void Register()");
             sb.AppendLine("    {");
 
-            foreach (var type in typesToRegister) register(sb, type);
+            foreach (var type in typesToRegister) register(sb, type.Key, type.Value);
 
             sb.AppendLine("    }");
             customMethods?.Invoke(sb);

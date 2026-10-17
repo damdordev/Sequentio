@@ -2,7 +2,7 @@ using System;
 
 namespace Damdor.Sequentio
 {
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Field)]
     public sealed class SequenceStepParameterGroupAttribute : Attribute
     {
         public string ParameterGroup { get; }

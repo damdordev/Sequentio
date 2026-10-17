@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Damdor.Vario;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -16,18 +14,18 @@ namespace Damdor.Sequentio.Editor
         private const float MinPixelsPerSecond = 1f;
         private const float MaxPixelsPerSecond = 2000f;
 
-        private SequenceExecutionData sequenceExecutionData;
+        private SequencePlan sequenceDefinitionPlan;
         private int rowCount;
         private Vector2 scrollPosition;
         private float pixelsPerSecond = 100f;
         private int lastSelectedIndex = -1;
         private GUIStyle stepLabelStyle;
 
-        public bool Draw(IReadOnlyList<SequenceStep> steps, VarioStorage storage, bool runtime, ISequenceDefinition sequenceDefinition, ReorderableList stepsList)
+        public void Draw(SequencePlan sequenceDefinitionPlan, ISequencePlayer sequencePlayer, ReorderableList stepsList)
         {
-            sequenceExecutionData = SequenceExecutionData.Create(steps, storage, runtime);
-            rowCount = sequenceExecutionData.StepsData.Count > 0
-                ? 1 + sequenceExecutionData.StepsData.Max(s => s.IndexInGroup)
+            this.sequenceDefinitionPlan = sequenceDefinitionPlan;
+            rowCount = sequenceDefinitionPlan.Steps.Count > 0
+                ? 1 + sequenceDefinitionPlan.Steps.Max(s => s.IndexInGroup)
                 : 1;
             var oldScrollPosition = scrollPosition;
             var oldPixelsPerSecond = pixelsPerSecond;
@@ -48,7 +46,7 @@ namespace Damdor.Sequentio.Editor
             HandleInput(rect, controlId);
 
             var contentRect = new Rect(0f, 0f,
-                Mathf.Max(viewportWidth, sequenceExecutionData.Duration * pixelsPerSecond + Padding * 2f + 60f),
+                Mathf.Max(viewportWidth, sequenceDefinitionPlan.Duration * pixelsPerSecond + Padding * 2f + 60f),
                 Mathf.Max(viewportHeight, rowCount * RowHeight + Padding * 2f));
 
             if (selectedIndex != lastSelectedIndex)
@@ -66,8 +64,8 @@ namespace Damdor.Sequentio.Editor
 
             scrollPosition = GUI.BeginScrollView(bodyRect, scrollPosition, contentRect, true, true);
             DrawGrid(viewportWidth, contentRect.height);
-            var selectionChanged = DrawSteps(stepsList, viewportWidth, viewportHeight);
-            if (steps.Count == 0)
+            var selectionChanged = DrawSteps(sequenceDefinitionPlan, stepsList, viewportWidth, viewportHeight);
+            if (sequenceDefinitionPlan.Steps.Count == 0)
             {
                 GUI.Label(new Rect(Padding, Padding, viewportWidth - Padding * 2f, RowHeight),
                     "No steps with a positive duration.", EditorStyles.miniLabel);
@@ -75,12 +73,7 @@ namespace Damdor.Sequentio.Editor
             GUI.EndScrollView();
 
             DrawRuler(new Rect(rect.x, rect.y, viewportWidth, RulerHeight));
-            DrawPlayhead(new Rect(rect.x, rect.y, viewportWidth, RulerHeight + viewportHeight),
-                sequenceDefinition as ISequencePlayer);
-            
-            sequenceExecutionData.Release();
-            return selectionChanged || scrollPosition != oldScrollPosition ||
-                   !Mathf.Approximately(pixelsPerSecond, oldPixelsPerSecond);
+            DrawPlayhead(new Rect(rect.x, rect.y, viewportWidth, RulerHeight + viewportHeight), sequencePlayer);
         }
 
         private void HandleInput(Rect rect, int controlId)
@@ -114,16 +107,16 @@ namespace Damdor.Sequentio.Editor
 
         private void RevealSelection(int selectedIndex, float viewportWidth, float viewportHeight)
         {
-            foreach (var step in sequenceExecutionData.StepsData)
+            foreach (var stepPlan in sequenceDefinitionPlan.Steps)
             {
-                if (step.OriginalIndex != selectedIndex) continue;
+                if (stepPlan.OriginalIndex != selectedIndex) continue;
 
-                var startX = Padding + (step.StartTime - step.Delay) * pixelsPerSecond;
-                var endX = Padding + (step.StartTime + step.Duration) * pixelsPerSecond;
+                var startX = Padding + (stepPlan.StartTime - stepPlan.Delay) * pixelsPerSecond;
+                var endX = Padding + (stepPlan.StartTime + stepPlan.Duration) * pixelsPerSecond;
                 if (startX < scrollPosition.x || endX > scrollPosition.x + viewportWidth)
                     scrollPosition.x = Mathf.Max(0f, startX - Padding);
 
-                var startY = Padding + step.IndexInGroup * RowHeight;
+                var startY = Padding + stepPlan.IndexInGroup * RowHeight;
                 if (startY < scrollPosition.y)
                     scrollPosition.y = startY - Padding;
                 else if (startY + RowHeight > scrollPosition.y + viewportHeight)
@@ -171,7 +164,7 @@ namespace Damdor.Sequentio.Editor
 
         private void DrawPlayhead(Rect rect, ISequencePlayer sequencePlayer)
         {
-            if (sequencePlayer == null || sequencePlayer.State == SequenceState.Idle) return;
+            if (sequencePlayer == null || sequencePlayer.State == SequencePlayerState.Idle) return;
 
             var x = Padding + sequencePlayer.CurrentTime * pixelsPerSecond - scrollPosition.x;
             GUI.BeginGroup(rect);
@@ -179,7 +172,7 @@ namespace Damdor.Sequentio.Editor
             GUI.EndGroup();
         }
 
-        private bool DrawSteps(ReorderableList stepsList, float viewportWidth, float viewportHeight)
+        private bool DrawSteps(SequencePlan sequenceDefinitionPlan, ReorderableList stepsList, float viewportWidth, float viewportHeight)
         {
             stepLabelStyle ??= new GUIStyle(EditorStyles.miniBoldLabel)
             {
@@ -192,35 +185,35 @@ namespace Damdor.Sequentio.Editor
 
             var selectionChanged = false;
             var visibleRect = new Rect(scrollPosition.x, scrollPosition.y, viewportWidth, viewportHeight);
-            foreach (var step in sequenceExecutionData.StepsData)
+            foreach (var stepPlan in sequenceDefinitionPlan.Steps)
             {
-                if(step.Duration <= 0f && step.Delay <= 0f) continue;
-                var rect = new Rect(Padding + step.StartTime * pixelsPerSecond, Padding + step.IndexInGroup * RowHeight,
-                    Mathf.Max(1f, step.Duration * pixelsPerSecond), RowHeight - 4f);
-                var delayRect = new Rect(rect.x - step.Delay * pixelsPerSecond, rect.y,
-                    step.Delay * pixelsPerSecond, rect.height);
+                if(stepPlan.Duration <= 0f && stepPlan.Delay <= 0f) continue;
+                var rect = new Rect(Padding + stepPlan.StartTime * pixelsPerSecond, Padding + stepPlan.IndexInGroup * RowHeight,
+                    Mathf.Max(1f, stepPlan.Duration * pixelsPerSecond), RowHeight - 4f);
+                var delayRect = new Rect(rect.x - stepPlan.Delay * pixelsPerSecond, rect.y,
+                    stepPlan.Delay * pixelsPerSecond, rect.height);
                 var fullRect = Rect.MinMaxRect(delayRect.xMin, rect.yMin, rect.xMax, rect.yMax);
                 if (!fullRect.Overlaps(visibleRect)) continue;
 
                 if (GUI.enabled && Event.current.type == EventType.MouseDown && Event.current.button == 0 &&
                     fullRect.Contains(Event.current.mousePosition))
                 {
-                    stepsList.Select(step.OriginalIndex);
+                    stepsList.Select(stepPlan.OriginalIndex);
                     stepsList.GrabKeyboardFocus();
                     stepsList.onSelectCallback?.Invoke(stepsList);
-                    lastSelectedIndex = step.OriginalIndex;
+                    lastSelectedIndex = stepPlan.OriginalIndex;
                     selectionChanged = true;
                     Event.current.Use();
                 }
 
-                var selected = stepsList.IsSelected(step.OriginalIndex);
-                var name = $"<b>{SequenceStepEditorHelper.GetStepName(step.Step)}</b> <color=#B8B8B8>{step.Step.TargetNameInEditor}</color>";
+                var selected = stepsList.IsSelected(stepPlan.OriginalIndex);
+                var name = $"<b>{StepEditorHelper.GetStepName(stepPlan.Definition)}</b> <color=#B8B8B8>{stepPlan.Definition.GetTargetNameInEditor(sequenceDefinitionPlan.Storage)}</color>";
                 var tooltip = $"{name}\n" +
-                              $"Start: {step.StartTime:0.###} s\nDuration: {step.Duration:0.###} s\nDelay: {step.Delay:0.###} s";
+                              $"Start: {stepPlan.StartTime:0.###} s\nDuration: {stepPlan.Duration:0.###} s\nDelay: {stepPlan.Delay:0.###} s";
                 var borderColor = selected ? new Color(0.45f, 0.8f, 1f) : new Color(0.3f, 0.4f, 0.5f);
                 var fillColor = selected ? new Color(0.15f, 0.45f, 0.7f) : new Color(0.22f, 0.3f, 0.38f);
 
-                if (step.Delay > 0f)
+                if (stepPlan.Delay > 0f)
                 {
                     var delayBorderColor = borderColor;
                     delayBorderColor.a = 0.2f;

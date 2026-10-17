@@ -1,5 +1,6 @@
 namespace Damdor.Sequentio
 {
+    // ReSharper disable once PartialTypeWithSinglePart
     public static partial class SequenceStepParameterGroups
     {
         public const string General = "General";

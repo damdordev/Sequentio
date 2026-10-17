@@ -2,7 +2,7 @@ namespace Damdor.Sequentio
 {
     public enum PlayDirection
     {
-        Normal,
+        Forward,
         Reverse
     }
 }

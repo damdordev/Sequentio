@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+// ReSharper disable Unity.PerformanceCriticalCodeInvocation
 
 namespace Damdor.Sequentio
 {
@@ -59,7 +60,7 @@ namespace Damdor.Sequentio
             autoPlay = AutoPlayMode.None;
             loop = LoopMode.None;
             timescale = TimescaleMode.Normal;
-            direction = PlayDirection.Normal;
+            direction = PlayDirection.Forward;
             defaultStopBehaviour = StopBehaviour.ReturnToInitialState;
             speed = 1f;
         }
