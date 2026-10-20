@@ -11,7 +11,7 @@ namespace Damdor.Sequentio
 
         public static SequenceExecutor Create(SequenceExecution plan)
         {
-            var player = SequentioPooling.PopSequencePlanPlayer();
+            var player = SequentioPooling.PopSequenceExecutor();
             player.Setup(plan);
             return player;
         }
@@ -133,7 +133,7 @@ namespace Damdor.Sequentio
 
         public void Release()
         {
-            SequentioPooling.ReleaseSequencePlanPlayer(this);
+            SequentioPooling.ReleaseSequenceExecutor(this);
         }
 
         internal void Reset()

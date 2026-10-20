@@ -107,17 +107,17 @@ namespace Damdor.Sequentio
         public static SequencePlan PopSequenceDefinitionPlan() => sequenceDefinitionPlanPool.Pop();
         public static void ReleaseSequenceDefinitionPlan(SequencePlan plan) => sequenceDefinitionPlanPool.Release(plan);
 
-        public static StepExecution PopStepPlayerPlan() => stepPlayerPlanPool.Pop();
-        public static void ReleaseStepPlayerPlan(StepExecution plan) => stepPlayerPlanPool.Release(plan);
+        public static StepExecution PopStepExecution() => stepPlayerPlanPool.Pop();
+        public static void ReleaseStepExecution(StepExecution plan) => stepPlayerPlanPool.Release(plan);
 
-        public static SequenceExecution PopSequencePlayerPlan() => sequencePlayerPlanPool.Pop();
-        public static void ReleaseSequencePlayerPlan(SequenceExecution plan) => sequencePlayerPlanPool.Release(plan);
+        public static SequenceExecution PopSequenceExecution() => sequencePlayerPlanPool.Pop();
+        public static void ReleaseSequenceExecution(SequenceExecution plan) => sequencePlayerPlanPool.Release(plan);
 
-        public static SequenceExecutor PopSequencePlanPlayer() => sequencePlayerPlanRunnerPool.Pop();
-        public static void ReleaseSequencePlanPlayer(SequenceExecutor runner) => sequencePlayerPlanRunnerPool.Release(runner);
+        public static SequenceExecutor PopSequenceExecutor() => sequencePlayerPlanRunnerPool.Pop();
+        public static void ReleaseSequenceExecutor(SequenceExecutor runner) => sequencePlayerPlanRunnerPool.Release(runner);
 
-        public static RuntimeSequence PopSequencePlaybackRunner() => sequencePlaybackRunnerPool.Pop();
-        public static void ReleaseSequencePlaybackRunner(RuntimeSequence runner) => sequencePlaybackRunnerPool.Release(runner);
+        public static RuntimeSequence PopSequenceRuntimeSequence() => sequencePlaybackRunnerPool.Pop();
+        public static void ReleaseRuntimeSequence(RuntimeSequence runner) => sequencePlaybackRunnerPool.Release(runner);
         
         public static SequenceDefinition PopSequenceDefinition() => sequenceDefinitionPool.Pop();
         public static void ReleaseSequenceDefinition(SequenceDefinition definition) => sequenceDefinitionPool.Release(definition);

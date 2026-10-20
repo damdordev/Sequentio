@@ -25,7 +25,7 @@ namespace Damdor.Sequentio
         
         public static SequenceExecution CreatePlayerPlan(SequencePlan sequenceDefinitionPlan)
         {
-            var playerPlan = SequentioPooling.PopSequencePlayerPlan();
+            var playerPlan = SequentioPooling.PopSequenceExecution();
             
             playerPlan.Duration = sequenceDefinitionPlan.Duration;
             playerPlan.Settings = sequenceDefinitionPlan.Settings.Clone();
@@ -33,7 +33,7 @@ namespace Damdor.Sequentio
 
             foreach (var stepDefinitionPlan in sequenceDefinitionPlan.Steps)
             {
-                var stepPlayerPlan = SequentioPooling.PopStepPlayerPlan();
+                var stepPlayerPlan = SequentioPooling.PopStepExecution();
                 
                 stepPlayerPlan.Definition = stepDefinitionPlan.Definition;
                 stepPlayerPlan.Player = CreateStepPlayer(stepDefinitionPlan.Definition);

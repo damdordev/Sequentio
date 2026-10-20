@@ -23,13 +23,13 @@ namespace Damdor.Sequentio
 
         public void Release()
         {
-            SequentioPooling.ReleaseStepPlayerPlan(this);
+            SequentioPooling.ReleaseStepExecution(this);
         }
 
         internal void Reset()
         {
             Definition = null;
-            Player?.Release();
+            if (Player != null) SequentioPooling.ReleaseStepPlayer(Player);
             Player = null;
             ValuesApplied = false;
             StartTime = 0f;

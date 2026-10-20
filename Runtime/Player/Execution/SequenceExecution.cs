@@ -14,7 +14,7 @@ namespace Damdor.Sequentio
         
         public void Release()
         {
-            SequentioPooling.ReleaseSequencePlayerPlan(this);
+            SequentioPooling.ReleaseSequenceExecution(this);
         }
         
         internal void Reset()

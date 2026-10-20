@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Damdor.Vario;
+using UnityEngine;
 #if DAMDOR_SEQUENTIO_UNITASK
 using Cysharp.Threading.Tasks;
 // ReSharper disable Unity.PerformanceCriticalCodeInvocation
@@ -38,7 +39,7 @@ namespace Damdor.Sequentio
 
         public static RuntimeSequence Create(ISequenceDefinition definition)
         {
-            var sequencePlaybackPlayer = SequentioPooling.PopSequencePlaybackRunner();
+            var sequencePlaybackPlayer = SequentioPooling.PopSequenceRuntimeSequence();
             sequencePlaybackPlayer.Setup(definition);
             return sequencePlaybackPlayer;
         }
@@ -46,7 +47,7 @@ namespace Damdor.Sequentio
         // ReSharper disable once UnusedMember.Global
         public static RuntimeSequence Create()
         {
-            var sequencePlaybackPlayer = SequentioPooling.PopSequencePlaybackRunner();
+            var sequencePlaybackPlayer = SequentioPooling.PopSequenceRuntimeSequence();
             sequencePlaybackPlayer.SetupNew();
             return sequencePlaybackPlayer;
         }
@@ -154,7 +155,7 @@ namespace Damdor.Sequentio
 
         public void Release()
         {
-            SequentioPooling.ReleaseSequencePlaybackRunner(this);
+            SequentioPooling.ReleaseRuntimeSequence(this);
         }
 
         public float GetProgress(StepDefinition definition)
