@@ -4,13 +4,11 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
-    internal class SequentioUpdateProvider : MonoBehaviour
+    public class SequentioUpdateProvider : MonoBehaviour
     {
-        public delegate void UpdateReceiver(float deltaTime);
-
-        private static readonly List<UpdateReceiver> receivers = new();
-        private static readonly List<UpdateReceiver> unscaledReceivers = new();
-        private static readonly List<UpdateReceiver> tmpReceivers = new();
+        private static readonly List<ISequentioUpdateReceiver> receivers = new();
+        private static readonly List<ISequentioUpdateReceiver> unscaledReceivers = new();
+        private static readonly List<ISequentioUpdateReceiver> tmpReceivers = new();
         
         private static SequentioUpdateProvider instance;
         private static bool isInstanceCreated;
@@ -31,7 +29,7 @@ namespace Damdor.Sequentio
         }
 #endif
 
-        public static void Register(UpdateReceiver receiver, bool unscaled)
+        public static void Register(ISequentioUpdateReceiver receiver, bool unscaled)
         {
             if (receiver == null) return;
             if(unscaled) unscaledReceivers.Add(receiver);
@@ -39,7 +37,7 @@ namespace Damdor.Sequentio
             if(!IsRegisteredToUpdate()) RegisterToUpdate();
         }
 
-        public static void Unregister(UpdateReceiver receiver)
+        public static void Unregister(ISequentioUpdateReceiver receiver)
         {
             receivers.Remove(receiver);
             unscaledReceivers.Remove(receiver);
@@ -72,11 +70,11 @@ namespace Damdor.Sequentio
         {
             tmpReceivers.Clear();
             tmpReceivers.AddRange(receivers);
-            foreach (var updateReceiver in tmpReceivers) updateReceiver(deltaTime);
+            foreach (var updateReceiver in tmpReceivers) updateReceiver.Update(deltaTime);
             
             tmpReceivers.Clear();
             tmpReceivers.AddRange(unscaledReceivers);
-            foreach (var updateReceiver in tmpReceivers) updateReceiver(unscaledDeltaTime);
+            foreach (var updateReceiver in tmpReceivers) updateReceiver.Update(unscaledDeltaTime);
         }
         
         private static bool IsRegisteredToUpdate() => Application.isPlaying ? isInstanceCreated : isAttachedToEditorUpdate;

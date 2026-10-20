@@ -9,7 +9,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Damdor.Sequentio
 {
-    public class RuntimeSequence : ISequenceDefinition, ISequencePlayer
+    public class RuntimeSequence : ISequenceDefinition, ISequencePlayer, ISequentioUpdateReceiver
     {
         public SequencePlayerState State { get; private set; }
         public SequenceExecution Execution { get; private set; }
@@ -80,7 +80,7 @@ namespace Damdor.Sequentio
                     definitionPlan.Release();
                     runner = SequenceExecutor.Create(Execution);
                     State = SequencePlayerState.Playing;
-                    SequentioUpdateProvider.Register(Update, Execution.Settings.Timescale == TimescaleMode.Unscaled);
+                    SequentioUpdateProvider.Register(this, Execution.Settings.Timescale == TimescaleMode.Unscaled);
                     break;
                 case SequencePlayerState.Playing:
                     break;
@@ -134,7 +134,7 @@ namespace Damdor.Sequentio
             runner.SetTime(time);
         }
 
-        private void Update(float dt)
+        public void Update(float dt)
         {
             if (State != SequencePlayerState.Playing) return;
             var result = runner.Update(dt);
@@ -149,7 +149,7 @@ namespace Damdor.Sequentio
             runner = null;
             Execution?.Release();
             Execution = null;
-            SequentioUpdateProvider.Unregister(Update);
+            SequentioUpdateProvider.Unregister(this);
         }
 
         public void Release()
