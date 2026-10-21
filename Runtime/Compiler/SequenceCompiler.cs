@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using Damdor.Vario;
 using UnityEngine;
 
 namespace Damdor.Sequentio
@@ -10,11 +11,12 @@ namespace Damdor.Sequentio
     {
         private static readonly Dictionary<Type, StepCompiler> stepCompilers = new();
         
-        public static SequencePlan CreateDefinitionPlan(ISequenceDefinition definition, bool runtime = true)
+        public static SequencePlan CreateDefinitionPlan(ISequenceDefinition definition, bool runtime, Action<VarioStorage, SequenceSettings> modify)
         {
             var plan = SequentioPooling.PopSequenceDefinitionPlan();
             plan.Settings = definition.Settings.Clone();
             plan.Storage = definition.Storage.Clone();
+            modify?.Invoke(plan.Storage, plan.Settings);
            
             CreateStepsDefinition(plan, definition, runtime);
             RecalculateStepsTimes(plan);
@@ -69,14 +71,14 @@ namespace Damdor.Sequentio
              for (var index = 0; index < definition.Steps.Count; index++)
              {
                  var stepDefinition = definition.Steps[index];
-                 if (!stepDefinition.Visibility.IsEnabled(definition.Storage, runtime)) continue;
+                 if (!stepDefinition.Visibility.IsEnabled(plan.Storage, runtime)) continue;
 
                  var stepPlan = SequentioPooling.PopStepDefinitionPlan();
                  stepPlan.Definition = stepDefinition;
                  stepPlan.RunWithPreviousStep = stepDefinition.RunWithPreviousStep;
                  stepPlan.InitOnStart = stepDefinition.InitOnStart;
-                 stepPlan.Delay = stepDefinition.Delay.Evaluate(definition.Storage);
-                 stepPlan.Duration = stepDefinition.CalculateDuration(definition.Storage);
+                 stepPlan.Delay = stepDefinition.Delay.Evaluate(plan.Storage);
+                 stepPlan.Duration = stepDefinition.CalculateDuration(plan.Storage);
                  stepPlan.OriginalIndex = index;
 
                  plan.Steps.Add(stepPlan);

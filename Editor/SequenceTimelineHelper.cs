@@ -29,7 +29,7 @@ namespace Damdor.Sequentio.Editor
                 : 1;
             var oldScrollPosition = scrollPosition;
             var oldPixelsPerSecond = pixelsPerSecond;
-            var selectedIndex = stepsList.selectedIndices.Count > 0 ? stepsList.index : -1;
+            var selectedIndex = stepsList != null ? stepsList.selectedIndices.Count > 0 ? stepsList.index : -1 : 0;
 
             EditorGUILayout.Space(8f);
 
@@ -198,15 +198,15 @@ namespace Damdor.Sequentio.Editor
                 if (GUI.enabled && Event.current.type == EventType.MouseDown && Event.current.button == 0 &&
                     fullRect.Contains(Event.current.mousePosition))
                 {
-                    stepsList.Select(stepPlan.OriginalIndex);
-                    stepsList.GrabKeyboardFocus();
-                    stepsList.onSelectCallback?.Invoke(stepsList);
+                    stepsList?.Select(stepPlan.OriginalIndex);
+                    stepsList?.GrabKeyboardFocus();
+                    stepsList?.onSelectCallback?.Invoke(stepsList);
                     lastSelectedIndex = stepPlan.OriginalIndex;
                     selectionChanged = true;
                     Event.current.Use();
                 }
 
-                var selected = stepsList.IsSelected(stepPlan.OriginalIndex);
+                var selected = stepsList?.IsSelected(stepPlan.OriginalIndex) ?? false; 
                 var name = $"<b>{StepEditorHelper.GetStepName(stepPlan.Definition)}</b> <color=#B8B8B8>{stepPlan.Definition.GetTargetNameInEditor(sequenceDefinitionPlan.Storage)}</color>";
                 var tooltip = $"{name}\n" +
                               $"Start: {stepPlan.StartTime:0.###} s\nDuration: {stepPlan.Duration:0.###} s\nDelay: {stepPlan.Delay:0.###} s";

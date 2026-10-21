@@ -17,14 +17,14 @@ namespace Damdor.Sequentio
         public SequenceSettings Settings => definition.Settings;
         public IReadOnlyList<StepDefinition> Steps => definition.Steps;
         public VarioStorage Storage => definition.Storage;
-        public SequencePlan CreateDefinitionPlan() => definition.CreateDefinitionPlan();
+        public SequencePlan CreateDefinitionPlan() => SequenceCompiler.CreateDefinitionPlan(definition, true, modify);
 
         public float Duration
         {
             get
             {
                 if(Execution != null) return Execution.Duration;
-                var definitionPlan = SequenceCompiler.CreateDefinitionPlan(definition);
+                var definitionPlan = CreateDefinitionPlan();
                 var duration = definitionPlan.Duration;
                 definitionPlan.Release();
                 return duration;
@@ -36,11 +36,12 @@ namespace Damdor.Sequentio
         private SequenceDefinition ownedDefinition;
         private ISequenceDefinition definition;
         private SequenceExecutor runner;
+        private Action<VarioStorage, SequenceSettings> modify;
 
-        public static RuntimeSequence Create(ISequenceDefinition definition)
+        public static RuntimeSequence Create(ISequenceDefinition definition, Action<VarioStorage, SequenceSettings> modify = null)
         {
             var sequencePlaybackPlayer = SequentioPooling.PopSequenceRuntimeSequence();
-            sequencePlaybackPlayer.Setup(definition);
+            sequencePlaybackPlayer.Setup(definition, modify);
             return sequencePlaybackPlayer;
         }
 
@@ -52,10 +53,11 @@ namespace Damdor.Sequentio
             return sequencePlaybackPlayer;
         }
         
-        private void Setup(ISequenceDefinition definition)
+        private void Setup(ISequenceDefinition definition, Action<VarioStorage, SequenceSettings> modify = null)
         {
             ReleaseOwnedDefinition();
             this.definition = definition;
+            this.modify = modify;
         }
 
         private void SetupNew()
@@ -63,6 +65,7 @@ namespace Damdor.Sequentio
             ReleaseOwnedDefinition();
             ownedDefinition = SequentioPooling.PopSequenceDefinition();
             definition = ownedDefinition;
+            modify = null;
         }
 
         public void Init()
@@ -76,7 +79,7 @@ namespace Damdor.Sequentio
             switch (State)
             {
                 case SequencePlayerState.Idle:
-                    var definitionPlan = SequenceCompiler.CreateDefinitionPlan(definition);
+                    var definitionPlan = SequenceCompiler.CreateDefinitionPlan(definition, true, modify);
                     Execution = SequenceCompiler.CreateExecution(definitionPlan);
                     definitionPlan.Release();
                     runner = SequenceExecutor.Create(Execution);
@@ -173,6 +176,7 @@ namespace Damdor.Sequentio
         {
             State = SequencePlayerState.Idle;
             definition = null;
+            modify = null;
             ReleaseSequencePlanRunner();
             ReleaseOwnedDefinition();
         }

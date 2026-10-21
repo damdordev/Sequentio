@@ -34,16 +34,20 @@ namespace Damdor.Sequentio.Editor
             SequencePlayer = serializedObject.targetObject as ISequencePlayer;
             
             var definitionProperty = serializedObject.FindProperty("definition");
-            storageProperty = definitionProperty.FindPropertyRelative("storage");
-            stepsProperty = definitionProperty.FindPropertyRelative("steps");
-            settingsProperty = definitionProperty.FindPropertyRelative("settings");
-            
-            if(!propertyPathToReorderableList.TryGetValue(stepsProperty.propertyPath, out var stepsList))
+            if (definitionProperty != null)
             {
-                stepsList = CreateStepsReorderableList(stepsProperty);
+                storageProperty = definitionProperty.FindPropertyRelative("storage");
+                stepsProperty = definitionProperty.FindPropertyRelative("steps");
+                settingsProperty = definitionProperty.FindPropertyRelative("settings");
+
+                if (!propertyPathToReorderableList.TryGetValue(stepsProperty.propertyPath, out var stepsList))
+                {
+                    stepsList = CreateStepsReorderableList(stepsProperty);
+                }
+
+                StepList = stepsList;
             }
-            StepList = stepsList;
-            
+
             playButtonContent ??= EditorGUIUtility.IconContent("PlayButton");
             stopButtonContent ??= EditorGUIUtility.IconContent("StopButton");
             pauseButtonContent ??= EditorGUIUtility.IconContent("PauseButton On");

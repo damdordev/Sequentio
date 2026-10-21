@@ -12,7 +12,7 @@ namespace Damdor.Sequentio.RunSequence
         {
             base.Init(definition, storage);
             var sequenceDefinition = definition.Sequence.Evaluate(storage);
-            var plan = SequenceCompiler.CreateDefinitionPlan(sequenceDefinition);
+            var plan = SequenceCompiler.CreateDefinitionPlan(sequenceDefinition, true, null);
             execution = SequenceCompiler.CreateExecution(plan);
             executor = SequenceExecutor.Create(execution);
             plan.Release();

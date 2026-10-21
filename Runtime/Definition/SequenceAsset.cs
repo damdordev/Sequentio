@@ -9,7 +9,7 @@ namespace Damdor.Sequentio
 {
     [Serializable]
     [CreateAssetMenu(fileName = "sequence", menuName = "Damdor/Sequntio/Sequence asset")]
-    public class SequenceAsset : ScriptableObject, ISequenceDefinition
+    public class SequenceAsset : ScriptableObject, ISequenceDefinition, IVarioStorageSource
     {
         public SequenceSettings Settings => definition.Settings;
         public IReadOnlyList<StepDefinition> Steps => definition.Steps;
