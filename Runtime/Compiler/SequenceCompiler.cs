@@ -13,8 +13,8 @@ namespace Damdor.Sequentio
         public static SequencePlan CreateDefinitionPlan(ISequenceDefinition definition, bool runtime = true)
         {
             var plan = SequentioPooling.PopSequenceDefinitionPlan();
-            plan.Settings = definition.Settings;
-            plan.Storage = definition.Storage;
+            plan.Settings = definition.Settings.Clone();
+            plan.Storage = definition.Storage.Clone();
            
             CreateStepsDefinition(plan, definition, runtime);
             RecalculateStepsTimes(plan);
@@ -28,9 +28,9 @@ namespace Damdor.Sequentio
             var playerPlan = SequentioPooling.PopSequenceExecution();
             
             playerPlan.Duration = sequenceDefinitionPlan.Duration;
-            playerPlan.Settings = sequenceDefinitionPlan.Settings.Clone();
-            playerPlan.Storage = sequenceDefinitionPlan.Storage.Clone();
-
+            playerPlan.Settings = sequenceDefinitionPlan.Settings;
+            playerPlan.Storage = sequenceDefinitionPlan.Storage;
+            
             foreach (var stepDefinitionPlan in sequenceDefinitionPlan.Steps)
             {
                 var stepPlayerPlan = SequentioPooling.PopStepExecution();

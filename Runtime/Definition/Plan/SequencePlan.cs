@@ -19,7 +19,9 @@ namespace Damdor.Sequentio
         
         internal void Reset()
         {
+            Settings?.Release();
             Settings = null;
+            Storage?.Release();
             Storage = null;
             
             foreach (var stepPlan in Steps) stepPlan.Release();

@@ -26,13 +26,9 @@ namespace Damdor.Sequentio
         
         internal void Reset()
         {
-            settings?.Release();
-            settings = null;
-            
+            settings.Reset();
             steps.Clear();
-            
-            storage?.Release();
-            storage = null;
+            storage.Clear();
         }
     }
 }
