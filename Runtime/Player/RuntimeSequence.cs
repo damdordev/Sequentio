@@ -77,7 +77,7 @@ namespace Damdor.Sequentio
             {
                 case SequencePlayerState.Idle:
                     var definitionPlan = SequenceCompiler.CreateDefinitionPlan(definition);
-                    Execution = SequenceCompiler.CreatePlayerPlan(definitionPlan);
+                    Execution = SequenceCompiler.CreateExecution(definitionPlan);
                     definitionPlan.Release();
                     runner = SequenceExecutor.Create(Execution);
                     State = SequencePlayerState.Playing;

@@ -6,42 +6,42 @@ namespace Damdor.Sequentio
 {
     public class SequenceExecutor
     {
-        private SequenceExecution plan;
+        private SequenceExecution execution;
         private PlayDirection direction;
 
-        public static SequenceExecutor Create(SequenceExecution plan)
+        public static SequenceExecutor Create(SequenceExecution execution)
         {
             var player = SequentioPooling.PopSequenceExecutor();
-            player.Setup(plan);
+            player.Setup(execution);
             return player;
         }
 
-        private void Setup(SequenceExecution plan)
+        private void Setup(SequenceExecution execution)
         {
-            this.plan = plan;
+            this.execution = execution;
             InitSteps();
-            direction = plan.Settings.Direction;
-            this.plan.CurrentTime = direction == PlayDirection.Forward ? 0f : this.plan.Duration;
+            direction = execution.Settings.Direction;
+            this.execution.CurrentTime = direction == PlayDirection.Forward ? 0f : this.execution.Duration;
         }
 
         public SequenceExecutorUpdateResult Update(float dt)
         {
-            dt *= plan.Settings.Speed;
+            dt *= execution.Settings.Speed;
             var factor = direction == PlayDirection.Forward ? 1f : -1f;
-            var newTime = plan.CurrentTime + dt * factor;
+            var newTime = execution.CurrentTime + dt * factor;
 
-            if (newTime < 0f || newTime > plan.Duration)
+            if (newTime < 0f || newTime > execution.Duration)
             {
-                switch (plan.Settings.Loop)
+                switch (execution.Settings.Loop)
                 {
                     case LoopMode.None:
-                        newTime = Mathf.Clamp(newTime, 0f, plan.Duration);
+                        newTime = Mathf.Clamp(newTime, 0f, execution.Duration);
                         break;
                     case LoopMode.Loop:
-                        if (plan.Duration > 0f)
+                        if (execution.Duration > 0f)
                         {
-                            if (newTime > plan.Duration) newTime %= plan.Duration;
-                            else if (newTime < 0f) newTime = plan.Duration + newTime % plan.Duration;
+                            if (newTime > execution.Duration) newTime %= execution.Duration;
+                            else if (newTime < 0f) newTime = execution.Duration + newTime % execution.Duration;
                         }
                         else
                         {
@@ -50,14 +50,14 @@ namespace Damdor.Sequentio
 
                         break;
                     case LoopMode.PingPong:
-                        if (plan.Duration > 0f)
+                        if (execution.Duration > 0f)
                         {
                             direction = direction == PlayDirection.Forward
                                 ? PlayDirection.Reverse
                                 : PlayDirection.Forward;
-                            if (newTime > plan.Duration || newTime < 0f)
+                            if (newTime > execution.Duration || newTime < 0f)
                             {
-                                newTime = Mathf.PingPong(newTime, plan.Duration);
+                                newTime = Mathf.PingPong(newTime, execution.Duration);
                             }
                         }
                         else
@@ -73,9 +73,12 @@ namespace Damdor.Sequentio
 
             SetTime(newTime);
 
-            if (plan.Settings.Loop == LoopMode.None && direction == PlayDirection.Forward &&
-                newTime >= plan.Duration || plan.Settings.Loop == LoopMode.None && direction == PlayDirection.Reverse &&
-                newTime <= 0f)
+            if (execution.Settings.Loop == LoopMode.None && direction == PlayDirection.Forward && newTime >= execution.Duration)
+            {
+                return SequenceExecutorUpdateResult.Finished;
+            }
+            
+            if (execution.Settings.Loop == LoopMode.None && direction == PlayDirection.Reverse && newTime <= 0f)
             {
                 return SequenceExecutorUpdateResult.Finished;
             }
@@ -85,49 +88,49 @@ namespace Damdor.Sequentio
 
         public void SetTime(float newTime)
         {
-            plan.CurrentTime = Mathf.Clamp(newTime, 0f, plan.Duration);
+            execution.CurrentTime = Mathf.Clamp(newTime, 0f, execution.Duration);
 
-            for (var index = plan.Steps.Count - 1; index >= 0; index--)
+            for (var index = execution.Steps.Count - 1; index >= 0; index--)
             {
-                var stepData = plan.Steps[index];
-                if (plan.CurrentTime >= stepData.StartTime || !stepData.ValuesApplied) continue;
+                var stepData = execution.Steps[index];
+                if (execution.CurrentTime >= stepData.StartTime || !stepData.ValuesApplied) continue;
 
                 stepData.SetProgress(0f);
             }
 
-            foreach (var stepData in plan.Steps)
+            foreach (var stepData in execution.Steps)
             {
-                if (plan.CurrentTime < stepData.StartTime) continue;
+                if (execution.CurrentTime < stepData.StartTime) continue;
 
                 if (!stepData.ValuesApplied)
                 {
-                    stepData.Player.Init(plan.Storage);
+                    stepData.Player.Init(execution.Storage);
                     stepData.ValuesApplied = true;
                 }
 
-                var t = Mathf.InverseLerp(stepData.StartTime, stepData.EndTime, plan.CurrentTime);
-                if (plan.CurrentTime >= stepData.EndTime) t = 1f;
+                var t = Mathf.InverseLerp(stepData.StartTime, stepData.EndTime, execution.CurrentTime);
+                if (execution.CurrentTime >= stepData.EndTime) t = 1f;
                 stepData.SetProgress(t);
             }
         }
 
         public void ReturnToInitialState()
         {
-            for (var index = plan.Steps.Count - 1; index >= 0; index--)
+            for (var index = execution.Steps.Count - 1; index >= 0; index--)
             {
-                if (!plan.Steps[index].ValuesApplied) continue;
-                plan.Steps[index].Player.ReturnToInitialState();
+                if (!execution.Steps[index].ValuesApplied) continue;
+                execution.Steps[index].Player.ReturnToInitialState();
             }
 
-            plan.CurrentTime = 0f;
+            execution.CurrentTime = 0f;
         }
 
         public void ReleaseSteps()
         {
-            for (var index = plan.Steps.Count - 1; index >= 0; index--)
+            for (var index = execution.Steps.Count - 1; index >= 0; index--)
             {
-                if (!plan.Steps[index].ValuesApplied) continue;
-                plan.Steps[index].Player.Release();
+                if (!execution.Steps[index].ValuesApplied) continue;
+                execution.Steps[index].Player.Release();
             }
         }
 
@@ -138,16 +141,16 @@ namespace Damdor.Sequentio
 
         internal void Reset()
         {
-            plan = null;
+            execution = null;
             direction = PlayDirection.Forward;
         }
 
         private void InitSteps()
         {
-            foreach (var stepPlan in plan.Steps)
+            foreach (var stepPlan in execution.Steps)
             {
                 if (!stepPlan.InitOnStart) continue;
-                stepPlan.Player.Init(plan.Storage);
+                stepPlan.Player.Init(execution.Storage);
                 stepPlan.ValuesApplied = true;
                 stepPlan.SetProgress(0f);
             }

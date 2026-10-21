@@ -22,8 +22,12 @@ namespace Damdor.Sequentio
             foreach (var stepExecution in Steps) stepExecution.Release();
             Steps.Clear();
             
+            Settings?.Release();
             Settings = null;
+            
+            Storage?.Release();
             Storage = null;
+            
             CurrentTime = 0f;
         }
     }

@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEngine;
 
 namespace Damdor.Sequentio.Editor
 {
@@ -20,6 +21,7 @@ namespace Damdor.Sequentio.Editor
             
             sequenceEditorHelper.Setup(serializedObject);
             sequenceEditorHelper.ShowPlayerControls(sequencePlayer);
+            if (sequencePlayer.State != SequencePlayerState.Idle) GUI.enabled = false;
             sequenceEditorHelper.ShowSettings();
             sequenceEditorHelper.ShowStorage();
 
@@ -31,6 +33,7 @@ namespace Damdor.Sequentio.Editor
             
             serializedObject.ApplyModifiedProperties();
             definitionPlan.Release();
+            GUI.enabled = true;
             if(sequencePlayer.State == SequencePlayerState.Playing) Repaint();
         }
     }

@@ -23,13 +23,13 @@ namespace Damdor.Sequentio
             return plan;
         }
         
-        public static SequenceExecution CreatePlayerPlan(SequencePlan sequenceDefinitionPlan)
+        public static SequenceExecution CreateExecution(SequencePlan sequenceDefinitionPlan)
         {
             var playerPlan = SequentioPooling.PopSequenceExecution();
             
             playerPlan.Duration = sequenceDefinitionPlan.Duration;
-            playerPlan.Settings = sequenceDefinitionPlan.Settings;
-            playerPlan.Storage = sequenceDefinitionPlan.Storage;
+            playerPlan.Settings = sequenceDefinitionPlan.Settings.Clone();
+            playerPlan.Storage = sequenceDefinitionPlan.Storage.Clone();
             
             foreach (var stepDefinitionPlan in sequenceDefinitionPlan.Steps)
             {
