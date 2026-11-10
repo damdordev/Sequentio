@@ -12,6 +12,8 @@
     "url": "https://github.com/damdordev/Sequentio.git"
   },
   "dependencies": {
-    "com.damdor.vario": "1.0.0"
-  }    
+    "com.damdor.vario": "1.0.0",
+    "com.unity.ugui": "2.0.0",
+    "com.damdor.traduio": "1.0.0"
+  }
 }
