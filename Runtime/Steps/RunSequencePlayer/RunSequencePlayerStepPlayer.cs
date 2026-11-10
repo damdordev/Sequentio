@@ -3,15 +3,15 @@ using Damdor.Vario;
 
 namespace Damdor.Sequentio.RunSequence
 {
-    public class RunSequenceStepPlayer : StepPlayer<RunSequenceStepDefinition>
+    public class RunSequencePlayerStepPlayer : StepPlayer<RunSequencePlayerStepDefinition>
     {
         private SequenceExecution execution;
         private SequenceExecutor executor;
 
-        protected override void Init(RunSequenceStepDefinition definition, VarioStorage storage)
+        protected override void Init(RunSequencePlayerStepDefinition definition, VarioStorage storage)
         {
             base.Init(definition, storage);
-            var sequencePlayer = definition.Sequence.Evaluate(storage);
+            var sequencePlayer = definition.SequencePlayer.Evaluate(storage);
             var plan = SequenceCompiler.CreateDefinitionPlan(sequencePlayer, sequencePlayer.Settings, true, null);
             execution = SequenceCompiler.CreateExecution(plan);
             executor = SequenceExecutor.Create(execution);
