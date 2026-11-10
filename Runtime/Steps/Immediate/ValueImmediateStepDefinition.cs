@@ -1,8 +1,10 @@
+using System;
 using Damdor.Vario;
 using UnityEngine;
 
 namespace Damdor.Sequentio
 {
+    [Serializable]
     public class ValueImmediateStepDefinition<TComponent, TValue> : StepDefinition
         where TComponent : class
     {
