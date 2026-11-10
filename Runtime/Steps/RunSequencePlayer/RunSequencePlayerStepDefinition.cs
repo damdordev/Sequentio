@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Damdor.Sequentio.RunSequence
 {
     [Serializable]
-    [SequentioStep(typeof(RunSequencePlayerStepPlayer), "Sequentio/Run sequence player", "Run Sequence player", "Packages/com.damdor.sequentio/Editor/StepsIcons/run-sequence.png")]
+    [SequentioStep(typeof(RunSequencePlayerStepPlayer), "Sequentio/Run sequence player", "Run Sequence Player", "Packages/com.damdor.sequentio/Editor/StepsIcons/run-sequence.png")]
     public class RunSequencePlayerStepDefinition : StepDefinition
     {
         public VarioValue<SequencePlayer> SequencePlayer

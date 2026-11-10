@@ -1,44 +1,34 @@
 using Damdor.Vario;
-// ReSharper disable Unity.PerformanceCriticalCodeInvocation
 
 namespace Damdor.Sequentio.RunSequence
 {
     public class RunSequencePlayerStepPlayer : StepPlayer<RunSequencePlayerStepDefinition>
     {
-        private SequenceExecution execution;
-        private SequenceExecutor executor;
+        private SequencePlayer sequencePlayer;
 
         protected override void Init(RunSequencePlayerStepDefinition definition, VarioStorage storage)
         {
             base.Init(definition, storage);
-            var sequencePlayer = definition.SequencePlayer.Evaluate(storage);
-            var plan = SequenceCompiler.CreateDefinitionPlan(sequencePlayer, sequencePlayer.Settings, true, null);
-            execution = SequenceCompiler.CreateExecution(plan);
-            executor = SequenceExecutor.Create(execution);
-            plan.Release();
+            sequencePlayer = definition.SequencePlayer.Evaluate(storage);
+            sequencePlayer.Init();
         }
 
-        public override void Release()
+        public override void Reset()
         {
-            base.Release();
-            executor?.Release();
-            executor = null;
-            
-            execution?.Release();
-            execution = null;
+            base.Reset();
+            sequencePlayer = null;
         }
 
         public override void ReturnToInitialState()
         {
             base.ReturnToInitialState();
-            executor.ReturnToInitialState();
-            executor.ReleaseSteps();
+            sequencePlayer.Stop(StopBehaviour.ReturnToInitialState);
         }
         
         public override void SetProgress(float t)
         {
             base.SetProgress(t);
-            executor.SetTime(t*execution.Duration);
+            sequencePlayer.MoveToTime(t * sequencePlayer.Duration);
         }
         
     }
