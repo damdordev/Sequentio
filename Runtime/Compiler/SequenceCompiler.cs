@@ -11,10 +11,14 @@ namespace Damdor.Sequentio
     {
         private static readonly Dictionary<Type, StepCompiler> stepCompilers = new();
         
-        public static SequencePlan CreateDefinitionPlan(ISequenceDefinition definition, bool runtime, Action<VarioStorage, SequenceSettings> modify)
+        public static SequencePlan CreateDefinitionPlan(
+            ISequenceDefinition definition,
+            SequenceSettings settings, 
+            bool runtime, 
+            Action<VarioStorage, SequenceSettings> modify)
         {
             var plan = SequentioPooling.PopSequenceDefinitionPlan();
-            plan.Settings = definition.Settings.Clone();
+            plan.Settings = settings.Clone();
             plan.Storage = definition.Storage.Clone();
             modify?.Invoke(plan.Storage, plan.Settings);
            

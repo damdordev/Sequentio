@@ -38,7 +38,6 @@ namespace Damdor.Sequentio.Editor
             {
                 storageProperty = definitionProperty.FindPropertyRelative("storage");
                 stepsProperty = definitionProperty.FindPropertyRelative("steps");
-                settingsProperty = definitionProperty.FindPropertyRelative("settings");
 
                 if (!propertyPathToReorderableList.TryGetValue(stepsProperty.propertyPath, out var stepsList))
                 {
@@ -47,6 +46,7 @@ namespace Damdor.Sequentio.Editor
 
                 StepList = stepsList;
             }
+            settingsProperty = serializedObject.FindProperty("settings");
 
             playButtonContent ??= EditorGUIUtility.IconContent("PlayButton");
             stopButtonContent ??= EditorGUIUtility.IconContent("StopButton");

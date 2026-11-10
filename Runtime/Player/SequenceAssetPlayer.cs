@@ -1,6 +1,5 @@
 using Damdor.Vario;
 using UnityEngine;
-using UnityEngine.Serialization;
 #if DAMDOR_SEQUENTIO_UNITASK
 using Cysharp.Threading.Tasks;
 #endif
@@ -21,6 +20,7 @@ namespace Damdor.Sequentio
             }
         }
 
+        public SequenceSettings Settings => settings;
         public VarioStorage StorageOverride => storageOverride;
         public VarioStorage Storage => storageOverride;
         public SequencePlayerState State => InnerSequence?.State ?? SequencePlayerState.Idle;
@@ -28,6 +28,7 @@ namespace Damdor.Sequentio
         public float Duration => InnerSequence?.Duration ?? 0f;
         public float CurrentTime => InnerSequence?.CurrentTime ?? 0f;
 
+        [SerializeField] private SequenceSettings settings;
         [SerializeField] private SequenceAsset asset;
         [SerializeField] private VarioStorage storageOverride = new();
 
@@ -45,13 +46,13 @@ namespace Damdor.Sequentio
                 ReleaseRuntimeSequence();
                 currentAsset = asset;
                 runtimeSequence = asset != null
-                    ? RuntimeSequence.Create(asset, ApplyStorageOverride)
+                    ? RuntimeSequence.Create(asset, settings, ApplyStorageOverride)
                     : RuntimeSequence.Create();
                 return runtimeSequence;
             }
         }
 
-        public SequencePlan CreateDefinitionPlan() => InnerSequence?.CreateDefinitionPlan();
+        public SequencePlan CreateDefinitionPlan(SequenceSettings settings) => InnerSequence?.CreateDefinitionPlan();
         public void Init() => InnerSequence?.Init();
         public void Play() => InnerSequence?.Play();
         public void Pause() => InnerSequence?.Pause();
@@ -70,17 +71,17 @@ namespace Damdor.Sequentio
 
         private void Awake()
         {
-            if (Application.isPlaying && asset != null && asset.Settings.AutoPlay == AutoPlayMode.Awake) Play();
+            if (Application.isPlaying && asset != null && Settings.AutoPlay == AutoPlayMode.Awake) Play();
         }
 
         private void Start()
         {
-            if (Application.isPlaying && asset != null && asset.Settings.AutoPlay == AutoPlayMode.Start) Play();
+            if (Application.isPlaying && asset != null && Settings.AutoPlay == AutoPlayMode.Start) Play();
         }
 
         private void OnEnable()
         {
-            if (Application.isPlaying && asset != null && asset.Settings.AutoPlay == AutoPlayMode.OnEnable) Play();
+            if (Application.isPlaying && asset != null && Settings.AutoPlay == AutoPlayMode.OnEnable) Play();
         }
 
         private void OnDisable()

@@ -14,10 +14,11 @@ namespace Damdor.Sequentio
     {
         public SequencePlayerState State { get; private set; }
         public SequenceExecution Execution { get; private set; }
-        public SequenceSettings Settings => definition.Settings;
+        public SequenceSettings Settings => settings;
         public IReadOnlyList<StepDefinition> Steps => definition.Steps;
         public VarioStorage Storage => definition.Storage;
-        public SequencePlan CreateDefinitionPlan() => SequenceCompiler.CreateDefinitionPlan(definition, true, modify);
+        public SequencePlan CreateDefinitionPlan(SequenceSettings settings) => SequenceCompiler.CreateDefinitionPlan(definition, settings, true, modify);
+        public SequencePlan CreateDefinitionPlan() => SequenceCompiler.CreateDefinitionPlan(definition, settings, true, modify);
 
         public float Duration
         {
@@ -35,13 +36,14 @@ namespace Damdor.Sequentio
 
         private SequenceDefinition ownedDefinition;
         private ISequenceDefinition definition;
+        private SequenceSettings settings;
         private SequenceExecutor runner;
         private Action<VarioStorage, SequenceSettings> modify;
 
-        public static RuntimeSequence Create(ISequenceDefinition definition, Action<VarioStorage, SequenceSettings> modify = null)
+        public static RuntimeSequence Create(ISequenceDefinition definition, SequenceSettings settings, Action<VarioStorage, SequenceSettings> modify = null)
         {
             var sequencePlaybackPlayer = SequentioPooling.PopSequenceRuntimeSequence();
-            sequencePlaybackPlayer.Setup(definition, modify);
+            sequencePlaybackPlayer.Setup(definition, settings, modify);
             return sequencePlaybackPlayer;
         }
 
@@ -53,11 +55,12 @@ namespace Damdor.Sequentio
             return sequencePlaybackPlayer;
         }
         
-        private void Setup(ISequenceDefinition definition, Action<VarioStorage, SequenceSettings> modify = null)
+        private void Setup(ISequenceDefinition definition, SequenceSettings settings, Action<VarioStorage, SequenceSettings> modify = null)
         {
             ReleaseOwnedDefinition();
             this.definition = definition;
             this.modify = modify;
+            this.settings = settings;
         }
 
         private void SetupNew()
@@ -79,7 +82,7 @@ namespace Damdor.Sequentio
             switch (State)
             {
                 case SequencePlayerState.Idle:
-                    var definitionPlan = SequenceCompiler.CreateDefinitionPlan(definition, true, modify);
+                    var definitionPlan = SequenceCompiler.CreateDefinitionPlan(definition, settings, true, modify);
                     Execution = SequenceCompiler.CreateExecution(definitionPlan);
                     definitionPlan.Release();
                     runner = SequenceExecutor.Create(Execution);

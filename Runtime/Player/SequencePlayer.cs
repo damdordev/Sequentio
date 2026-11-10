@@ -11,10 +11,11 @@ namespace Damdor.Sequentio
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class SequencePlayer : MonoBehaviour, ISequenceDefinition, ISequencePlayer
     {
-        public SequenceSettings Settings => definition.Settings;
+        public SequenceSettings Settings => settings;
         public IReadOnlyList<StepDefinition> Steps => definition.Steps;
         public VarioStorage Storage => definition.Storage;
-        public SequencePlan CreateDefinitionPlan() => definition.CreateDefinitionPlan();
+        public SequencePlan CreateDefinitionPlan(SequenceSettings settings) => definition.CreateDefinitionPlan(settings);
+        public SequencePlan CreateDefinitionPlan() => definition.CreateDefinitionPlan(settings);
 
         public SequencePlayerState State => InnerSequence?.State ?? SequencePlayerState.Idle;
         public SequenceExecution Execution => InnerSequence?.Execution;
@@ -24,6 +25,7 @@ namespace Damdor.Sequentio
         private RuntimeSequence innerSequence;
         private bool destroyed;
 
+        [SerializeField] private SequenceSettings settings;
         [SerializeField] private SequenceDefinition definition;
 
         private RuntimeSequence InnerSequence
@@ -32,7 +34,7 @@ namespace Damdor.Sequentio
             {
                 if (innerSequence == null && !destroyed)
                 {
-                    innerSequence = RuntimeSequence.Create(this);
+                    innerSequence = RuntimeSequence.Create(this, settings);
                 }
 
                 return innerSequence;

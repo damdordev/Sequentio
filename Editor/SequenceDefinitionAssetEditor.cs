@@ -19,11 +19,12 @@ namespace Damdor.Sequentio.Editor
             serializedObject.Update();
             
             sequenceEditorHelper.Setup(serializedObject);
-            sequenceEditorHelper.ShowSettings();
             sequenceEditorHelper.ShowStorage();
 
-            var sequencePlan = asset.CreateDefinitionPlan();
+            var settings = SequentioPooling.PopSequenceSettings();
+            var sequencePlan = asset.CreateDefinitionPlan(settings);
             timelineHelper.Draw(sequencePlan, null, sequenceEditorHelper.StepList);
+            settings?.Release();
             
             sequenceEditorHelper.ShowSteps();
             sequenceEditorHelper.ShowSelectedStep();

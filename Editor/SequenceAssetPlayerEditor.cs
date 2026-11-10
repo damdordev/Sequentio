@@ -22,6 +22,7 @@ namespace Damdor.Sequentio.Editor
             using (new EditorGUI.DisabledScope(player.State != SequencePlayerState.Idle))
             {
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("asset"));
+                sequenceEditorHelper.ShowSettings();
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("storageOverride"), true);
             }
 
@@ -29,7 +30,7 @@ namespace Damdor.Sequentio.Editor
             if (player.Asset == null) return;
 
             sequenceEditorHelper.ShowPlayerControls(player);
-            var plan = player.CreateDefinitionPlan();
+            var plan = player.CreateDefinitionPlan(player.Settings);
             try
             {
                 timelineHelper.Draw(plan, player, null);
