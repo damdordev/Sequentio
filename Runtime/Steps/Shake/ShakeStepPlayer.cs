@@ -40,8 +40,9 @@ namespace Damdor.Sequentio
         public override void Reset()
         {
             base.Reset();
-            target = default;
+            target = null;
             durations.Clear();
+            endValues.Clear();
         }
 
         public override void SetProgress(float t)
@@ -80,7 +81,6 @@ namespace Damdor.Sequentio
             if(length < 2)
                 length = 2;
             var num2 = num1 / length;
-            durations.Clear();
             for(var i = 0; i < length; ++i) durations.Add(0f);
 
             var num3 = 0.0f;
@@ -96,14 +96,13 @@ namespace Damdor.Sequentio
             for(var index = 0; index < length; ++index) durations[index] = durations[index] * num6;
             for(var index = 1; index < length; ++index)  durations[index] += durations[index - 1];
             var degrees = Random.Range(0.0f, 360f);
-            endValues.Clear();
             for(var i = 0; i < length; ++i) endValues.Add(Vector3.zero);
 
             for(var index = 0; index < length; ++index)
             {
                 if(index < length - 1)
                 {
-                    var quaternion = Quaternion.identity;
+                    Quaternion quaternion;
                     if(randomnessMode == ShakeRandomnessMode.Harmonic)
                     {
                         if(index > 0) degrees = degrees - 180f + Random.Range(0.0f, randomness);
