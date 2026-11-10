@@ -16,8 +16,8 @@ namespace Damdor.Sequentio
 
         public VarioStorage StorageOverride => storageOverride;
         
-        [SerializeField] private VarioValue<SequenceAsset> sequenceAsset;
-        [SerializeField] private VarioStorage storageOverride = new();
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private VarioValue<SequenceAsset> sequenceAsset;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private VarioStorage storageOverride = new();
 
         // ReSharper disable Unity.PerformanceAnalysis
         public override float CalculateDuration(VarioStorage storage)

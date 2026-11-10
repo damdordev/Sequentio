@@ -50,13 +50,13 @@ namespace Damdor.Sequentio
             set => randomnessMode = value;
         }
 
-        [SerializeField] private VarioValue<TComponent> target;
-        [SerializeField] private VarioValue<float> duration;
-        [SerializeField] private VarioValue<Vector3> strength;
-        [SerializeField] private VarioValue<int> vibrato;
-        [SerializeField] private VarioValue<bool> fadeOut;
-        [SerializeField] private VarioValue<float> randomness;
-        [SerializeField] private VarioValue<ShakeRandomnessMode> randomnessMode;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private VarioValue<TComponent> target;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private VarioValue<float> duration;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private VarioValue<Vector3> strength;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private VarioValue<int> vibrato;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private VarioValue<bool> fadeOut;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private VarioValue<float> randomness;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private VarioValue<ShakeRandomnessMode> randomnessMode;
         
         public override float CalculateDuration(VarioStorage storage) => duration.Evaluate(storage);
 

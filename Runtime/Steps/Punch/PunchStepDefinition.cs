@@ -36,11 +36,11 @@ namespace Damdor.Sequentio
             set => elasticity = value;
         }
 
-        [SerializeField] private VarioValue<TComponent> target;
-        [SerializeField] private VarioValue<float> duration;
-        [SerializeField] private VarioValue<Vector3> direction;
-        [SerializeField] private VarioValue<int> vibrato;
-        [SerializeField] private VarioValue<float> elasticity;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private VarioValue<TComponent> target;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private VarioValue<float> duration;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private VarioValue<Vector3> direction;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private VarioValue<int> vibrato;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private VarioValue<float> elasticity;
         
         public override float CalculateDuration(VarioStorage storage) => duration.Evaluate(storage);
 

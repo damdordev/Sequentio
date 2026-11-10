@@ -14,7 +14,7 @@ namespace Damdor.Sequentio.RunSequence
             set => sequence = value;
         }
         
-        [SerializeField] private VarioValue<SequencePlayer> sequence;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.Motion)] private VarioValue<SequencePlayer> sequence;
         
         // ReSharper disable Unity.PerformanceAnalysis
         public override float CalculateDuration(VarioStorage storage)
