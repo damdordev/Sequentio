@@ -40,8 +40,16 @@ namespace Damdor.Sequentio
                     case LoopMode.Loop:
                         if (execution.Duration > 0f)
                         {
-                            if (newTime > execution.Duration) newTime %= execution.Duration;
-                            else if (newTime < 0f) newTime = execution.Duration + newTime % execution.Duration;
+                            if (newTime > execution.Duration)
+                            {
+                                SetTime(1f);
+                                newTime %= execution.Duration;
+                            }
+                            else if (newTime < 0f)
+                            {
+                                SetTime(0f);
+                                newTime = execution.Duration + newTime % execution.Duration;
+                            }
                         }
                         else
                         {
@@ -55,8 +63,14 @@ namespace Damdor.Sequentio
                             direction = direction == PlayDirection.Forward
                                 ? PlayDirection.Reverse
                                 : PlayDirection.Forward;
-                            if (newTime > execution.Duration || newTime < 0f)
+                            if (newTime > execution.Duration)
                             {
+                                SetTime(1f);
+                                newTime = Mathf.PingPong(newTime, execution.Duration);
+                            }
+                            else if (newTime < 0f)
+                            {
+                                SetTime(0f);
                                 newTime = Mathf.PingPong(newTime, execution.Duration);
                             }
                         }

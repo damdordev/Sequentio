@@ -47,7 +47,9 @@ namespace Damdor.Sequentio
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetState()
         {
+            unscaledReceivers.Clear();
             receivers.Clear();
+            tmpReceivers.Clear();
             instance = null;
         }
 

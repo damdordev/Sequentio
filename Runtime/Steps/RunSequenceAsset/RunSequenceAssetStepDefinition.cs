@@ -37,7 +37,9 @@ namespace Damdor.Sequentio
         {
             base.Reset();
             sequenceAsset = null;
+            
             storageOverride.Release();
+            storageOverride = null;
         }
     }
 }

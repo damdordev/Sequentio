@@ -43,7 +43,7 @@ namespace Damdor.Sequentio
         public static RuntimeSequence Create(ISequenceDefinition definition, SequenceSettings settings, Action<VarioStorage, SequenceSettings> modify = null)
         {
             var sequencePlaybackPlayer = SequentioPooling.PopSequenceRuntimeSequence();
-            sequencePlaybackPlayer.Setup(definition, settings, modify);
+            sequencePlaybackPlayer.Setup(definition, settings.Clone(), modify);
             return sequencePlaybackPlayer;
         }
 
@@ -67,6 +67,7 @@ namespace Damdor.Sequentio
         {
             ReleaseOwnedDefinition();
             ownedDefinition = SequentioPooling.PopSequenceDefinition();
+            settings = SequentioPooling.PopSequenceSettings();
             definition = ownedDefinition;
             modify = null;
         }
@@ -180,6 +181,8 @@ namespace Damdor.Sequentio
             State = SequencePlayerState.Idle;
             definition = null;
             modify = null;
+            settings?.Release();
+            settings = null;
             ReleaseSequencePlanRunner();
             ReleaseOwnedDefinition();
         }
