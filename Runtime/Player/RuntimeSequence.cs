@@ -23,7 +23,7 @@ namespace Damdor.Sequentio
             get
             {
                 if(Execution != null) return Execution.Duration;
-                var definitionPlan = SequenceCompiler.CreateDefinitionPlan(definition, settings, true, modify);
+                var definitionPlan = SequenceCompiler.CreateDefinitionPlan(definition, settings, modify);
                 var duration = definitionPlan.Duration;
                 definitionPlan.Release();
                 return duration;
@@ -81,7 +81,7 @@ namespace Damdor.Sequentio
             switch (State)
             {
                 case SequencePlayerState.Idle:
-                    var definitionPlan = SequenceCompiler.CreateDefinitionPlan(definition, settings, true, modify);
+                    var definitionPlan = SequenceCompiler.CreateDefinitionPlan(definition, settings, modify);
                     Execution = SequenceCompiler.CreateExecution(definitionPlan);
                     definitionPlan.Release();
                     runner = SequenceExecutor.Create(Execution);

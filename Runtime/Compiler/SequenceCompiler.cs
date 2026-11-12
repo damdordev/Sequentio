@@ -14,7 +14,6 @@ namespace Damdor.Sequentio
         public static SequencePlan CreateDefinitionPlan(
             ISequenceDefinition definition,
             SequenceSettings settings, 
-            bool runtime, 
             Action<VarioStorage, SequenceSettings> modify = null)
         {
             var plan = SequentioPooling.PopSequenceDefinitionPlan();
@@ -22,7 +21,7 @@ namespace Damdor.Sequentio
             plan.Storage = definition.Storage.Clone();
             modify?.Invoke(plan.Storage, plan.Settings);
            
-            CreateStepsDefinition(plan, definition, runtime);
+            CreateStepsDefinition(plan, definition);
             RecalculateStepsTimes(plan);
             CalculateDurationAndInitialTime(plan);
             
@@ -70,12 +69,12 @@ namespace Damdor.Sequentio
                 : stepCompiler.Compile(stepDefinition);
         }
         
-         private static void CreateStepsDefinition(SequencePlan plan, ISequenceDefinition definition, bool runtime)
+         private static void CreateStepsDefinition(SequencePlan plan, ISequenceDefinition definition)
          {
              for (var index = 0; index < definition.Steps.Count; index++)
              {
                  var stepDefinition = definition.Steps[index];
-                 if (!stepDefinition.Visibility.IsEnabled(plan.Storage, runtime)) continue;
+                 if (!stepDefinition.Enabled.Evaluate(plan.Storage)) continue;
 
                  var stepPlan = SequentioPooling.PopStepDefinitionPlan();
                  stepPlan.Definition = stepDefinition;

@@ -7,10 +7,10 @@ namespace Damdor.Sequentio
     [Serializable]
     public abstract class StepDefinition
     {
-        public StepVisibility Visibility
+        public VarioValue<bool> Enabled
         {
-            get => visibility;
-            set => visibility = value;
+            get => enabled;
+            set => enabled = value;
         }
         
         public bool InitOnStart
@@ -30,11 +30,11 @@ namespace Damdor.Sequentio
             get => delay;
             set => delay = value;
         }
-        
-        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.General)] private StepVisibility visibility = new();
+
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.General)] private VarioValue<bool> enabled;
+        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.General)] private VarioValue<float> delay;
         [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.General)] private bool initOnStart;
         [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.General)] private bool runWithPreviousStep;
-        [SerializeField, SequenceStepParameterGroup(SequenceStepParameterGroups.General)] private VarioValue<float> delay;
 
         public abstract float CalculateDuration(VarioStorage storage);
         public virtual string GetTargetNameInEditor(VarioStorage storage) => "";
@@ -42,7 +42,7 @@ namespace Damdor.Sequentio
         public virtual void Reset()
         {
             delay = 0f;
-            visibility.Reset();
+            enabled = true;
         }
         
         protected string GetTargetName<T>(VarioValue<T> target, VarioStorage storage)
