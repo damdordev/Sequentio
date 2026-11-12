@@ -31,7 +31,7 @@ namespace Damdor.Sequentio
         [SerializeField] private VarioStorage storageOverride = new();
 
         private SequenceAsset currentAsset;
-        private RuntimeSequence runtimeSequence;
+        private RuntimeSequence innerSequence;
         private bool destroyed;
 
         private RuntimeSequence InnerSequence
@@ -39,14 +39,18 @@ namespace Damdor.Sequentio
             get
             {
                 if (destroyed) return null;
-                if (runtimeSequence != null && currentAsset == asset) return runtimeSequence;
+                if (innerSequence != null && currentAsset == asset)
+                {
+                    innerSequence.Settings.CopyFrom(settings);
+                    return innerSequence;
+                }
 
                 ReleaseRuntimeSequence();
                 currentAsset = asset;
-                runtimeSequence = asset != null
+                innerSequence = asset != null
                     ? RuntimeSequence.Create(asset, settings, ApplyStorageOverride)
                     : RuntimeSequence.Create();
-                return runtimeSequence;
+                return innerSequence;
             }
         }
 
@@ -96,9 +100,9 @@ namespace Damdor.Sequentio
 
         private void ReleaseRuntimeSequence()
         {
-            if (!Application.isPlaying) runtimeSequence?.Stop(StopBehaviour.ReturnToInitialState);
-            runtimeSequence?.Release();
-            runtimeSequence = null;
+            if (!Application.isPlaying) innerSequence?.Stop(StopBehaviour.ReturnToInitialState);
+            innerSequence?.Release();
+            innerSequence = null;
             currentAsset = null;
         }
     }

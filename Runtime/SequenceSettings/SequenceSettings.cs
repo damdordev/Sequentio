@@ -55,6 +55,16 @@ namespace Damdor.Sequentio
             return clone;
         }
 
+        public void CopyFrom(SequenceSettings otherSettings)
+        {
+            AutoPlay = otherSettings.AutoPlay;
+            Loop = otherSettings.Loop;
+            Timescale = otherSettings.Timescale;
+            Direction = otherSettings.Direction;
+            DefaultStopBehaviour = otherSettings.DefaultStopBehaviour;
+            speed = otherSettings.speed;
+        }
+
         internal void Reset()
         {
             autoPlay = AutoPlayMode.None;

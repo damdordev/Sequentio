@@ -32,11 +32,9 @@ namespace Damdor.Sequentio
         {
             get
             {
-                if (innerSequence == null && !destroyed)
-                {
-                    innerSequence = RuntimeSequence.Create(this, settings);
-                }
-
+                if (destroyed) return innerSequence;
+                if (innerSequence == null) innerSequence = RuntimeSequence.Create(this, settings);
+                else innerSequence.Settings.CopyFrom(settings);
                 return innerSequence;
             }
         }

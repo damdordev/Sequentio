@@ -42,9 +42,9 @@ namespace Damdor.Sequentio
 
         public static RuntimeSequence Create(ISequenceDefinition definition, SequenceSettings settings, Action<VarioStorage, SequenceSettings> modify = null)
         {
-            var sequencePlaybackPlayer = SequentioPooling.PopSequenceRuntimeSequence();
-            sequencePlaybackPlayer.Setup(definition, settings.Clone(), modify);
-            return sequencePlaybackPlayer;
+            var runtimeSequence = SequentioPooling.PopSequenceRuntimeSequence();
+            runtimeSequence.Setup(definition, settings.Clone(), modify);
+            return runtimeSequence;
         }
 
         // ReSharper disable once UnusedMember.Global

@@ -60,9 +60,14 @@ namespace Damdor.Sequentio
                     case LoopMode.PingPong:
                         if (execution.Duration > 0f)
                         {
-                            direction = direction == PlayDirection.Forward
-                                ? PlayDirection.Reverse
-                                : PlayDirection.Forward;
+                            var count = Mathf.FloorToInt(dt / execution.Duration) % 2;
+                            if (count == 0)
+                            {
+                                direction = direction == PlayDirection.Forward
+                                    ? PlayDirection.Reverse
+                                    : PlayDirection.Forward;
+                            }
+
                             if (newTime > execution.Duration)
                             {
                                 SetTime(1f);
