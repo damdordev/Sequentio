@@ -3,10 +3,9 @@ using Damdor.Vario;
 
 namespace Damdor.Sequentio
 {
-    public interface ISequenceDefinition
+    public interface ISequenceDefinition : IVarioStorageSource
     {
         IReadOnlyList<StepDefinition> Steps { get; }
-        VarioStorage Storage { get; }
         SequencePlan CreateDefinitionPlan(SequenceSettings settings);
     }
 }

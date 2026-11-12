@@ -39,18 +39,18 @@ namespace Damdor.Sequentio
             
             foreach (var stepDefinitionPlan in sequenceDefinitionPlan.Steps)
             {
-                var stepPlayerPlan = SequentioPooling.PopStepExecution();
+                var stepExecution = SequentioPooling.PopStepExecution();
                 
-                stepPlayerPlan.Definition = stepDefinitionPlan.Definition;
-                stepPlayerPlan.Player = CreateStepPlayer(stepDefinitionPlan.Definition);
-                stepPlayerPlan.StartTime = stepDefinitionPlan.StartTime;
-                stepPlayerPlan.EndTime = stepDefinitionPlan.EndTime;
-                stepPlayerPlan.Duration = stepDefinitionPlan.Duration;
-                stepPlayerPlan.Delay = stepDefinitionPlan.Delay;
-                stepPlayerPlan.InitOnStart = stepDefinitionPlan.InitOnStart;
-                stepPlayerPlan.RunWithPreviousStep = stepDefinitionPlan.RunWithPreviousStep;
+                stepExecution.Definition = stepDefinitionPlan.Definition;
+                stepExecution.Player = CreateStepPlayer(stepDefinitionPlan.Definition);
+                stepExecution.StartTime = stepDefinitionPlan.StartTime;
+                stepExecution.EndTime = stepDefinitionPlan.EndTime;
+                stepExecution.Duration = stepDefinitionPlan.Duration;
+                stepExecution.Delay = stepDefinitionPlan.Delay;
+                stepExecution.InitOnStart = stepDefinitionPlan.InitOnStart;
+                stepExecution.RunWithPreviousStep = stepDefinitionPlan.RunWithPreviousStep;
 
-                playerPlan.Steps.Add(stepPlayerPlan);
+                playerPlan.Steps.Add(stepExecution);
             }
 
             return playerPlan;
