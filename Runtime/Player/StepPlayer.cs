@@ -9,7 +9,6 @@ namespace Damdor.Sequentio
         public virtual void Init(VarioStorage storage) {}
         public virtual void SetProgress(float t){}
         public virtual void ReturnToInitialState(){}
-        public virtual void Release(){}
     }
     
     public class StepPlayer<TStepDefinition> : StepPlayer where TStepDefinition : StepDefinition

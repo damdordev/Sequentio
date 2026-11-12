@@ -123,7 +123,7 @@ namespace Damdor.Sequentio
 
                 if (!stepData.ValuesApplied)
                 {
-                    stepData.Player.Init(execution.Storage);
+                    stepData.Init(execution.Storage);
                     stepData.ValuesApplied = true;
                 }
 
@@ -138,7 +138,7 @@ namespace Damdor.Sequentio
             for (var index = execution.Steps.Count - 1; index >= 0; index--)
             {
                 if (!execution.Steps[index].ValuesApplied) continue;
-                execution.Steps[index].Player.ReturnToInitialState();
+                execution.Steps[index].ReturnToInitialState();
             }
 
             execution.CurrentTime = 0f;
@@ -149,7 +149,6 @@ namespace Damdor.Sequentio
             for (var index = execution.Steps.Count - 1; index >= 0; index--)
             {
                 if (!execution.Steps[index].ValuesApplied) continue;
-                execution.Steps[index].Player.Release();
             }
         }
 
@@ -169,7 +168,7 @@ namespace Damdor.Sequentio
             foreach (var stepPlan in execution.Steps)
             {
                 if (!stepPlan.InitOnStart) continue;
-                stepPlan.Player.Init(execution.Storage);
+                stepPlan.Init(execution.Storage);
                 stepPlan.ValuesApplied = true;
                 stepPlan.SetProgress(0f);
             }

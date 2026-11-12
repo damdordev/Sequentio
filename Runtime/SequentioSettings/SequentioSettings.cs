@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Damdor.Sequentio
 {
     public static class SequentioSettings
     {
         public static IReadOnlyList<Type> SupportedStepTypes => supportedStepTypes;
+        public static bool LogStepErrors { get; set; }
+        public static SequentioStepErrorHandler StepErrorHandler { get; set; }
 
         private static readonly List<Type> supportedStepTypes = new();
         private static readonly Dictionary<Type, string> stepTypeToPath = new();
@@ -41,6 +44,16 @@ namespace Damdor.Sequentio
         {
             var icon = stepToIcon.GetValueOrDefault(type, "");
             return icon;
+        }
+
+        internal static void NotifyOnStepError(SequentioStepErrorHandlerData data)
+        {
+            if(LogStepErrors)
+            {
+                Debug.LogError($"Sequentio: Step error: {data.ErrorSource}: {data.Definition.GetType().Name}: - {data.Exception}");
+            }
+
+            StepErrorHandler?.Invoke(data);
         }
         
     }

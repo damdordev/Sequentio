@@ -1,5 +1,9 @@
 // ReSharper disable Unity.PerformanceCriticalCodeInvocation
 // ReSharper disable UnusedAutoPropertyAccessor.Global
+
+using System;
+using Damdor.Vario;
+
 namespace Damdor.Sequentio
 {
     public class StepExecution
@@ -15,10 +19,41 @@ namespace Damdor.Sequentio
         public float Delay { get; set; }
         public float Progress { get; private set; }
 
+        public void Init(VarioStorage storage)
+        {
+            try
+            {
+                Player.Init(storage);
+            }
+            catch (Exception e)
+            {
+                NotifyException(SequentioStepErrorSource.InitPlayer, e);
+            }
+        }
+        
         public void SetProgress(float progress)
         {
             Progress = progress;
-            Player.SetProgress(progress);
+            try
+            {
+                Player.SetProgress(progress);
+            }
+            catch (Exception e)
+            {
+                NotifyException(SequentioStepErrorSource.SetProgress, e);
+            }
+        }
+
+        public void ReturnToInitialState()
+        {
+            try
+            {
+                Player.ReturnToInitialState();
+            }
+            catch (Exception e)
+            {
+                NotifyException(SequentioStepErrorSource.ReturnToInitialState, e);
+            }
         }
 
         public void Release()
@@ -39,6 +74,17 @@ namespace Damdor.Sequentio
             RunWithPreviousStep = false;
             Delay = 0f;
             Progress = 0f;
+        }
+        
+        private void NotifyException(SequentioStepErrorSource source, Exception exception)
+        {
+            SequentioSettings.NotifyOnStepError(new SequentioStepErrorHandlerData(
+                    source,
+                    Definition,
+                    Player,
+                    exception
+                )
+            );
         }
     }
 }

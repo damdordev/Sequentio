@@ -41,7 +41,22 @@ namespace Damdor.Sequentio
                 var stepExecution = SequentioPooling.PopStepExecution();
                 
                 stepExecution.Definition = stepDefinitionPlan.Definition;
-                stepExecution.Player = CreateStepPlayer(stepDefinitionPlan.Definition);
+                try
+                {
+                    stepExecution.Player = CreateStepPlayer(stepDefinitionPlan.Definition);
+                }
+                catch (Exception e)
+                {
+                    SequentioSettings.NotifyOnStepError(new SequentioStepErrorHandlerData(
+                            SequentioStepErrorSource.CreatePlayer,
+                            stepDefinitionPlan.Definition,
+                            null,
+                            e
+                        )
+                    );
+                    continue;
+                }
+
                 stepExecution.StartTime = stepDefinitionPlan.StartTime;
                 stepExecution.EndTime = stepDefinitionPlan.EndTime;
                 stepExecution.Duration = stepDefinitionPlan.Duration;
@@ -81,7 +96,22 @@ namespace Damdor.Sequentio
                  stepPlan.RunWithPreviousStep = stepDefinition.RunWithPreviousStep;
                  stepPlan.InitOnStart = stepDefinition.InitOnStart;
                  stepPlan.Delay = stepDefinition.Delay.Evaluate(plan.Storage);
-                 stepPlan.Duration = stepDefinition.CalculateDuration(plan.Storage);
+                 try
+                 {
+                     stepPlan.Duration = stepDefinition.CalculateDuration(plan.Storage);
+                 }
+                 catch (Exception e)
+                 {
+                     SequentioSettings.NotifyOnStepError(new SequentioStepErrorHandlerData(
+                             SequentioStepErrorSource.CalculateDuration,
+                             stepDefinition,
+                             null,
+                             e
+                         )
+                     );
+                     continue;
+                 }
+
                  stepPlan.OriginalIndex = index;
 
                  plan.Steps.Add(stepPlan);
