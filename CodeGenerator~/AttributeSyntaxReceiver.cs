@@ -4,6 +4,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Damdor.Sequentio.CodeGenerator;
 
+/// <summary>
+/// Collects class declarations whose attributes match the configured names.
+/// </summary>
 public class AttributeSyntaxReceiver : ISyntaxReceiver
 {
     private class AttributeData
@@ -16,10 +19,17 @@ public class AttributeSyntaxReceiver : ISyntaxReceiver
         public List<ClassDeclarationSyntax> Classes = new();
     }
     
+    /// <summary>
+    /// The collected class declarations indexed by configured attribute name.
+    /// </summary>
     public Dictionary<string, List<ClassDeclarationSyntax>> CandidateClasses { get; }
     
     private readonly List<AttributeData> attributes = new();
 
+    /// <summary>
+    /// Creates a receiver that collects classes with the specified attributes.
+    /// </summary>
+    /// <param name="attributes">The attribute names to match. Matching also accepts an Attribute suffix and namespace qualification in source code.</param>
     public AttributeSyntaxReceiver(params string[] attributes)
     {
         CandidateClasses = new Dictionary<string, List<ClassDeclarationSyntax>>(attributes.Length);
@@ -37,6 +47,10 @@ public class AttributeSyntaxReceiver : ISyntaxReceiver
         }
     }
 
+    /// <summary>
+    /// Collects attributed class declarations matching the configured attribute names.
+    /// </summary>
+    /// <param name="syntaxNode">The syntax node to inspect for attributed class declarations.</param>
     public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
     {
         if(syntaxNode is not ClassDeclarationSyntax classSyntax) return;

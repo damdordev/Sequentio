@@ -4,10 +4,17 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
+    /// <summary>
+    /// Defines a step for tweening three-dimensional vector values.
+    /// </summary>
+    /// <typeparam name="TComponent">The target type whose value is modified.</typeparam>
     [Serializable]
     public abstract class Vector3TweenStepDefinition<TComponent> : TweenStepDefinition<TComponent, Vector3>
         where TComponent : class
     {
+        /// <summary>
+        /// The vector axes modified by the tween.
+        /// </summary>
         public VarioValue<Vector3AxisFilter> AxisFilter
         {
             get => axisFilter;
@@ -16,6 +23,7 @@ namespace Damdor.Sequentio
         
         [SerializeField] private VarioValue<Vector3AxisFilter> axisFilter;
 
+        /// <inheritdoc />
         public override void Reset()
         {
             base.Reset();

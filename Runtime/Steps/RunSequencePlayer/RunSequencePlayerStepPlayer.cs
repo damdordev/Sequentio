@@ -2,10 +2,14 @@ using Damdor.Vario;
 
 namespace Damdor.Sequentio.RunSequence
 {
+    /// <summary>
+    /// Maps step progress to the playback time of a sequence player component.
+    /// </summary>
     public class RunSequencePlayerStepPlayer : StepPlayer<RunSequencePlayerStepDefinition>
     {
         private SequencePlayer sequencePlayer;
 
+        /// <inheritdoc />
         protected override void Init(RunSequencePlayerStepDefinition definition, VarioStorage storage)
         {
             base.Init(definition, storage);
@@ -13,18 +17,21 @@ namespace Damdor.Sequentio.RunSequence
             sequencePlayer.Init();
         }
 
+        /// <inheritdoc />
         public override void Reset()
         {
             base.Reset();
             sequencePlayer = null;
         }
 
+        /// <inheritdoc />
         public override void ReturnToInitialState()
         {
             base.ReturnToInitialState();
             sequencePlayer.Stop(StopBehaviour.ReturnToInitialState);
         }
         
+        /// <inheritdoc />
         public override void SetProgress(float t)
         {
             base.SetProgress(t);

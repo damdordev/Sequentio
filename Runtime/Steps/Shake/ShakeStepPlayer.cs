@@ -6,6 +6,11 @@ using Random = UnityEngine.Random;
 
 namespace Damdor.Sequentio
 {
+    /// <summary>
+    /// Generates shake offsets and applies them relative to the captured initial value.
+    /// </summary>
+    /// <typeparam name="TShakeStepDefinition">The shake definition type handled by the player.</typeparam>
+    /// <typeparam name="TComponent">The target type whose value is modified.</typeparam>
     public abstract class ShakeStepPlayer<TShakeStepDefinition, TComponent> : StepPlayer<TShakeStepDefinition>
         where TShakeStepDefinition : ShakeStepDefinition<TComponent>
         where TComponent : class
@@ -22,6 +27,7 @@ namespace Damdor.Sequentio
         private readonly List<Vector3> endValues = new();
         private Vector3 initialValue;
         
+        /// <inheritdoc />
         protected override void Init(TShakeStepDefinition definition, VarioStorage storage)
         {
             base.Init(definition, storage);
@@ -37,6 +43,7 @@ namespace Damdor.Sequentio
             Prepare();
         }
 
+        /// <inheritdoc />
         public override void Reset()
         {
             base.Reset();
@@ -45,6 +52,7 @@ namespace Damdor.Sequentio
             endValues.Clear();
         }
 
+        /// <inheritdoc />
         public override void SetProgress(float t)
         {
             base.SetProgress(t);
@@ -68,6 +76,7 @@ namespace Damdor.Sequentio
             SetValue(target, initialValue + value);
         }
 
+        /// <inheritdoc />
         public override void ReturnToInitialState()
         {
             base.ReturnToInitialState();
@@ -134,7 +143,17 @@ namespace Damdor.Sequentio
             return new Vector3(magnitude * Mathf.Cos(f), magnitude * Mathf.Sin(f), 0.0f);
         }
         
+        /// <summary>
+        /// Reads the animated or assigned value from the target.
+        /// </summary>
+        /// <param name="target">The target whose value is read or written.</param>
+        /// <returns>The current value of the target property.</returns>
         protected abstract Vector3 GetValue(TComponent target);
+        /// <summary>
+        /// Writes the animated or assigned value to the target.
+        /// </summary>
+        /// <param name="target">The target whose value is read or written.</param>
+        /// <param name="value">The value to apply or convert.</param>
         protected abstract void SetValue(TComponent target, Vector3 value);
     }
 }

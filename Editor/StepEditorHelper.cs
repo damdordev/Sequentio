@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace Damdor.Sequentio.Editor
 {
+    /// <summary>
+    /// Draws step previews, progress, and grouped parameter fields in sequence inspectors.
+    /// </summary>
     public static class StepEditorHelper
     {
         private const float IconSize = 32f;
@@ -29,6 +32,14 @@ namespace Damdor.Sequentio.Editor
             public readonly List<StepParameterEntry> Entries = new();
         }
 
+        /// <summary>
+        /// Draws a step icon, label, duration, and optional playback progress in a list row.
+        /// </summary>
+        /// <param name="property">The serialized step or endpoint property to draw.</param>
+        /// <param name="rect">The rectangle in which to draw the preview or progress.</param>
+        /// <param name="index">The zero-based index of the step in the serialized array.</param>
+        /// <param name="storage">The variable storage used to resolve step parameters.</param>
+        /// <param name="sequencePlayer">The player used for playback controls or progress display; null where the view supports no player.</param>
         public static void DrawQuickPreview(SerializedProperty property, Rect rect, int index, VarioStorage storage, ISequencePlayer sequencePlayer)
         {
             var element = property.GetArrayElementAtIndex(index);
@@ -61,6 +72,11 @@ namespace Damdor.Sequentio.Editor
             GUI.DrawTexture(rect, icon, ScaleMode.ScaleToFit, true);
         }
 
+        /// <summary>
+        /// Gets the registered editor display name of a step.
+        /// </summary>
+        /// <param name="step">The step definition whose progress or metadata is requested.</param>
+        /// <returns>The registered display name, or an empty string if the type is not registered.</returns>
         public static string GetStepName(StepDefinition step)
         {
             return SequentioSettings.GetStepName(step.GetType());
@@ -105,6 +121,11 @@ namespace Damdor.Sequentio.Editor
             );
         }
         
+        /// <summary>
+        /// Draws the selected step header and grouped parameter fields.
+        /// </summary>
+        /// <param name="property">The serialized step or endpoint property to draw.</param>
+        /// <param name="storage">The variable storage used to resolve step parameters.</param>
         public static void ShowStepDetails(SerializedProperty property, VarioStorage storage)
         {
             var step = (StepDefinition)property.managedReferenceValue;
@@ -148,11 +169,21 @@ namespace Damdor.Sequentio.Editor
         }
 
         
+        /// <summary>
+        /// Draws the current progress of a step as an editor progress bar.
+        /// </summary>
+        /// <param name="rect">The rectangle in which to draw the preview or progress.</param>
+        /// <param name="sequencePlayer">The player used for playback controls or progress display; null where the view supports no player.</param>
+        /// <param name="step">The step definition whose progress or metadata is requested.</param>
         public static void ShowProgress(Rect rect, ISequencePlayer sequencePlayer, StepDefinition step)
         {
             EditorGUI.ProgressBar(rect, sequencePlayer.GetProgress(step), "");
         }
         
+        /// <summary>
+        /// Draws visible serialized step fields grouped and ordered by their parameter group attributes.
+        /// </summary>
+        /// <param name="property">The serialized step or endpoint property to draw.</param>
         public static void ShowStepFields(SerializedProperty property)
         {
             var step = property.managedReferenceValue as StepDefinition;

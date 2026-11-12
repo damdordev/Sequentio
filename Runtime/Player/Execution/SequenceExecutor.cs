@@ -4,11 +4,19 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
+    /// <summary>
+    /// Initializes and updates step players according to sequence timing, direction, and loop settings.
+    /// </summary>
     public class SequenceExecutor
     {
         private SequenceExecution execution;
         private PlayDirection direction;
 
+        /// <summary>
+        /// Obtains a pooled executor and initializes the supplied execution.
+        /// </summary>
+        /// <param name="execution">The mutable sequence execution to control.</param>
+        /// <returns>A pooled instance. Call its Release method when it is no longer needed.</returns>
         public static SequenceExecutor Create(SequenceExecution execution)
         {
             var player = SequentioPooling.PopSequenceExecutor();
@@ -24,6 +32,11 @@ namespace Damdor.Sequentio
             this.execution.CurrentTime = direction == PlayDirection.Forward ? 0f : this.execution.Duration;
         }
 
+        /// <summary>
+        /// Advances sequence playback by the supplied elapsed time.
+        /// </summary>
+        /// <param name="dt">The elapsed time in seconds before applying playback speed and direction.</param>
+        /// <returns>Whether non-looping playback has reached its terminal boundary.</returns>
         public SequenceExecutorUpdateResult Update(float dt)
         {
             dt *= execution.Settings.Speed;
@@ -109,6 +122,10 @@ namespace Damdor.Sequentio
             return SequenceExecutorUpdateResult.NotFinished;
         }
 
+        /// <summary>
+        /// Clamps sequence time and applies the corresponding progress to scheduled steps.
+        /// </summary>
+        /// <param name="newTime">The requested sequence time in seconds, clamped to the sequence duration.</param>
         public void SetTime(float newTime)
         {
             execution.CurrentTime = Mathf.Clamp(newTime, 0f, execution.Duration);
@@ -137,6 +154,9 @@ namespace Damdor.Sequentio
             }
         }
 
+        /// <summary>
+        /// Restores target values captured during step initialization.
+        /// </summary>
         public void ReturnToInitialState()
         {
             for (var index = execution.Steps.Count - 1; index >= 0; index--)
@@ -148,6 +168,9 @@ namespace Damdor.Sequentio
             execution.CurrentTime = 0f;
         }
 
+        /// <summary>
+        /// Resets the supplied instance and returns it to the corresponding Sequentio pool.
+        /// </summary>
         public void ReleaseSteps()
         {
             for (var index = execution.Steps.Count - 1; index >= 0; index--)
@@ -156,6 +179,9 @@ namespace Damdor.Sequentio
             }
         }
 
+        /// <summary>
+        /// Resets this instance and returns it to its Sequentio pool. Do not use it after release.
+        /// </summary>
         public void Release()
         {
             SequentioPooling.ReleaseSequenceExecutor(this);

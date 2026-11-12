@@ -7,17 +7,38 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Damdor.Sequentio.CodeGenerator;
 
+/// <summary>
+/// Provides source generation helpers for registering classes marked with selected attributes.
+/// </summary>
 public abstract class ClassRegisterViaAttributeCodeGenerator : ISourceGenerator
 {
+    /// <summary>
+    /// The attribute names recognized by this generator.
+    /// </summary>
     public abstract string[] Attributes { get; } 
     
+    /// <summary>
+    /// Registers the syntax receiver used to discover attributed classes.
+    /// </summary>
+    /// <param name="context">The Roslyn context used to register callbacks or emit generated source.</param>
     public void Initialize(GeneratorInitializationContext context)
     {
         context.RegisterForSyntaxNotifications(() => new AttributeSyntaxReceiver(Attributes));
     }
 
+    /// <summary>
+    /// Generates registration source for the attributed step definitions in the compilation.
+    /// </summary>
+    /// <param name="context">The Roslyn context used to register callbacks or emit generated source.</param>
     public abstract void Execute(GeneratorExecutionContext context);
     
+    /// <summary>
+    /// Emits a Unity initialization class that registers concrete classes carrying the selected attribute.
+    /// </summary>
+    /// <param name="context">The Roslyn context used to register callbacks or emit generated source.</param>
+    /// <param name="attribute">The configured attribute name for which registration code is generated.</param>
+    /// <param name="register">The callback that appends registration code for a fully qualified class name and its attribute data.</param>
+    /// <param name="customMethods">An optional callback that appends helper methods to the generated registration class.</param>
     protected void GenerateForAttribute(
             GeneratorExecutionContext context, 
             string attribute, 

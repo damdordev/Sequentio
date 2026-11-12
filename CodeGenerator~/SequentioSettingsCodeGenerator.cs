@@ -3,13 +3,21 @@ using Microsoft.CodeAnalysis;
 
 namespace Damdor.Sequentio.CodeGenerator
 {
+    /// <summary>
+    /// Generates initialization code that registers attributed Sequentio steps.
+    /// </summary>
     [Generator]
     public class SequentioSettingsCodeGenerator : ClassRegisterViaAttributeCodeGenerator
     {
+        /// <summary>
+        /// The short attribute name used to discover Sequentio step definitions.
+        /// </summary>
         public const string SequentioStepAttribute = "SequentioStep";
 
+        /// <inheritdoc />
         public override string[] Attributes { get; } = { SequentioStepAttribute };
 
+        /// <inheritdoc />
         public override void Execute(GeneratorExecutionContext context)
         {
             GenerateForAttribute(context, SequentioStepAttribute, (sb, type, attrData) =>

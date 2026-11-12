@@ -8,13 +8,34 @@ using Cysharp.Threading.Tasks;
 
 namespace Damdor.Sequentio
 {
+    /// <summary>
+    /// Provides pooled sequence playback independent of a Unity component. Release the instance when it is no longer needed.
+    /// </summary>
     public class RuntimeSequence : ISequenceDefinition, ISequencePlayer, ISequentioUpdateReceiver
     {
+        /// <summary>
+        /// The current playback state.
+        /// </summary>
         public SequencePlayerState State { get; private set; }
+        
+        /// <summary>
+        /// The playback settings for this sequence.
+        /// </summary>
         public SequenceSettings Settings => settings;
+        
+        /// <summary>
+        /// The ordered steps in this sequence.
+        /// </summary>
         public IReadOnlyList<StepDefinition> Steps => definition.Steps;
+        
+        /// <summary>
+        /// The variable storage associated with this sequence.
+        /// </summary>
         public VarioStorage Storage => definition.Storage;
 
+        /// <summary>
+        /// The sequence duration in seconds, excluding additional loop iterations.
+        /// </summary>
         public float Duration
         {
             get
@@ -27,6 +48,9 @@ namespace Damdor.Sequentio
             }
         }
 
+        /// <summary>
+        /// The current position on the sequence timeline, in seconds.
+        /// </summary>
         public float CurrentTime => execution?.CurrentTime ?? 0;
 
         private SequenceDefinition ownedDefinition;
@@ -36,6 +60,13 @@ namespace Damdor.Sequentio
         private Action<VarioStorage, SequenceSettings> modify;
         private SequenceExecution execution;
 
+        /// <summary>
+        /// Obtains a pooled runtime sequence using the supplied definition and cloned settings.
+        /// </summary>
+        /// <param name="definition">The definition used to configure playback.</param>
+        /// <param name="settings">The playback settings to copy for the sequence.</param>
+        /// <param name="modify">An optional callback that modifies cloned storage and settings before step timings are evaluated.</param>
+        /// <returns>A pooled instance. Call its Release method when it is no longer needed.</returns>
         public static RuntimeSequence Create(ISequenceDefinition definition, SequenceSettings settings, Action<VarioStorage, SequenceSettings> modify = null)
         {
             var runtimeSequence = SequentioPooling.PopSequenceRuntimeSequence();
@@ -44,6 +75,10 @@ namespace Damdor.Sequentio
         }
 
         // ReSharper disable once UnusedMember.Global
+        /// <summary>
+        /// Obtains a pooled runtime sequence with an empty owned definition and default settings.
+        /// </summary>
+        /// <returns>A pooled instance. Call its Release method when it is no longer needed.</returns>
         public static RuntimeSequence Create()
         {
             var sequencePlaybackPlayer = SequentioPooling.PopSequenceRuntimeSequence();
@@ -68,12 +103,18 @@ namespace Damdor.Sequentio
             modify = null;
         }
 
+        /// <summary>
+        /// Starts playback to create the execution, then pauses it for manual control.
+        /// </summary>
         public void Init()
         {
             Play();
             Pause();
         }
 
+        /// <summary>
+        /// Starts playback, resumes a paused sequence, or restarts a finished sequence.
+        /// </summary>
         public void Play()
         {
             switch (State)
@@ -102,6 +143,10 @@ namespace Damdor.Sequentio
         }
         
 #if DAMDOR_SEQUENTIO_UNITASK
+        /// <summary>
+        /// Starts playback and waits until the sequence finishes or returns to the idle state.
+        /// </summary>
+        /// <returns>A task that completes when playback finishes or is stopped.</returns>
         public UniTask PlayAndWait()
         {
             Play();
@@ -109,6 +154,9 @@ namespace Damdor.Sequentio
         }
 #endif
         
+        /// <summary>
+        /// Pauses playback if the sequence is currently playing.
+        /// </summary>
         public void Pause()
         {
             if (State == SequencePlayerState.Playing)
@@ -117,12 +165,19 @@ namespace Damdor.Sequentio
             }
         }
         
+        /// <summary>
+        /// Stops playback using the configured default stop behavior.
+        /// </summary>
         public void Stop()
         {
             if (State == SequencePlayerState.Idle) return;
             Stop(execution.Settings.DefaultStopBehaviour);
         }
         
+        /// <summary>
+        /// Stops playback using the specified target restoration behavior.
+        /// </summary>
+        /// <param name="stopBehaviour">Whether to restore captured initial target values or retain current values.</param>
         public void Stop(StopBehaviour stopBehaviour)
         {
             if (State == SequencePlayerState.Idle) return;
@@ -131,6 +186,10 @@ namespace Damdor.Sequentio
             ReleaseSequencePlanRunner();
         }
         
+        /// <summary>
+        /// Applies the requested sequence time. Has no effect while the player is idle.
+        /// </summary>
+        /// <param name="time">The requested sequence time in seconds, clamped to the sequence duration.</param>
         public void MoveToTime(float time)
         {
             if (State == SequencePlayerState.Idle) return;
@@ -138,6 +197,10 @@ namespace Damdor.Sequentio
             runner.SetTime(time);
         }
 
+        /// <summary>
+        /// Advances sequence playback by the supplied elapsed time.
+        /// </summary>
+        /// <param name="dt">The elapsed time in seconds before applying playback speed and direction.</param>
         public void Update(float dt)
         {
             if (State != SequencePlayerState.Playing) return;
@@ -156,11 +219,19 @@ namespace Damdor.Sequentio
             SequentioUpdateProvider.Unregister(this);
         }
 
+        /// <summary>
+        /// Resets this instance and returns it to its Sequentio pool. Do not use it after release.
+        /// </summary>
         public void Release()
         {
             SequentioPooling.ReleaseRuntimeSequence(this);
         }
 
+        /// <summary>
+        /// Gets the last assigned normalized progress of the specified step.
+        /// </summary>
+        /// <param name="definition">The step definition whose progress or metadata is requested.</param>
+        /// <returns>The step progress, or zero if there is no active execution or the step is not present.</returns>
         public float GetProgress(StepDefinition definition)
         {
             if (State == SequencePlayerState.Idle) return 0f;

@@ -3,9 +3,13 @@ using UnityEngine;
 
 namespace Damdor.Sequentio.Editor
 {
+    /// <summary>
+    /// Draws tween endpoint fields according to the selected value source.
+    /// </summary>
     [CustomPropertyDrawer(typeof(TweenEndpoint<,>))]
     public class TweenPointPropertyDrawer : PropertyDrawer
     {
+        /// <inheritdoc />
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             var valueSourceProperty = property.FindPropertyRelative("valueSource");
@@ -37,6 +41,7 @@ namespace Damdor.Sequentio.Editor
             };
         }
 
+        /// <inheritdoc />
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, property);

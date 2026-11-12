@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace Damdor.Sequentio.Editor
 {
+    /// <summary>
+    /// Draws an interactive sequence timeline with step selection, zooming, panning, and a playback indicator.
+    /// </summary>
     public sealed class SequenceTimelineHelper
     {
         private const float RulerHeight = 24f;
@@ -21,6 +24,12 @@ namespace Damdor.Sequentio.Editor
         private int lastSelectedIndex = -1;
         private GUIStyle stepLabelStyle;
 
+        /// <summary>
+        /// Draws the sequence timeline and handles zooming, panning, and step selection.
+        /// </summary>
+        /// <param name="sequenceDefinitionPlan">The compiled sequence plan.</param>
+        /// <param name="sequencePlayer">The player used for playback controls or progress display; null where the view supports no player.</param>
+        /// <param name="stepsList">The optional step list synchronized with timeline selection.</param>
         public void Draw(SequencePlan sequenceDefinitionPlan, ISequencePlayer sequencePlayer, ReorderableList stepsList)
         {
             this.sequenceDefinitionPlan = sequenceDefinitionPlan;

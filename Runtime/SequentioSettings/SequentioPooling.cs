@@ -29,6 +29,9 @@ namespace Damdor.Sequentio
         private static readonly ObjectPool<SequenceDefinition> sequenceDefinitionPool =
             new(200, runner => runner.Reset(), true);
 
+        /// <summary>
+        /// Gets or sets the maximum number of retained players per step player type.
+        /// </summary>
         public static int StepPlayerPoolSize
         {
             get => stepPlayerPoolSize;
@@ -39,87 +42,184 @@ namespace Damdor.Sequentio
             }
         }
 
+        /// <summary>
+        /// Gets or sets the maximum number of retained sequence settings.
+        /// </summary>
         public static int SequenceSettingsPoolSize
         {
             get => sequenceSettingsPool.MaxSize;
             set => sequenceSettingsPool.MaxSize = value;
         }
 
+        /// <summary>
+        /// Gets or sets the maximum number of retained step plans.
+        /// </summary>
         public static int StepDefinitionPlan
         {
             get => stepDefinitionPlanPool.MaxSize;
             set => stepDefinitionPlanPool.MaxSize = value;
         }
 
+        /// <summary>
+        /// Gets or sets the maximum number of retained sequence plans.
+        /// </summary>
         public static int SequenceDefinitionPlan
         {
             get => sequenceDefinitionPlanPool.MaxSize;
             set => sequenceDefinitionPlanPool.MaxSize = value;
         }
 
+        /// <summary>
+        /// Gets or sets the maximum number of retained step executions.
+        /// </summary>
         public static int StepPlayerPlan
         {
             get => stepPlayerPlanPool.MaxSize;
             set => stepPlayerPlanPool.MaxSize = value;
         }
 
+        /// <summary>
+        /// Gets or sets the maximum number of retained sequence executions.
+        /// </summary>
         public static int SequencePlayerPlan
         {
             get => sequencePlayerPlanPool.MaxSize;
             set => sequencePlayerPlanPool.MaxSize = value;
         }
 
+        /// <summary>
+        /// Gets or sets the maximum number of retained sequence executors.
+        /// </summary>
         public static int SequencePlayerPlanRunner
         {
             get => sequencePlayerPlanRunnerPool.MaxSize;
             set => sequencePlayerPlanRunnerPool.MaxSize = value;
         }
 
+        /// <summary>
+        /// Gets or sets the maximum number of retained runtime sequences.
+        /// </summary>
         public static int SequencePlaybackPlayerPoolSize
         {
             get => sequencePlaybackRunnerPool.MaxSize;
             set => sequencePlaybackRunnerPool.MaxSize = value;
         }
 
+        /// <summary>
+        /// Gets or sets the maximum number of retained sequence definitions.
+        /// </summary>
         public static int SequenceDefinitionPoolSize
         {
             get => sequenceDefinitionPool.MaxSize;
             set => sequenceDefinitionPool.MaxSize = value;
         }
 
+        /// <summary>
+        /// Obtains an instance from the corresponding Sequentio pool, creating one if the pool is empty.
+        /// </summary>
+        /// <typeparam name="T">The concrete step player type to obtain from the pool.</typeparam>
+        /// <returns>The pooled or newly created instance.</returns>
         public static T PopStepPlayer<T>() where T : StepPlayer, new()
         {
             return (T)GetStepPlayerPool(typeof(T)).Pop(() => new T());
         }
 
+        /// <summary>
+        /// Resets the supplied instance and returns it to the corresponding Sequentio pool.
+        /// </summary>
+        /// <param name="step">The instance to reset and return to its pool.</param>
         public static void ReleaseStepPlayer(StepPlayer step)
         {
             if (step == null) return;
             GetStepPlayerPool(step.GetType()).Release(step);
         }
 
+        /// <summary>
+        /// Obtains an instance from the corresponding Sequentio pool, creating one if the pool is empty.
+        /// </summary>
+        /// <returns>The pooled or newly created instance.</returns>
         public static SequenceSettings PopSequenceSettings() => sequenceSettingsPool.Pop();
+        /// <summary>
+        /// Resets the supplied instance and returns it to the corresponding Sequentio pool.
+        /// </summary>
+        /// <param name="settings">The instance to reset and return to its pool.</param>
         public static void ReleaseSequenceSettings(SequenceSettings settings) => sequenceSettingsPool.Release(settings);
 
+        /// <summary>
+        /// Obtains an instance from the corresponding Sequentio pool, creating one if the pool is empty.
+        /// </summary>
+        /// <returns>The pooled or newly created instance.</returns>
         public static StepPlan PopStepDefinitionPlan() => stepDefinitionPlanPool.Pop();
+        /// <summary>
+        /// Resets the supplied instance and returns it to the corresponding Sequentio pool.
+        /// </summary>
+        /// <param name="plan">The instance to reset and return to its pool.</param>
         public static void ReleaseStepDefinitionPlan(StepPlan plan) => stepDefinitionPlanPool.Release(plan);
 
+        /// <summary>
+        /// Obtains an instance from the corresponding Sequentio pool, creating one if the pool is empty.
+        /// </summary>
+        /// <returns>The pooled or newly created instance.</returns>
         public static SequencePlan PopSequenceDefinitionPlan() => sequenceDefinitionPlanPool.Pop();
+        /// <summary>
+        /// Resets the supplied instance and returns it to the corresponding Sequentio pool.
+        /// </summary>
+        /// <param name="plan">The instance to reset and return to its pool.</param>
         public static void ReleaseSequenceDefinitionPlan(SequencePlan plan) => sequenceDefinitionPlanPool.Release(plan);
 
+        /// <summary>
+        /// Obtains an instance from the corresponding Sequentio pool, creating one if the pool is empty.
+        /// </summary>
+        /// <returns>The pooled or newly created instance.</returns>
         public static StepExecution PopStepExecution() => stepPlayerPlanPool.Pop();
+        /// <summary>
+        /// Resets the supplied instance and returns it to the corresponding Sequentio pool.
+        /// </summary>
+        /// <param name="plan">The instance to reset and return to its pool.</param>
         public static void ReleaseStepExecution(StepExecution plan) => stepPlayerPlanPool.Release(plan);
 
+        /// <summary>
+        /// Obtains an instance from the corresponding Sequentio pool, creating one if the pool is empty.
+        /// </summary>
+        /// <returns>The pooled or newly created instance.</returns>
         public static SequenceExecution PopSequenceExecution() => sequencePlayerPlanPool.Pop();
+        /// <summary>
+        /// Resets the supplied instance and returns it to the corresponding Sequentio pool.
+        /// </summary>
+        /// <param name="plan">The instance to reset and return to its pool.</param>
         public static void ReleaseSequenceExecution(SequenceExecution plan) => sequencePlayerPlanPool.Release(plan);
 
+        /// <summary>
+        /// Obtains an instance from the corresponding Sequentio pool, creating one if the pool is empty.
+        /// </summary>
+        /// <returns>The pooled or newly created instance.</returns>
         public static SequenceExecutor PopSequenceExecutor() => sequencePlayerPlanRunnerPool.Pop();
+        /// <summary>
+        /// Resets the supplied instance and returns it to the corresponding Sequentio pool.
+        /// </summary>
+        /// <param name="runner">The instance to reset and return to its pool.</param>
         public static void ReleaseSequenceExecutor(SequenceExecutor runner) => sequencePlayerPlanRunnerPool.Release(runner);
 
+        /// <summary>
+        /// Obtains an instance from the corresponding Sequentio pool, creating one if the pool is empty.
+        /// </summary>
+        /// <returns>The pooled or newly created instance.</returns>
         public static RuntimeSequence PopSequenceRuntimeSequence() => sequencePlaybackRunnerPool.Pop();
+        /// <summary>
+        /// Resets the supplied instance and returns it to the corresponding Sequentio pool.
+        /// </summary>
+        /// <param name="runner">The instance to reset and return to its pool.</param>
         public static void ReleaseRuntimeSequence(RuntimeSequence runner) => sequencePlaybackRunnerPool.Release(runner);
         
+        /// <summary>
+        /// Obtains an instance from the corresponding Sequentio pool, creating one if the pool is empty.
+        /// </summary>
+        /// <returns>The pooled or newly created instance.</returns>
         public static SequenceDefinition PopSequenceDefinition() => sequenceDefinitionPool.Pop();
+        /// <summary>
+        /// Resets the supplied instance and returns it to the corresponding Sequentio pool.
+        /// </summary>
+        /// <param name="definition">The definition used to configure playback.</param>
         public static void ReleaseSequenceDefinition(SequenceDefinition definition) => sequenceDefinitionPool.Release(definition);
         
         private static ObjectPool<StepPlayer> GetStepPlayerPool(Type type)

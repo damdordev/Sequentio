@@ -8,10 +8,22 @@ using UnityEngine;
 
 namespace Damdor.Sequentio.Editor
 {
+    /// <summary>
+    /// Draws sequence settings, variables, steps, and playback controls in custom inspectors.
+    /// </summary>
     public class SequenceEditorHelper
     {
+        /// <summary>
+        /// The sequence definition currently inspected by this helper.
+        /// </summary>
         public ISequenceDefinition SequenceDefinition { get; private set; }
+        /// <summary>
+        /// The sequence player controlled or inspected by this helper or step.
+        /// </summary>
         public ISequencePlayer SequencePlayer { get; private set; }
+        /// <summary>
+        /// The reorderable list used to edit and select sequence steps.
+        /// </summary>
         public ReorderableList StepList { get; private set; }
 
         private SerializedProperty settingsProperty;
@@ -25,6 +37,10 @@ namespace Damdor.Sequentio.Editor
         private GUIContent stopButtonContent;
         private GUIContent pauseButtonContent;
         
+        /// <summary>
+        /// Binds the inspector helper to a serialized sequence asset or player.
+        /// </summary>
+        /// <param name="serializedObject">The serialized sequence asset or component to inspect.</param>
         public void Setup(SerializedObject serializedObject)
         {
             if (this.serializedObject == serializedObject) return;
@@ -53,6 +69,9 @@ namespace Damdor.Sequentio.Editor
             pauseButtonContent ??= EditorGUIUtility.IconContent("PauseButton On");
         }
         
+        /// <summary>
+        /// Clears the serialized object binding and cached references used to draw the inspector.
+        /// </summary>
         public void Release()
         {
             serializedObject = null;
@@ -63,22 +82,34 @@ namespace Damdor.Sequentio.Editor
             StepList = null;
         }
         
+        /// <summary>
+        /// Draws the playback settings of the configured serialized object.
+        /// </summary>
         public void ShowSettings()
         {
             EditorGUILayout.PropertyField(settingsProperty);
         }
 
+        /// <summary>
+        /// Draws the variable storage section of the configured sequence definition.
+        /// </summary>
         public void ShowStorage()
         {
             storageProperty.isExpanded = EditorGUILayout.Foldout(storageProperty.isExpanded, "Storage");
             if (storageProperty.isExpanded) EditorGUILayout.PropertyField(storageProperty);
         }
 
+        /// <summary>
+        /// Draws the reorderable list of sequence steps.
+        /// </summary>
         public void ShowSteps()
         {
             StepList.DoLayoutList();
         }
 
+        /// <summary>
+        /// Draws parameter editors for the selected steps.
+        /// </summary>
         public void ShowSelectedStep()
         {
             EditorGUILayout.BeginVertical();
@@ -94,6 +125,10 @@ namespace Damdor.Sequentio.Editor
             EditorGUILayout.EndVertical();
         }
         
+        /// <summary>
+        /// Draws play, pause, stop, and timeline scrubbing controls for a sequence player.
+        /// </summary>
+        /// <param name="sequencePlayer">The player used for playback controls or progress display; null where the view supports no player.</param>
         public void ShowPlayerControls(ISequencePlayer sequencePlayer)
         {
             serializedObject.Update();

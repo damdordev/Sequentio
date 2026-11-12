@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
+    /// <summary>
+    /// Dispatches scaled or unscaled frame updates to registered sequence receivers in play mode and the editor.
+    /// </summary>
     public class SequentioUpdateProvider : MonoBehaviour
     {
         private static readonly List<ISequentioUpdateReceiver> receivers = new();
@@ -29,6 +32,11 @@ namespace Damdor.Sequentio
         }
 #endif
 
+        /// <summary>
+        /// Subscribes a receiver to scaled or unscaled sequence updates.
+        /// </summary>
+        /// <param name="receiver">The receiver to add to or remove from frame updates.</param>
+        /// <param name="unscaled">Whether the receiver uses unscaled elapsed time in play mode.</param>
         public static void Register(ISequentioUpdateReceiver receiver, bool unscaled)
         {
             if (receiver == null) return;
@@ -37,6 +45,10 @@ namespace Damdor.Sequentio
             if(!IsRegisteredToUpdate()) RegisterToUpdate();
         }
 
+        /// <summary>
+        /// Removes a receiver from both scaled and unscaled sequence updates.
+        /// </summary>
+        /// <param name="receiver">The receiver to add to or remove from frame updates.</param>
         public static void Unregister(ISequentioUpdateReceiver receiver)
         {
             receivers.Remove(receiver);

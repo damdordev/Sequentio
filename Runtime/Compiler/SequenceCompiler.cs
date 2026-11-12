@@ -7,10 +7,20 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
+    /// <summary>
+    /// Compiles sequence definitions into timed plans and executable step players.
+    /// </summary>
     public static class SequenceCompiler
     {
         private static readonly Dictionary<Type, StepCompiler> stepCompilers = new();
         
+        /// <summary>
+        /// Compiles enabled steps and evaluates their timings using cloned sequence settings and storage.
+        /// </summary>
+        /// <param name="definition">The definition used to configure playback.</param>
+        /// <param name="settings">The playback settings to copy for the sequence.</param>
+        /// <param name="modify">An optional callback that modifies cloned storage and settings before step timings are evaluated.</param>
+        /// <returns>A pooled plan. Call its Release method when it is no longer needed.</returns>
         public static SequencePlan CreateDefinitionPlan(
             ISequenceDefinition definition,
             SequenceSettings settings, 
@@ -28,6 +38,11 @@ namespace Damdor.Sequentio
             return plan;
         }
         
+        /// <summary>
+        /// Creates a pooled execution with cloned settings and storage and a player for each successfully compiled step.
+        /// </summary>
+        /// <param name="sequenceDefinitionPlan">The compiled sequence plan.</param>
+        /// <returns>A pooled execution. Call its Release method when it is no longer needed.</returns>
         public static SequenceExecution CreateExecution(SequencePlan sequenceDefinitionPlan)
         {
             var playerPlan = SequentioPooling.PopSequenceExecution();

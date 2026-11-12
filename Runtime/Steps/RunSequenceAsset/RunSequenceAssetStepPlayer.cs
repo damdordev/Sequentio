@@ -2,6 +2,9 @@ using Damdor.Vario;
 
 namespace Damdor.Sequentio
 {
+    /// <summary>
+    /// Maps step progress to the playback time of a nested sequence asset.
+    /// </summary>
     public class RunSequenceAssetStepPlayer : StepPlayer<RunSequenceAssetStepDefinition>
     {
         private SequenceAsset sequenceAsset;
@@ -9,6 +12,7 @@ namespace Damdor.Sequentio
         private RuntimeSequence runtimeSequence;
         private VarioStorage storageOverride;
         
+        /// <inheritdoc />
         protected override void Init(RunSequenceAssetStepDefinition definition, VarioStorage storage)
         {
             base.Init(definition, storage);
@@ -19,18 +23,21 @@ namespace Damdor.Sequentio
             runtimeSequence.Init();
         }
 
+        /// <inheritdoc />
         public override void SetProgress(float t)
         {
             base.SetProgress(t);
             runtimeSequence?.MoveToTime(t*runtimeSequence.Duration);
         }
 
+        /// <inheritdoc />
         public override void ReturnToInitialState()
         {
             base.ReturnToInitialState();
             runtimeSequence?.Stop(StopBehaviour.ReturnToInitialState);
         }
 
+        /// <inheritdoc />
         public override void Reset()
         {
             base.Reset();

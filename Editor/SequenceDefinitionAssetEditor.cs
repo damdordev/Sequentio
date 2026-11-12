@@ -2,6 +2,9 @@ using UnityEditor;
 
 namespace Damdor.Sequentio.Editor
 {
+    /// <summary>
+    /// Draws the custom inspector and timeline for a sequence asset.
+    /// </summary>
     [CustomEditor(typeof(SequenceAsset))]
     public class SequenceDefinitionAssetEditor : UnityEditor.Editor
     {
@@ -13,6 +16,7 @@ namespace Damdor.Sequentio.Editor
             sequenceEditorHelper.Release();
         }
 
+        /// <inheritdoc />
         public override void OnInspectorGUI()
         {
             var asset = target as SequenceAsset;

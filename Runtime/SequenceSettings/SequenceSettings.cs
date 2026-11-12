@@ -4,39 +4,60 @@ using UnityEngine;
 
 namespace Damdor.Sequentio
 {
+    /// <summary>
+    /// Configures automatic playback, looping, timing, speed, direction, and stopping.
+    /// </summary>
     [Serializable]
     public class SequenceSettings
     {
+        /// <summary>
+        /// The Unity lifecycle callback that starts playback automatically.
+        /// </summary>
         public AutoPlayMode AutoPlay
         {
             get => autoPlay;
             set => autoPlay = value;
         }
 
+        /// <summary>
+        /// The behavior used when playback reaches a sequence boundary.
+        /// </summary>
         public LoopMode Loop
         {
             get => loop;
             set => loop = value;
         }
 
+        /// <summary>
+        /// Whether playback uses scaled or unscaled elapsed time.
+        /// </summary>
         public TimescaleMode Timescale
         {
             get => timescale;
             set => timescale = value;
         }
         
+        /// <summary>
+        /// The multiplier applied to elapsed playback time.
+        /// </summary>
         public float Speed
         {
             get => speed;
             set => speed = value;
         }
 
+        /// <summary>
+        /// The initial playback direction.
+        /// </summary>
         public PlayDirection Direction
         {
             get => direction;
             set => direction = value;
         }
         
+        /// <summary>
+        /// The target restoration behavior used by the parameterless stop operation.
+        /// </summary>
         public StopBehaviour DefaultStopBehaviour
         {
             get => defaultStopBehaviour;
@@ -55,6 +76,10 @@ namespace Damdor.Sequentio
             return clone;
         }
 
+        /// <summary>
+        /// Copies all playback options from another settings instance.
+        /// </summary>
+        /// <param name="otherSettings">The settings from which all playback options are copied.</param>
         public void CopyFrom(SequenceSettings otherSettings)
         {
             AutoPlay = otherSettings.AutoPlay;
