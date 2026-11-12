@@ -30,7 +30,7 @@ namespace Damdor.Sequentio.Editor
             if (player.Asset == null) return;
 
             sequenceEditorHelper.ShowPlayerControls(player);
-            var plan = player.CreateDefinitionPlan(player.Settings);
+            var plan = SequenceCompiler.CreateDefinitionPlan(player.Asset, player.Settings, true);
             try
             {
                 timelineHelper.Draw(plan, player, null);

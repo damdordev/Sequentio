@@ -22,7 +22,7 @@ namespace Damdor.Sequentio.RunSequence
             var player = sequencePlayer.Evaluate(storage);
             if (!player) return 0f;
 
-            var plan = player.CreateDefinitionPlan();
+            var plan = SequenceCompiler.CreateDefinitionPlan(player, player.Settings, true);
             var duration = plan.Duration;
             plan.Release();
             return duration;

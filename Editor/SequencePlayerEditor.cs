@@ -25,7 +25,7 @@ namespace Damdor.Sequentio.Editor
             sequenceEditorHelper.ShowSettings();
             sequenceEditorHelper.ShowStorage();
 
-            var definitionPlan = sequencePlayer.CreateDefinitionPlan();
+            var definitionPlan = SequenceCompiler.CreateDefinitionPlan(sequencePlayer, sequencePlayer.Settings, true);
             timelineHelper.Draw(definitionPlan, sequencePlayer, sequenceEditorHelper.StepList);
             
             sequenceEditorHelper.ShowSteps();

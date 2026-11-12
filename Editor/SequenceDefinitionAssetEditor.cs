@@ -22,7 +22,7 @@ namespace Damdor.Sequentio.Editor
             sequenceEditorHelper.ShowStorage();
 
             var settings = SequentioPooling.PopSequenceSettings();
-            var sequencePlan = asset.CreateDefinitionPlan(settings);
+            var sequencePlan = SequenceCompiler.CreateDefinitionPlan(asset, settings, true);
             timelineHelper.Draw(sequencePlan, null, sequenceEditorHelper.StepList);
             settings?.Release();
             

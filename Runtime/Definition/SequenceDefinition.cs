@@ -12,7 +12,6 @@ namespace Damdor.Sequentio
     {
         public IReadOnlyList<StepDefinition> Steps => steps;
         public VarioStorage Storage => storage;
-        public SequencePlan CreateDefinitionPlan(SequenceSettings settings) => SequenceCompiler.CreateDefinitionPlan(this, settings, true, null);
 
         [SerializeField] private VarioStorage storage = new();
         [SerializeField] private SequenceSettings settings = new();

@@ -6,6 +6,5 @@ namespace Damdor.Sequentio
     public interface ISequenceDefinition : IVarioStorageSource
     {
         IReadOnlyList<StepDefinition> Steps { get; }
-        SequencePlan CreateDefinitionPlan(SequenceSettings settings);
     }
 }

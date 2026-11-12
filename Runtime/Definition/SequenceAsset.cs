@@ -13,7 +13,6 @@ namespace Damdor.Sequentio
     {
         public IReadOnlyList<StepDefinition> Steps => definition.Steps;
         public VarioStorage Storage => definition.Storage;
-        public SequencePlan CreateDefinitionPlan(SequenceSettings settings) => definition.CreateDefinitionPlan(settings);
 
         [SerializeField] private SequenceDefinition definition;
     }

@@ -14,8 +14,6 @@ namespace Damdor.Sequentio
         public SequenceSettings Settings => settings;
         public IReadOnlyList<StepDefinition> Steps => definition.Steps;
         public VarioStorage Storage => definition.Storage;
-        public SequencePlan CreateDefinitionPlan(SequenceSettings settings) => definition.CreateDefinitionPlan(settings);
-        public SequencePlan CreateDefinitionPlan() => definition.CreateDefinitionPlan(settings);
 
         public SequencePlayerState State => InnerSequence?.State ?? SequencePlayerState.Idle;
         public SequenceExecution Execution => InnerSequence?.Execution;

@@ -17,15 +17,13 @@ namespace Damdor.Sequentio
         public SequenceSettings Settings => settings;
         public IReadOnlyList<StepDefinition> Steps => definition.Steps;
         public VarioStorage Storage => definition.Storage;
-        public SequencePlan CreateDefinitionPlan(SequenceSettings settings) => SequenceCompiler.CreateDefinitionPlan(definition, settings, true, modify);
-        public SequencePlan CreateDefinitionPlan() => SequenceCompiler.CreateDefinitionPlan(definition, settings, true, modify);
 
         public float Duration
         {
             get
             {
                 if(Execution != null) return Execution.Duration;
-                var definitionPlan = CreateDefinitionPlan();
+                var definitionPlan = SequenceCompiler.CreateDefinitionPlan(definition, settings, true, modify);
                 var duration = definitionPlan.Duration;
                 definitionPlan.Release();
                 return duration;

@@ -54,8 +54,6 @@ namespace Damdor.Sequentio
             }
         }
 
-        public SequencePlan CreateDefinitionPlan(SequenceSettings settings) => InnerSequence?.CreateDefinitionPlan();
-        public SequencePlan CreateDefinitionPlan() => InnerSequence?.CreateDefinitionPlan();
         public void Init() => InnerSequence?.Init();
         public void Play() => InnerSequence?.Play();
         public void Pause() => InnerSequence?.Pause();

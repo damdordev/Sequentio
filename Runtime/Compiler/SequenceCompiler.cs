@@ -15,7 +15,7 @@ namespace Damdor.Sequentio
             ISequenceDefinition definition,
             SequenceSettings settings, 
             bool runtime, 
-            Action<VarioStorage, SequenceSettings> modify)
+            Action<VarioStorage, SequenceSettings> modify = null)
         {
             var plan = SequentioPooling.PopSequenceDefinitionPlan();
             plan.Settings = settings.Clone();
