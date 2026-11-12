@@ -31,7 +31,7 @@ namespace Damdor.Sequentio
         {
             base.SetProgress(t);
 
-            SetValue(target, TransformValue(Lerp(start, end, easing.Evaluate(t))));
+            SetValue(target, TransformValue(GetValue(target), Lerp(start, end, easing.Evaluate(t))));
         }
 
         public override void ReturnToInitialState()
@@ -61,7 +61,7 @@ namespace Damdor.Sequentio
 
         protected abstract TValue GetValue(TComponent component);
         protected abstract void SetValue(TComponent component, TValue value);
-        protected virtual TValue TransformValue(TValue value) => value;
+        protected virtual TValue TransformValue(TValue currentValue, TValue value) => value;
         
         // ReSharper disable once VirtualMemberNeverOverridden.Global
         protected virtual TValue Lerp(TValue a, TValue b, float t)

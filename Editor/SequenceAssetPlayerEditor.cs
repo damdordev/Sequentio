@@ -19,6 +19,7 @@ namespace Damdor.Sequentio.Editor
             serializedObject.Update();
             sequenceEditorHelper.Setup(serializedObject);
 
+            sequenceEditorHelper.ShowPlayerControls(player);
             using (new EditorGUI.DisabledScope(player.State != SequencePlayerState.Idle))
             {
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("asset"));
@@ -28,8 +29,7 @@ namespace Damdor.Sequentio.Editor
 
             serializedObject.ApplyModifiedProperties();
             if (player.Asset == null) return;
-
-            sequenceEditorHelper.ShowPlayerControls(player);
+            
             var plan = SequenceCompiler.CreateDefinitionPlan(player.Asset, player.Settings);
             try
             {

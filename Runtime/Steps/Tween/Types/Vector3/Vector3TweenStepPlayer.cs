@@ -22,6 +22,6 @@ namespace Damdor.Sequentio
             axisFilter = default;
         }
 
-        protected override Vector3 TransformValue(Vector3 value) => initValue.Modify(value, axisFilter);
+        protected override Vector3 TransformValue(Vector3 currentValue, Vector3 value) => currentValue.Modify(value, axisFilter);
     }
 }

@@ -20,12 +20,8 @@ namespace Damdor.Sequentio.RunSequence
         public override float CalculateDuration(VarioStorage storage)
         {
             var player = sequencePlayer.Evaluate(storage);
-            if (!player || player.Asset == null) return 0f;
-
-            var plan = SequenceCompiler.CreateDefinitionPlan(player.Asset, player.Settings);
-            var duration = plan.Duration;
-            plan.Release();
-            return duration;
+            if (!player) return 0f;
+            return !player ? 0f : player.Duration;
         }
 
         public override string GetTargetNameInEditor(VarioStorage storage) => GetTargetName(sequencePlayer, storage);

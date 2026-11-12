@@ -24,10 +24,9 @@ namespace Damdor.Sequentio
             hsvFilter = default;
         }
 
-        protected override Color TransformValue(Color value)
+        protected override Color TransformValue(Color currentValue, Color value)
         {
-            // Apply HSV restrictions first, then preserve any disabled RGBA channels.
-            return initValue.Modify(initValue.Modify(value, hsvFilter), channelFilter);
+            return currentValue.Modify(initValue.Modify(value, hsvFilter), channelFilter);
         }
     }
 }
