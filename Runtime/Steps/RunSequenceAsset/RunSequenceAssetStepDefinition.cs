@@ -26,13 +26,13 @@ namespace Damdor.Sequentio
             if (!definition) return 0f;
 
             var settings = SequentioPooling.PopSequenceSettings();
-            var plan = definition.CreateDefinitionPlan(settings);
+            var plan = SequenceCompiler.CreateDefinitionPlan(definition, settings, true, ApplyOverrides);
             var duration = plan.Duration;
             settings.Release();
             plan.Release();
             return duration;
         }
-        
+
         public override void Reset()
         {
             base.Reset();
@@ -40,6 +40,11 @@ namespace Damdor.Sequentio
             
             storageOverride.Release();
             storageOverride = null;
+        }
+        
+        private void ApplyOverrides(VarioStorage storage, SequenceSettings settings)
+        {
+            storage.CopyFrom(storageOverride);
         }
     }
 }
