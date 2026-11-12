@@ -208,6 +208,10 @@ namespace Damdor.Sequentio
             if (result == SequenceExecutorUpdateResult.Finished) State = SequencePlayerState.Finished;
         }
         
+        public T AddStep<T>() where T : StepDefinition, new() => definition.AddStep<T>();
+        public void RemoveStep(int index) => definition.RemoveStep(index);
+        public T InsertStep<T>(int index) where T : StepDefinition, new() => definition.InsertStep<T>(index);
+        
         private void ReleaseSequencePlanRunner()
         {
             if (runner == null) return;

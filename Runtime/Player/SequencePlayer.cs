@@ -106,6 +106,10 @@ namespace Damdor.Sequentio
         /// <returns>A task that completes when playback finishes or is stopped.</returns>
         public UniTask PlayAndWait() => InnerSequence?.PlayAndWait() ?? UniTask.CompletedTask;
 #endif
+        
+        public T AddStep<T>() where T : StepDefinition, new() => definition.AddStep<T>();
+        public void RemoveStep(int index) => definition.RemoveStep(index);
+        public T InsertStep<T>(int index) where T : StepDefinition, new() => definition.InsertStep<T>(index);
 
         /// <summary>
         /// Starts playback when automatic playback is configured for Awake.

@@ -17,7 +17,28 @@ namespace Damdor.Sequentio
         /// The ordered steps in this sequence.
         /// </summary>
         public IReadOnlyList<StepDefinition> Steps => steps;
-       
+
+        public T AddStep<T>() where T : StepDefinition, new()
+        {
+            var t = new T();
+            steps.Add(t);
+            return t;
+        }
+
+        public void RemoveStep(int index)
+        {
+            steps.RemoveAt(index);
+        }
+
+        public T InsertStep<T>(int index) where T : StepDefinition, new()
+        {
+            if(index < 0 || index > steps.Count)
+                throw new ArgumentOutOfRangeException(nameof(index));
+            var t = new T();
+            steps.Insert(index, t);
+            return t;
+        }
+
         /// <summary>
         /// The variable storage associated with this sequence.
         /// </summary>
