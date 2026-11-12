@@ -21,7 +21,8 @@ namespace Damdor.Sequentio
         }
 
         public SequenceSettings Settings => settings;
-        public VarioStorage Storage => storageOverride;
+        VarioStorage IVarioStorageSource.Storage => storageOverride;
+        public VarioStorage StorageOverride => storageOverride;
         public SequencePlayerState State => InnerSequence?.State ?? SequencePlayerState.Idle;
         public float Duration => InnerSequence?.Duration ?? 0f;
         public float CurrentTime => InnerSequence?.CurrentTime ?? 0f;

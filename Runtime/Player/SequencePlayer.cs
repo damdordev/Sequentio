@@ -16,7 +16,6 @@ namespace Damdor.Sequentio
         public VarioStorage Storage => definition.Storage;
 
         public SequencePlayerState State => InnerSequence?.State ?? SequencePlayerState.Idle;
-        public SequenceExecution Execution => InnerSequence?.Execution;
         public float Duration => InnerSequence?.Duration ?? 0f;
         public float CurrentTime => InnerSequence?.CurrentTime ?? 0f;
 

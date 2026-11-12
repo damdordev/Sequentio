@@ -1,8 +1,6 @@
-
 using System;
 using System.Collections.Generic;
 using Damdor.Vario;
-using UnityEngine;
 #if DAMDOR_SEQUENTIO_UNITASK
 using Cysharp.Threading.Tasks;
 // ReSharper disable Unity.PerformanceCriticalCodeInvocation
@@ -13,7 +11,6 @@ namespace Damdor.Sequentio
     public class RuntimeSequence : ISequenceDefinition, ISequencePlayer, ISequentioUpdateReceiver
     {
         public SequencePlayerState State { get; private set; }
-        public SequenceExecution Execution { get; private set; }
         public SequenceSettings Settings => settings;
         public IReadOnlyList<StepDefinition> Steps => definition.Steps;
         public VarioStorage Storage => definition.Storage;
@@ -22,7 +19,7 @@ namespace Damdor.Sequentio
         {
             get
             {
-                if(Execution != null) return Execution.Duration;
+                if(execution != null) return execution.Duration;
                 var definitionPlan = SequenceCompiler.CreateDefinitionPlan(definition, settings, modify);
                 var duration = definitionPlan.Duration;
                 definitionPlan.Release();
@@ -30,13 +27,14 @@ namespace Damdor.Sequentio
             }
         }
 
-        public float CurrentTime => Execution?.CurrentTime ?? 0;
+        public float CurrentTime => execution?.CurrentTime ?? 0;
 
         private SequenceDefinition ownedDefinition;
         private ISequenceDefinition definition;
         private SequenceSettings settings;
         private SequenceExecutor runner;
         private Action<VarioStorage, SequenceSettings> modify;
+        private SequenceExecution execution;
 
         public static RuntimeSequence Create(ISequenceDefinition definition, SequenceSettings settings, Action<VarioStorage, SequenceSettings> modify = null)
         {
@@ -82,11 +80,11 @@ namespace Damdor.Sequentio
             {
                 case SequencePlayerState.Idle:
                     var definitionPlan = SequenceCompiler.CreateDefinitionPlan(definition, settings, modify);
-                    Execution = SequenceCompiler.CreateExecution(definitionPlan);
+                    execution = SequenceCompiler.CreateExecution(definitionPlan);
                     definitionPlan.Release();
-                    runner = SequenceExecutor.Create(Execution);
+                    runner = SequenceExecutor.Create(execution);
                     State = SequencePlayerState.Playing;
-                    SequentioUpdateProvider.Register(this, Execution.Settings.Timescale == TimescaleMode.Unscaled);
+                    SequentioUpdateProvider.Register(this, execution.Settings.Timescale == TimescaleMode.Unscaled);
                     break;
                 case SequencePlayerState.Playing:
                     break;
@@ -122,7 +120,7 @@ namespace Damdor.Sequentio
         public void Stop()
         {
             if (State == SequencePlayerState.Idle) return;
-            Stop(Execution.Settings.DefaultStopBehaviour);
+            Stop(execution.Settings.DefaultStopBehaviour);
         }
         
         public void Stop(StopBehaviour stopBehaviour)
@@ -153,8 +151,8 @@ namespace Damdor.Sequentio
             runner.ReleaseSteps();
             runner.Release();
             runner = null;
-            Execution?.Release();
-            Execution = null;
+            execution?.Release();
+            execution = null;
             SequentioUpdateProvider.Unregister(this);
         }
 
@@ -166,7 +164,7 @@ namespace Damdor.Sequentio
         public float GetProgress(StepDefinition definition)
         {
             if (State == SequencePlayerState.Idle) return 0f;
-            foreach (var stepPlayerPlan in Execution.Steps)
+            foreach (var stepPlayerPlan in execution.Steps)
             {
                 if(stepPlayerPlan.Definition == definition) return stepPlayerPlan.Progress;
             }
