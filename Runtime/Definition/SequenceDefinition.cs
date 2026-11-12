@@ -8,13 +8,12 @@ using UnityEngine;
 namespace Damdor.Sequentio
 {
     [Serializable]
-    public class SequenceDefinition : ISequenceDefinition, IVarioStorageSource
+    public class SequenceDefinition : ISequenceDefinition
     {
         public IReadOnlyList<StepDefinition> Steps => steps;
         public VarioStorage Storage => storage;
 
         [SerializeField] private VarioStorage storage = new();
-        [SerializeField] private SequenceSettings settings = new();
         [SerializeReference] private List<StepDefinition> steps = new();
 
         public void Release()
@@ -24,7 +23,6 @@ namespace Damdor.Sequentio
         
         internal void Reset()
         {
-            settings.Reset();
             steps.Clear();
             storage.Clear();
         }
