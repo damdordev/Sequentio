@@ -74,6 +74,18 @@ namespace Damdor.Sequentio
             return runtimeSequence;
         }
 
+        /// <summary>
+        /// Creates a pooled runtime sequence for playback using the specified sequence definition.
+        /// </summary>
+        /// <param name="definition">The sequence definition that provides the steps and storage for playback.</param>
+        /// <returns>A pooled runtime sequence instance. Release it when it is no longer needed.</returns>
+        public static RuntimeSequence Create(ISequenceDefinition definition)
+        {
+            var runtimeSequence = SequentioPooling.PopSequenceRuntimeSequence();
+            runtimeSequence.Setup(definition, SequentioPooling.PopSequenceSettings(), null);
+            return runtimeSequence;
+        }
+
         // ReSharper disable once UnusedMember.Global
         /// <summary>
         /// Obtains a pooled runtime sequence with an empty owned definition and default settings.

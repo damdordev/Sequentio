@@ -21,6 +21,7 @@ namespace Damdor.Sequentio
         public T AddStep<T>() where T : StepDefinition, new()
         {
             var t = new T();
+            t.Reset();
             steps.Add(t);
             return t;
         }
@@ -35,6 +36,7 @@ namespace Damdor.Sequentio
             if(index < 0 || index > steps.Count)
                 throw new ArgumentOutOfRangeException(nameof(index));
             var t = new T();
+            t.Reset();
             steps.Insert(index, t);
             return t;
         }
