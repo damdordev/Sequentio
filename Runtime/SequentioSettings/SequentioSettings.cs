@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     public static class SequentioSettings
     {
         public static IReadOnlyList<Type> SupportedStepTypes => supportedStepTypes;
-        public static bool LogStepErrors { get; set; }
+        public static bool LogStepErrors { get; set; } = true;
         public static SequentioStepErrorHandler StepErrorHandler { get; set; }
 
         private static readonly List<Type> supportedStepTypes = new();

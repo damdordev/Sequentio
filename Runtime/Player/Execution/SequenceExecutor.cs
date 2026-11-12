@@ -42,7 +42,7 @@ namespace Damdor.Sequentio
                         {
                             if (newTime > execution.Duration)
                             {
-                                SetTime(1f);
+                                SetTime(execution.Duration);
                                 newTime %= execution.Duration;
                             }
                             else if (newTime < 0f)
@@ -60,21 +60,25 @@ namespace Damdor.Sequentio
                     case LoopMode.PingPong:
                         if (execution.Duration > 0f)
                         {
-                            var count = Mathf.FloorToInt(dt / execution.Duration) % 2;
-                            if (count == 0)
-                            {
-                                direction = direction == PlayDirection.Forward
-                                    ? PlayDirection.Reverse
-                                    : PlayDirection.Forward;
-                            }
-
                             if (newTime > execution.Duration)
                             {
-                                SetTime(1f);
+                                if (Mathf.FloorToInt( newTime / execution.Duration) % 2 == 1)
+                                {
+                                    direction = direction == PlayDirection.Forward
+                                        ? PlayDirection.Reverse
+                                        : PlayDirection.Forward;
+                                }                                
+                                SetTime(execution.Duration);
                                 newTime = Mathf.PingPong(newTime, execution.Duration);
                             }
                             else if (newTime < 0f)
                             {
+                                if (Mathf.FloorToInt( -newTime / execution.Duration) % 2 == 0)
+                                {
+                                    direction = direction == PlayDirection.Forward
+                                        ? PlayDirection.Reverse
+                                        : PlayDirection.Forward;
+                                }
                                 SetTime(0f);
                                 newTime = Mathf.PingPong(newTime, execution.Duration);
                             }
