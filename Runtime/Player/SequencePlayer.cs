@@ -65,12 +65,17 @@ namespace Damdor.Sequentio
 
         protected virtual void OnDisable()
         {
-            if (!Application.isPlaying) InnerSequence?.Stop();
+            ReleaseRuntimeSequence();
         }
         
         protected virtual void OnDestroy()
         {
             destroyed = true;
+            ReleaseRuntimeSequence();
+        }
+
+        private void ReleaseRuntimeSequence()
+        {
             InnerSequence?.Release();
             innerSequence = null;
         }
