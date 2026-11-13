@@ -135,6 +135,8 @@ namespace Damdor.Sequentio
                 else
                     endValues[index] = Vector3.zero;
             }
+            
+            for (var i = 0; i < durations.Count; i++) durations[i] /= duration;
         }
         
         private static Vector3 Vector3FromAngle(float degrees, float magnitude)

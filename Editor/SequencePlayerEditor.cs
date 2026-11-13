@@ -25,6 +25,7 @@ namespace Damdor.Sequentio.Editor
             
             sequenceEditorHelper.Setup(serializedObject);
             sequenceEditorHelper.ShowPlayerControls(sequencePlayer);
+            var wasGuiEnabled = GUI.enabled;
             if (sequencePlayer.State != SequencePlayerState.Idle) GUI.enabled = false;
             sequenceEditorHelper.ShowSettings();
             sequenceEditorHelper.ShowStorage();
@@ -37,7 +38,7 @@ namespace Damdor.Sequentio.Editor
             
             serializedObject.ApplyModifiedProperties();
             definitionPlan.Release();
-            GUI.enabled = true;
+            if(wasGuiEnabled) GUI.enabled = true;
             if(sequencePlayer.State == SequencePlayerState.Playing) Repaint();
         }
     }

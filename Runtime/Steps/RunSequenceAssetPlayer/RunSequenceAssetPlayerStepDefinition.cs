@@ -2,7 +2,7 @@ using System;
 using Damdor.Vario;
 using UnityEngine;
 
-namespace Damdor.Sequentio.RunSequence
+namespace Damdor.Sequentio
 {
     /// <summary>
     /// Defines a step that controls a sequence asset player component.

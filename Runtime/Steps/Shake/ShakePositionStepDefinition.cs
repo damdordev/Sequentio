@@ -20,7 +20,7 @@ namespace Damdor.Sequentio
             set => local = value;
         }
         
-        private VarioValue<bool> local;
+        [SerializeField] private VarioValue<bool> local;
 
         /// <inheritdoc />
         public override void Reset()

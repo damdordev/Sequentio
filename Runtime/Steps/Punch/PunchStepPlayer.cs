@@ -112,8 +112,8 @@ namespace Damdor.Sequentio
                 }
                 else
                     endValues[index+1] = Vector3.zero;
-
             }
+            for (var i = 0; i < durations.Count; i++) durations[i] /= duration;
         }
         
         /// <summary>

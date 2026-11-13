@@ -48,9 +48,6 @@ namespace Damdor.Sequentio
         {
             base.Reset();
             sequenceAsset = null;
-            
-            storageOverride.Release();
-            storageOverride = null;
         }
         
         private void ApplyOverrides(VarioStorage storage, SequenceSettings settings)

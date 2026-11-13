@@ -227,7 +227,6 @@ namespace Damdor.Sequentio
         private void ReleaseSequencePlanRunner()
         {
             if (runner == null) return;
-            runner.ReleaseSteps();
             runner.Release();
             runner = null;
             execution?.Release();

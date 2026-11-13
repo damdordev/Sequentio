@@ -63,6 +63,8 @@ namespace Damdor.Sequentio
             receivers.Clear();
             tmpReceivers.Clear();
             instance = null;
+            isInstanceCreated = false;
+            isAttachedToEditorUpdate = false;
         }
 
         private void Update()

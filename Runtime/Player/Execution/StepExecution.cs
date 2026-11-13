@@ -3,6 +3,7 @@
 
 using System;
 using Damdor.Vario;
+using UnityEngine;
 
 namespace Damdor.Sequentio
 {
@@ -83,6 +84,7 @@ namespace Damdor.Sequentio
         /// <param name="progress">The normalized step progress, where zero is the start and one is the end.</param>
         public void SetProgress(float progress)
         {
+            if (Mathf.Approximately(Progress, progress)) return;
             Progress = progress;
             try
             {
@@ -129,7 +131,7 @@ namespace Damdor.Sequentio
             InitOnStart = false;
             RunWithPreviousStep = false;
             Delay = 0f;
-            Progress = 0f;
+            Progress = -1f;
         }
         
         private void NotifyException(SequentioStepErrorSource source, Exception exception)

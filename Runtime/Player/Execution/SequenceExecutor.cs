@@ -169,17 +169,6 @@ namespace Damdor.Sequentio
         }
 
         /// <summary>
-        /// Resets the supplied instance and returns it to the corresponding Sequentio pool.
-        /// </summary>
-        public void ReleaseSteps()
-        {
-            for (var index = execution.Steps.Count - 1; index >= 0; index--)
-            {
-                if (!execution.Steps[index].ValuesApplied) continue;
-            }
-        }
-
-        /// <summary>
         /// Resets this instance and returns it to its Sequentio pool. Do not use it after release.
         /// </summary>
         public void Release()

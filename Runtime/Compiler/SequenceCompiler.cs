@@ -69,6 +69,7 @@ namespace Damdor.Sequentio
                             e
                         )
                     );
+                    stepExecution.Release();
                     continue;
                 }
 

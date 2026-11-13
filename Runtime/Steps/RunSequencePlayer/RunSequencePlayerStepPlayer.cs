@@ -1,6 +1,6 @@
 using Damdor.Vario;
 
-namespace Damdor.Sequentio.RunSequence
+namespace Damdor.Sequentio
 {
     /// <summary>
     /// Maps step progress to the playback time of a sequence player component.
