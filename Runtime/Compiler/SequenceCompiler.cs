@@ -10,9 +10,9 @@ namespace Damdor.Sequentio
     /// <summary>
     /// Compiles sequence definitions into timed plans and executable step players.
     /// </summary>
-    public static class SequenceCompiler
+    public class SequenceCompiler
     {
-        private static readonly Dictionary<Type, StepCompiler> stepCompilers = new();
+        private readonly Dictionary<Type, StepCompiler> stepCompilers = new();
         
         /// <summary>
         /// Compiles enabled steps and evaluates their timings using cloned sequence settings and storage.
@@ -21,7 +21,7 @@ namespace Damdor.Sequentio
         /// <param name="settings">The playback settings to copy for the sequence.</param>
         /// <param name="modify">An optional callback that modifies cloned storage and settings before step timings are evaluated.</param>
         /// <returns>A pooled plan. Call its Release method when it is no longer needed.</returns>
-        public static SequencePlan CreateDefinitionPlan(
+        public SequencePlan CreateDefinitionPlan(
             ISequenceDefinition definition,
             SequenceSettings settings, 
             Action<VarioStorage, SequenceSettings> modify = null)
@@ -43,7 +43,7 @@ namespace Damdor.Sequentio
         /// </summary>
         /// <param name="sequenceDefinitionPlan">The compiled sequence plan.</param>
         /// <returns>A pooled execution. Call its Release method when it is no longer needed.</returns>
-        public static SequenceExecution CreateExecution(SequencePlan sequenceDefinitionPlan)
+        public SequenceExecution CreateExecution(SequencePlan sequenceDefinitionPlan)
         {
             var playerPlan = SequentioPooling.PopSequenceExecution();
             
@@ -86,14 +86,14 @@ namespace Damdor.Sequentio
             return playerPlan;
         }
         
-        internal static void RegisterStep<TStepDefinition, TStepPlayer>()
+        public void RegisterStep<TStepDefinition, TStepPlayer>()
             where TStepDefinition : StepDefinition
             where TStepPlayer : StepPlayer<TStepDefinition>, new()
         {
             stepCompilers[typeof(TStepDefinition)] = new StepCompiler<TStepDefinition, TStepPlayer>();
         }
         
-        private static StepPlayer CreateStepPlayer(StepDefinition stepDefinition)
+        public StepPlayer CreateStepPlayer(StepDefinition stepDefinition)
         {
             return !stepCompilers.TryGetValue(stepDefinition.GetType(), out var stepCompiler) 
                 ? throw new ArgumentException($"Invalid step definition type: {stepDefinition.GetType().FullName}") 

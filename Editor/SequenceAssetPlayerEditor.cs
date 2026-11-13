@@ -34,7 +34,7 @@ namespace Damdor.Sequentio.Editor
             serializedObject.ApplyModifiedProperties();
             if (player.Asset == null) return;
             
-            var plan = SequenceCompiler.CreateDefinitionPlan(player.Asset, player.Settings);
+            var plan = SequentioSettings.Compiler.CreateDefinitionPlan(player.Asset, player.Settings);
             try
             {
                 timelineHelper.Draw(plan, player, null);

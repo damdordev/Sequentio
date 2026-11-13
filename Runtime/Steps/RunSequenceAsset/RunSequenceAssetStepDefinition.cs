@@ -36,7 +36,7 @@ namespace Damdor.Sequentio
             if (!definition) return 0f;
 
             var settings = SequentioPooling.PopSequenceSettings();
-            var plan = SequenceCompiler.CreateDefinitionPlan(definition, settings, ApplyOverrides);
+            var plan = SequentioSettings.Compiler.CreateDefinitionPlan(definition, settings, ApplyOverrides);
             var duration = plan.Duration;
             settings.Release();
             plan.Release();

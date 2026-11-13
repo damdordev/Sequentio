@@ -22,10 +22,19 @@ namespace Damdor.Sequentio
         /// </summary>
         public static SequentioStepErrorHandler StepErrorHandler { get; set; }
 
+        /// <summary>
+        /// Gets the compiler instance used to build sequence plans and executions from the registered step types.
+        /// </summary>
+        /// <value>
+        /// The shared sequence compiler managed by the settings.
+        /// </value>
+        public static SequenceCompiler Compiler => compiler;
+
         private static readonly List<Type> supportedStepTypes = new();
         private static readonly Dictionary<Type, string> stepTypeToPath = new();
         private static readonly Dictionary<Type, string> stepTypeToName = new();
         private static readonly Dictionary<Type, string> stepToIcon = new();
+        private static SequenceCompiler compiler = new();
 
         /// <summary>
         /// Registers a step definition, its player, and its editor metadata. Existing registrations are ignored.
@@ -45,7 +54,7 @@ namespace Damdor.Sequentio
             stepTypeToPath[type] = path;
             stepTypeToName[type] = name;
             stepToIcon[type] = icon;
-            SequenceCompiler.RegisterStep<TStepDefinition, TStepPlayer>();
+            Compiler.RegisterStep<TStepDefinition, TStepPlayer>();
         }
 
         /// <summary>

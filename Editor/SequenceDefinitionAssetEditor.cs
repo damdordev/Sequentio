@@ -26,7 +26,7 @@ namespace Damdor.Sequentio.Editor
             sequenceEditorHelper.ShowStorage();
 
             var settings = SequentioPooling.PopSequenceSettings();
-            var sequencePlan = SequenceCompiler.CreateDefinitionPlan(asset, settings);
+            var sequencePlan = SequentioSettings.Compiler.CreateDefinitionPlan(asset, settings);
             timelineHelper.Draw(sequencePlan, null, sequenceEditorHelper.StepList);
             settings?.Release();
             
