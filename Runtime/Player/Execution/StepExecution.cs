@@ -103,6 +103,7 @@ namespace Damdor.Sequentio
         {
             try
             {
+                Progress = 0f;
                 Player.ReturnToInitialState();
             }
             catch (Exception e)
