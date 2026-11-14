@@ -3,7 +3,9 @@
     "rootNamespace": "Damdor.Sequentio.Tests",
     "references": [
         "Sequentio",
-        "Vario"
+        "Vario",
+        "UnityEngine.UI",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [
         "Editor"
