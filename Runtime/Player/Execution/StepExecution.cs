@@ -66,11 +66,11 @@ namespace Damdor.Sequentio
         /// Initializes the step player and reports any exception through Sequentio error handling.
         /// </summary>
         /// <param name="storage">The variable storage used to resolve step parameters.</param>
-        public void Init(VarioStorage storage)
+        public void Init(VarioStorage storage, IExecutionContext executionContext)
         {
             try
             {
-                Player.Init(storage);
+                Player.Init(storage, executionContext);
             }
             catch (Exception e)
             {

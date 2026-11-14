@@ -57,7 +57,7 @@ namespace Damdor.Sequentio.Tests
             where TDefinition : StepDefinition
         {
             player.Setup(definition);
-            player.Init(null);
+            player.Init(null, new ExecutionContext());
         }
 
         private static void CheckTween<TDefinition, TTarget, TValue>(TDefinition definition,

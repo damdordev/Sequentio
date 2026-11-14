@@ -13,7 +13,7 @@ namespace Damdor.Sequentio.Tests
             var player = Compiler.CreateStepPlayer(definition);
             Assert.That(player, Is.TypeOf<MockStepPlayer>());
             var storage = new VarioStorage();
-            player.Init(storage);
+            player.Init(storage, new ExecutionContext());
             Assert.That(((MockStepPlayer)player).InitializedDefinition, Is.SameAs(definition));
             Assert.That(((MockStepPlayer)player).InitializedStorage, Is.SameAs(storage));
         }

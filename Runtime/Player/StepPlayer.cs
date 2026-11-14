@@ -11,13 +11,19 @@ namespace Damdor.Sequentio
         /// <summary>
         /// Resets the player state and references for reuse.
         /// </summary>
-        public virtual void Reset() { }
-        
+        public virtual void Reset()
+        {
+            ExecutionContext = null;
+        }
+
         /// <summary>
         /// Initializes playback or captures the step values needed for execution.
         /// </summary>
         /// <param name="storage">The variable storage used to resolve step parameters.</param>
-        public virtual void Init(VarioStorage storage) {}
+        public virtual void Init(VarioStorage storage, IExecutionContext executionContext)
+        {
+            ExecutionContext = executionContext;
+        }
        
         /// <summary>
         /// Applies normalized progress to the step.
@@ -29,6 +35,8 @@ namespace Damdor.Sequentio
         /// Restores target values captured during step initialization.
         /// </summary>
         public virtual void ReturnToInitialState(){}
+        
+        protected virtual IExecutionContext ExecutionContext { get; private set; }
     }
     
     /// <summary>
@@ -56,9 +64,9 @@ namespace Damdor.Sequentio
         protected virtual void Init(TStepDefinition definition, VarioStorage storage){}
 
         /// <inheritdoc />
-        public override void Init(VarioStorage storage)
+        public sealed override void Init(VarioStorage storage, IExecutionContext executionContext)
         {
-            base.Init(storage);
+            base.Init(storage, executionContext);
             Init(definition, storage);
         }
 

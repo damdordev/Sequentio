@@ -10,7 +10,7 @@ namespace Damdor.Sequentio
     public class SequenceExecutor
     {
         private SequenceExecution execution;
-        private PlayDirection direction;
+        private readonly ExecutionContext executionContext = new();
 
         /// <summary>
         /// Obtains a pooled executor and initializes the supplied execution.
@@ -27,9 +27,10 @@ namespace Damdor.Sequentio
         private void Setup(SequenceExecution execution)
         {
             this.execution = execution;
+            executionContext.Reset();
+            executionContext.Direction = execution.Settings.Direction;
+            this.execution.CurrentTime = executionContext.Direction == PlayDirection.Forward ? 0f : this.execution.Duration;
             InitSteps();
-            direction = execution.Settings.Direction;
-            this.execution.CurrentTime = direction == PlayDirection.Forward ? 0f : this.execution.Duration;
         }
 
         /// <summary>
@@ -40,11 +41,12 @@ namespace Damdor.Sequentio
         public SequenceExecutorUpdateResult Update(float dt)
         {
             dt *= execution.Settings.Speed;
-            var factor = direction == PlayDirection.Forward ? 1f : -1f;
+            var factor = executionContext.Direction == PlayDirection.Forward ? 1f : -1f;
             var newTime = execution.CurrentTime + dt * factor;
 
             if (newTime < 0f || newTime > execution.Duration)
             {
+                ++executionContext.LoopIndex;
                 switch (execution.Settings.Loop)
                 {
                     case LoopMode.None:
@@ -77,7 +79,7 @@ namespace Damdor.Sequentio
                             {
                                 if (Mathf.FloorToInt( newTime / execution.Duration) % 2 == 1)
                                 {
-                                    direction = direction == PlayDirection.Forward
+                                    executionContext.Direction = executionContext.Direction == PlayDirection.Forward
                                         ? PlayDirection.Reverse
                                         : PlayDirection.Forward;
                                 }                                
@@ -88,7 +90,7 @@ namespace Damdor.Sequentio
                             {
                                 if (Mathf.FloorToInt( -newTime / execution.Duration) % 2 == 0)
                                 {
-                                    direction = direction == PlayDirection.Forward
+                                    executionContext.Direction = executionContext.Direction == PlayDirection.Forward
                                         ? PlayDirection.Reverse
                                         : PlayDirection.Forward;
                                 }
@@ -109,12 +111,12 @@ namespace Damdor.Sequentio
 
             SetTime(newTime);
 
-            if (execution.Settings.Loop == LoopMode.None && direction == PlayDirection.Forward && newTime >= execution.Duration)
+            if (execution.Settings.Loop == LoopMode.None && executionContext.Direction == PlayDirection.Forward && newTime >= execution.Duration)
             {
                 return SequenceExecutorUpdateResult.Finished;
             }
             
-            if (execution.Settings.Loop == LoopMode.None && direction == PlayDirection.Reverse && newTime <= 0f)
+            if (execution.Settings.Loop == LoopMode.None && executionContext.Direction == PlayDirection.Reverse && newTime <= 0f)
             {
                 return SequenceExecutorUpdateResult.Finished;
             }
@@ -144,7 +146,7 @@ namespace Damdor.Sequentio
 
                 if (!stepData.ValuesApplied)
                 {
-                    stepData.Init(execution.Storage);
+                    stepData.Init(execution.Storage, executionContext);
                     stepData.ValuesApplied = true;
                 }
 
@@ -179,7 +181,7 @@ namespace Damdor.Sequentio
         internal void Reset()
         {
             execution = null;
-            direction = PlayDirection.Forward;
+            executionContext.Direction = PlayDirection.Forward;
         }
 
         private void InitSteps()
@@ -187,7 +189,7 @@ namespace Damdor.Sequentio
             foreach (var stepPlan in execution.Steps)
             {
                 if (!stepPlan.InitOnStart) continue;
-                stepPlan.Init(execution.Storage);
+                stepPlan.Init(execution.Storage, executionContext);
                 stepPlan.ValuesApplied = true;
                 stepPlan.SetProgress(0f);
             }

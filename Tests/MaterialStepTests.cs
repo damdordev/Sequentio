@@ -54,7 +54,7 @@ namespace Damdor.Sequentio.Tests
         {
             var player = new TPlayer();
             player.Setup(definition);
-            player.Init(storage);
+            player.Init(storage, new ExecutionContext());
             return player;
         }
 
@@ -176,7 +176,7 @@ namespace Damdor.Sequentio.Tests
             // Reinitialize so the new endpoint is captured, also exercising pooled player reuse.
             player.Reset();
             player.Setup(definition);
-            player.Init(storage);
+            player.Init(storage, new ExecutionContext());
             player.SetProgress(1f);
 
             Assert.That(modified.GetColor(name), Is.EqualTo(Color.blue));
