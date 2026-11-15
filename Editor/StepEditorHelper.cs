@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Damdor.Vario;
 using UnityEditor;
@@ -21,6 +22,7 @@ namespace Damdor.Sequentio.Editor
         
         private sealed class StepParameterEntry
         {
+            public FieldInfo Field;
             public SerializedProperty Property;
             public int Priority;
             public int Order;
@@ -212,6 +214,7 @@ namespace Damdor.Sequentio.Editor
         
                 group.Entries.Add(new StepParameterEntry
                 {
+                    Field = field,
                     Property = iterator.Copy(),
                     Priority = attribute?.PriorityInGroup ?? 0,
                     Order = order++
@@ -234,15 +237,66 @@ namespace Damdor.Sequentio.Editor
         
                 if (!string.IsNullOrEmpty(group.Name))
                     EditorGUILayout.LabelField(group.Name, EditorStyles.boldLabel);
-        
+
                 foreach (var entry in group.Entries)
-                    EditorGUILayout.PropertyField(entry.Property, true);
-        
+                {
+                    var serializedField = entry.Field.GetCustomAttribute<SerializeFieldSequenceParameter>();
+                    if (serializedField != null)
+                    {
+                        var value = entry.Property.managedReferenceValue;
+                        var availableTypes = serializedField.GetSettings().Types;
+                        var availableOptions = availableTypes.Select(t => serializedField.GetSettings().GetNameForType(t)).ToList();
+                        availableOptions.Insert(0, "---");
+                        var index = 0;
+                        if (value != null) index = availableTypes.IndexOf(value.GetType()) + 1;
+                        EditorGUILayout.BeginHorizontal();
+                        EditorGUILayout.LabelField(entry.Property.displayName);
+                        // var current = entry.Property.refere
+                        var newIndex = EditorGUILayout.Popup(index, availableOptions.ToArray());
+                        EditorGUILayout.EndHorizontal();
+                        if (newIndex != index)
+                        {
+                            if (newIndex == 0)
+                            {
+                                entry.Property.managedReferenceValue = null;
+                            }
+                            else
+                            {
+                                value = Activator.CreateInstance(availableTypes[newIndex - 1]);
+                                entry.Property.managedReferenceValue = value;
+                                property.serializedObject.ApplyModifiedProperties();
+                            }
+                        }
+
+                        EditorGUI.indentLevel += 2;
+                        DrawChildren(entry.Property);
+                        EditorGUI.indentLevel -= 2;
+                    }
+                    else
+                    {
+                        EditorGUILayout.PropertyField(entry.Property, true);
+                    }
+                }
+
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.Space(2);
             }
         
             EditorGUILayout.EndVertical();
+        }
+        
+        private static void DrawChildren(SerializedProperty parent)
+        {
+            var iterator = parent.Copy();
+            var end = iterator.GetEndProperty();
+            var enterChildren = true;
+
+            while (iterator.NextVisible(enterChildren) &&
+                   !SerializedProperty.EqualContents(iterator, end))
+            {
+                enterChildren = false;
+                EditorGUILayout.PropertyField(iterator, true);
+            }
         }
         
         private static StepParameterGroup FindOrCreateGroup(List<StepParameterGroup> groups, string groupName)
