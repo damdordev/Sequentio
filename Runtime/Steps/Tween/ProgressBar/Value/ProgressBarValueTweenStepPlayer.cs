@@ -1,3 +1,5 @@
+#if DAMDOR_SEQUENTIO_PROGRESSIO
+
 using Damdor.Progressio;
 using Damdor.Vario;
 
@@ -28,3 +30,4 @@ namespace Damdor.Sequentio
         }
     }
 }
+#endif

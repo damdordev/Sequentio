@@ -1,3 +1,5 @@
+#if DAMDOR_SEQUENTIO_TRADUIO
+
 using Damdor.Traduio;
 
 namespace Damdor.Sequentio
@@ -13,3 +15,5 @@ namespace Damdor.Sequentio
         protected override void SetValue(BaseNumberTranslationTarget component, float value) => component.Value = value;
     }
 }
+
+#endif

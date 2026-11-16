@@ -1,3 +1,5 @@
+#if DAMDOR_SEQUENTIO_TRADUIO
+
 using Damdor.Traduio;
 using System;
 
@@ -12,3 +14,5 @@ namespace Damdor.Sequentio
     {
     }
 }
+
+#endif
