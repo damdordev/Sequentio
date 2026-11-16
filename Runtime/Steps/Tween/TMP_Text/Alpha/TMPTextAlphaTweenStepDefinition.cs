@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening alpha on a TextMesh Pro component.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(TMPTextAlphaTweenStepPlayer), "TMP_Text/Alpha", "Alpha", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(TMPTextAlphaTweenStepPlayer), "TMP_Text/Alpha", "Alpha", "Packages/com.damdor.sequentio/Editor/StepsIcons/TMPTextAlphaTweenStep_icon.png")]
     public class TMPTextAlphaTweenStepDefinition : FloatTweenStepDefinition<TMP_Text>
     {
     }

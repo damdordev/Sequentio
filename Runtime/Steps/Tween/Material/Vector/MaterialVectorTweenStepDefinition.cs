@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening Material.vector.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(MaterialVectorTweenStepPlayer), "Material/Vector", "Vector", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(MaterialVectorTweenStepPlayer), "Material/Vector", "Vector", "Packages/com.damdor.sequentio/Editor/StepsIcons/MaterialVectorTweenStep_icon.png")]
     public class MaterialVectorTweenStepDefinition : Vector4TweenStepDefinition<Material>
     {
         /// <summary>

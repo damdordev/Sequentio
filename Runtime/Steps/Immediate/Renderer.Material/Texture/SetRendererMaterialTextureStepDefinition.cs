@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines a step for setting Renderer.Material.texture.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(SetRendererMaterialTextureStepPlayer), "Renderer.Material/Texture", "Texture", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(SetRendererMaterialTextureStepPlayer), "Renderer.Material/Texture", "Texture", "Packages/com.damdor.sequentio/Editor/StepsIcons/SetRendererMaterialTextureStep_icon.png")]
     public class SetRendererMaterialTextureStepDefinition : ValueImmediateStepDefinition<Renderer, Texture>
     {
         /// <summary>

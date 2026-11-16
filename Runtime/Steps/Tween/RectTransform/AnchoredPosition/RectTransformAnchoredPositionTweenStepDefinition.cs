@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening anchored position on a RectTransform.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(RectTransformAnchoredPositionTweenStepPlayer), "RectTransform/AnchoredPosition", "AnchoredPosition", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(RectTransformAnchoredPositionTweenStepPlayer), "RectTransform/AnchoredPosition", "AnchoredPosition", "Packages/com.damdor.sequentio/Editor/StepsIcons/RectTransformAnchoredPositionTweenStep_icon.png")]
     public class RectTransformAnchoredPositionTweenStepDefinition : Vector2TweenStepDefinition<RectTransform>
     {
     }

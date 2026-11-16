@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines the Renderer.PropertyBlock/Int step.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(RendererPropertyBlockIntTweenStepPlayer), "Renderer.PropertyBlock/Int", "Int", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(RendererPropertyBlockIntTweenStepPlayer), "Renderer.PropertyBlock/Int", "Int", "Packages/com.damdor.sequentio/Editor/StepsIcons/RendererPropertyBlockIntTweenStep_icon.png")]
     public class RendererPropertyBlockIntTweenStepDefinition : IntTweenStepDefinition<Renderer>
     {
         /// <summary>

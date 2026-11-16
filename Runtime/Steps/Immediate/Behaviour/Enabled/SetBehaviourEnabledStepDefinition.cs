@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for setting the enabled state of a behaviour.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(SetBehaviourEnabledStepPlayer), "Behaviour/Enabled", "Enabled", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(SetBehaviourEnabledStepPlayer), "Behaviour/Enabled", "Enabled", "Packages/com.damdor.sequentio/Editor/StepsIcons/SetBehaviourEnabledStep_icon.png")]
     public class SetBehaviourEnabledStepDefinition : ValueImmediateStepDefinition<Behaviour, bool>
     {
     }

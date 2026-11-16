@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines a step for shaking transform position in local or world coordinates.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(ShakePositionStepPlayer), "Transform/Shake position", "Shake Position", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(ShakePositionStepPlayer), "Transform/Shake position", "Shake Position", "Packages/com.damdor.sequentio/Editor/StepsIcons/ShakePositionStep_icon.png")]
     public class ShakePositionStepDefinition : ShakeStepDefinition<Transform>
     {
         /// <summary>

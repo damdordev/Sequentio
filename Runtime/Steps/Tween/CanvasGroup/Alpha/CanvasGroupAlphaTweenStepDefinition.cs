@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening canvas group opacity.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(CanvasGroupAlphaTweenStepPlayer), "CanvasGroup/Alpha", "Alpha", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(CanvasGroupAlphaTweenStepPlayer), "CanvasGroup/Alpha", "Alpha", "Packages/com.damdor.sequentio/Editor/StepsIcons/CanvasGroupAlphaTweenStep_icon.png")]
     public class CanvasGroupAlphaTweenStepDefinition : FloatTweenStepDefinition<CanvasGroup>
     {
     }

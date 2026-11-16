@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines the Animator/Float step.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(AnimatorFloatTweenStepPlayer), "Animator/Float", "Animator Float", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(AnimatorFloatTweenStepPlayer), "Animator/Float", "Animator Float", "Packages/com.damdor.sequentio/Editor/StepsIcons/AnimatorFloatTweenStep_icon.png")]
     public class AnimatorFloatTweenStepDefinition : FloatTweenStepDefinition<Animator>
     {
         /// <summary>

@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines the Animator/Bool step.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(SetAnimatorBoolStepPlayer), "Animator/Bool", "Animator Bool", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(SetAnimatorBoolStepPlayer), "Animator/Bool", "Animator Bool", "Packages/com.damdor.sequentio/Editor/StepsIcons/SetAnimatorBoolStep_icon.png")]
     public class SetAnimatorBoolStepDefinition : ValueImmediateStepDefinition<Animator, bool>
     {
         /// <summary>

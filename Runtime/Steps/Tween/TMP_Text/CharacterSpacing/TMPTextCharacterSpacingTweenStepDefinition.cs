@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening character spacing on a TextMesh Pro component.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(TMPTextCharacterSpacingTweenStepPlayer), "TMP_Text/CharacterSpacing", "CharacterSpacing", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(TMPTextCharacterSpacingTweenStepPlayer), "TMP_Text/CharacterSpacing", "CharacterSpacing", "Packages/com.damdor.sequentio/Editor/StepsIcons/TMPTextCharacterSpacingTweenStep_icon.png")]
     public class TMPTextCharacterSpacingTweenStepDefinition : FloatTweenStepDefinition<TMP_Text>
     {
     }

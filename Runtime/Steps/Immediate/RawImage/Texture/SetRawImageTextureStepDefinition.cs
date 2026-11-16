@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines the RawImage/Texture step.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(SetRawImageTextureStepPlayer), "RawImage/Texture", "Texture", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(SetRawImageTextureStepPlayer), "RawImage/Texture", "Texture", "Packages/com.damdor.sequentio/Editor/StepsIcons/SetRawImageTextureStep_icon.png")]
     public class SetRawImageTextureStepDefinition : ValueImmediateStepDefinition<RawImage, Texture>
     {
     }

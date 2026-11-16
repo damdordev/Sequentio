@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening Camera.backgroundColor.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(CameraBackgroundColorTweenStepPlayer), "Camera/BackgroundColor", "BackgroundColor", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(CameraBackgroundColorTweenStepPlayer), "Camera/BackgroundColor", "BackgroundColor", "Packages/com.damdor.sequentio/Editor/StepsIcons/CameraBackgroundColorTweenStep_icon.png")]
     public class CameraBackgroundColorTweenStepDefinition : ColorTweenStepDefinition<Camera>
     {
     }

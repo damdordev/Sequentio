@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines the Animator/Int step.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(AnimatorIntTweenStepPlayer), "Animator/Int", "Animator Int", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(AnimatorIntTweenStepPlayer), "Animator/Int", "Animator Int", "Packages/com.damdor.sequentio/Editor/StepsIcons/AnimatorIntTweenStep_icon.png")]
     public class AnimatorIntTweenStepDefinition : IntTweenStepDefinition<Animator>
     {
         /// <summary>

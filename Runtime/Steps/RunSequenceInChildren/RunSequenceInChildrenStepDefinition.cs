@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Damdor.Sequentio
 {
     [Serializable]
-    [SequentioStep(typeof(RunSequenceInChildrenStepPlayer), "Sequentio/Run sequence in children", "Run Sequence In Children", "Packages/com.damdor.sequentio/Editor/StepsIcons/run-sequence.png")]
+    [SequentioStep(typeof(RunSequenceInChildrenStepPlayer), "Sequentio/Run sequence in children", "Run Sequence In Children", "Packages/com.damdor.sequentio/Editor/StepsIcons/RunSequenceInChildrenStep_icon.png")]
     public class RunSequenceInChildrenStepDefinition : StepDefinition
     {
         public VarioValue<GameObject> Root

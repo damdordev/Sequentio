@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines the Renderer.PropertyBlock/Color step.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(RendererPropertyBlockColorTweenStepPlayer), "Renderer.PropertyBlock/Color", "Color", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(RendererPropertyBlockColorTweenStepPlayer), "Renderer.PropertyBlock/Color", "Color", "Packages/com.damdor.sequentio/Editor/StepsIcons/RendererPropertyBlockColorTweenStep_icon.png")]
     public class RendererPropertyBlockColorTweenStepDefinition : ColorTweenStepDefinition<Renderer>
     {
         /// <summary>

@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines a step for setting the sprite displayed by an image.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(SetImageSpriteStepPlayer), "Image/Sprite", "Sprite", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(SetImageSpriteStepPlayer), "Image/Sprite", "Sprite", "Packages/com.damdor.sequentio/Editor/StepsIcons/SetImageSpriteStep_icon.png")]
     public class SetImageSpriteStepDefinition : ValueImmediateStepDefinition<Image, Sprite>
     {
     }

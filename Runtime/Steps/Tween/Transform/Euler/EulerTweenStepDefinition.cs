@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening transform Euler angles in local or world coordinates.
     /// </summary>
     [Serializable] 
-    [SequentioStep(typeof(EulerTweenStepPlayer), "Transform/Euler", "Rotate (Euler)", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(EulerTweenStepPlayer), "Transform/Euler", "Rotate (Euler)", "Packages/com.damdor.sequentio/Editor/StepsIcons/EulerTweenStep_icon.png")]
     public class EulerTweenStepDefinition : Vector3TweenStepDefinition<Transform>
     {
         /// <summary>

@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening Material.textureOffset.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(MaterialTextureOffsetTweenStepPlayer), "Material/TextureOffset", "TextureOffset", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(MaterialTextureOffsetTweenStepPlayer), "Material/TextureOffset", "TextureOffset", "Packages/com.damdor.sequentio/Editor/StepsIcons/MaterialTextureOffsetTweenStep_icon.png")]
     public class MaterialTextureOffsetTweenStepDefinition : Vector2TweenStepDefinition<Material>
     {
         /// <summary>

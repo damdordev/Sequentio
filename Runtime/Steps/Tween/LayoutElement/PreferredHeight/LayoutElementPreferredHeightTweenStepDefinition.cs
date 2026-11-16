@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening preferred height on a LayoutElement.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(LayoutElementPreferredHeightTweenStepPlayer), "LayoutElement/PreferredHeight", "PreferredHeight", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(LayoutElementPreferredHeightTweenStepPlayer), "LayoutElement/PreferredHeight", "PreferredHeight", "Packages/com.damdor.sequentio/Editor/StepsIcons/LayoutElementPreferredHeightTweenStep_icon.png")]
     public class LayoutElementPreferredHeightTweenStepDefinition : FloatTweenStepDefinition<LayoutElement>
     {
     }

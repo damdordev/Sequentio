@@ -5,7 +5,7 @@ using UnityEngine.Events;
 namespace Damdor.Sequentio
 {
     [Serializable]
-    [SequentioStep(typeof(RunEventStepPlayer), "RunEvent", "Run Event", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(RunEventStepPlayer), "RunEvent", "Run Event", "Packages/com.damdor.sequentio/Editor/StepsIcons/RunEventStep_icon.png")]
     public class RunEventStepDefinition : EventStepDefinition
     {
         public UnityEvent Event

@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening transform local scale.
     /// </summary>
     [Serializable] 
-    [SequentioStep(typeof(ScaleTweenStepPlayer), "Transform/Scale", "Scale", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(ScaleTweenStepPlayer), "Transform/Scale", "Scale", "Packages/com.damdor.sequentio/Editor/StepsIcons/ScaleTweenStep_icon.png")]
     public class ScaleTweenStepDefinition : Vector3TweenStepDefinition<Transform>
     {
     }

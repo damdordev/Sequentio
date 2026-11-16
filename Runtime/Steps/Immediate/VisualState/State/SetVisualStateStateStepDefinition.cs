@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Damdor.Sequentio
 {
     [Serializable]
-    [SequentioStep(typeof(SetVisualStateStateStepPlayer), "VisualState/State", "State", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(SetVisualStateStateStepPlayer), "VisualState/State", "State", "Packages/com.damdor.sequentio/Editor/StepsIcons/SetVisualStateStateStep_icon.png")]
     public class SetVisualStateStateStepDefinition : ValueImmediateStepDefinition<VisualState, string>
     {
         public VarioValue<bool> Immediate

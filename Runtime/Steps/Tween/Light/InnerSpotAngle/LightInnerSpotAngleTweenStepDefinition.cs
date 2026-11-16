@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines the Light/InnerSpotAngle step.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(LightInnerSpotAngleTweenStepPlayer), "Light/InnerSpotAngle", "InnerSpotAngle", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(LightInnerSpotAngleTweenStepPlayer), "Light/InnerSpotAngle", "InnerSpotAngle", "Packages/com.damdor.sequentio/Editor/StepsIcons/LightInnerSpotAngleTweenStep_icon.png")]
     public class LightInnerSpotAngleTweenStepDefinition : FloatTweenStepDefinition<Light>
     {
     }

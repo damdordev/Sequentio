@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening Camera.fieldOfView.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(CameraFieldOfViewTweenStepPlayer), "Camera/FieldOfView", "FieldOfView", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(CameraFieldOfViewTweenStepPlayer), "Camera/FieldOfView", "FieldOfView", "Packages/com.damdor.sequentio/Editor/StepsIcons/CameraFieldOfViewTweenStep_icon.png")]
     public class CameraFieldOfViewTweenStepDefinition : FloatTweenStepDefinition<Camera>
     {
     }

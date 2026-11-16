@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Damdor.Sequentio
 {
     [Serializable]
-    [SequentioStep(typeof(ProgressBarValueTweenStepPlayer), "ProgressBar/Value", "Value", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(ProgressBarValueTweenStepPlayer), "ProgressBar/Value", "Value", "Packages/com.damdor.sequentio/Editor/StepsIcons/ProgressBarValueTweenStep_icon.png")]
     public class ProgressBarValueTweenStepDefinition : FloatTweenStepDefinition<ProgressBar>
     {
         public VarioValue<bool> Immediate

@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines a nested sequence asset step with variable overrides.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(RunSequenceAssetStepPlayer), "Sequentio/Run sequence asset", "Run Sequence Asset", "Packages/com.damdor.sequentio/Editor/StepsIcons/run-sequence.png")]
+    [SequentioStep(typeof(RunSequenceAssetStepPlayer), "Sequentio/Run sequence asset", "Run Sequence Asset", "Packages/com.damdor.sequentio/Editor/StepsIcons/RunSequenceAssetStep_icon.png")]
     public class RunSequenceAssetStepDefinition : StepDefinition
     {
         /// <summary>

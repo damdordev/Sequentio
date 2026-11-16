@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening a UI graphic color.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(GraphicColorTweenStepPlayer), "Graphic/Color", "Color", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(GraphicColorTweenStepPlayer), "Graphic/Color", "Color", "Packages/com.damdor.sequentio/Editor/StepsIcons/GraphicColorTweenStep_icon.png")]
     public class GraphicColorTweenStepDefinition : ColorTweenStepDefinition<Graphic>
     {
     }

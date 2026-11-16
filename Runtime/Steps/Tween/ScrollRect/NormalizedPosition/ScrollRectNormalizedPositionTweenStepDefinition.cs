@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines the ScrollRect/NormalizedPosition step.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(ScrollRectNormalizedPositionTweenStepPlayer), "ScrollRect/NormalizedPosition", "NormalizedPosition", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(ScrollRectNormalizedPositionTweenStepPlayer), "ScrollRect/NormalizedPosition", "NormalizedPosition", "Packages/com.damdor.sequentio/Editor/StepsIcons/ScrollRectNormalizedPositionTweenStep_icon.png")]
     public class ScrollRectNormalizedPositionTweenStepDefinition : Vector2TweenStepDefinition<ScrollRect>
     {
     }

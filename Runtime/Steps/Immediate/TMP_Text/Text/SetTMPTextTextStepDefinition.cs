@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for setting the text of a TextMesh Pro component.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(SetTMPTextTextStepPlayer), "TMP_Text/Text", "Text", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(SetTMPTextTextStepPlayer), "TMP_Text/Text", "Text", "Packages/com.damdor.sequentio/Editor/StepsIcons/SetTMPTextTextStep_icon.png")]
     public class SetTMPTextTextStepDefinition : ValueImmediateStepDefinition<TMP_Text, string>
     {
     }

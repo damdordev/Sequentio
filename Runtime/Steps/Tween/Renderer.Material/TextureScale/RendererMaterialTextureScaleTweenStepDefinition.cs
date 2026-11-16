@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening Renderer.Material.textureScale.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(RendererMaterialTextureScaleTweenStepPlayer), "Renderer.Material/TextureScale", "TextureScale", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(RendererMaterialTextureScaleTweenStepPlayer), "Renderer.Material/TextureScale", "TextureScale", "Packages/com.damdor.sequentio/Editor/StepsIcons/RendererMaterialTextureScaleTweenStep_icon.png")]
     public class RendererMaterialTextureScaleTweenStepDefinition : Vector2TweenStepDefinition<Renderer>
     {
         /// <summary>

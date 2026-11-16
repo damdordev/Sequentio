@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for shaking transform local scale.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(ShakeScaleStepPlayer), "Transform/Shake scale", "Shake Scale", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(ShakeScaleStepPlayer), "Transform/Shake scale", "Shake Scale", "Packages/com.damdor.sequentio/Editor/StepsIcons/ShakeScaleStep_icon.png")]
     public class ShakeScaleStepDefinition : ShakeStepDefinition<Transform>
     {
         /// <inheritdoc />

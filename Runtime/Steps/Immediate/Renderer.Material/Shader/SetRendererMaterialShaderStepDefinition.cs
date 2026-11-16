@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines a step for setting Renderer.Material.shader.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(SetRendererMaterialShaderStepPlayer), "Renderer.Material/Shader", "Shader", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(SetRendererMaterialShaderStepPlayer), "Renderer.Material/Shader", "Shader", "Packages/com.damdor.sequentio/Editor/StepsIcons/SetRendererMaterialShaderStep_icon.png")]
     public class SetRendererMaterialShaderStepDefinition : ValueImmediateStepDefinition<Renderer, Shader>
     {
         /// <summary>

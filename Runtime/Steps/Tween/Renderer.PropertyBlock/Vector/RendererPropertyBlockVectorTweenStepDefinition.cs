@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines the Renderer.PropertyBlock/Vector step.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(RendererPropertyBlockVectorTweenStepPlayer), "Renderer.PropertyBlock/Vector", "Vector", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(RendererPropertyBlockVectorTweenStepPlayer), "Renderer.PropertyBlock/Vector", "Vector", "Packages/com.damdor.sequentio/Editor/StepsIcons/RendererPropertyBlockVectorTweenStep_icon.png")]
     public class RendererPropertyBlockVectorTweenStepDefinition : Vector4TweenStepDefinition<Renderer>
     {
         /// <summary>

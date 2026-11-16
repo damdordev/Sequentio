@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening Light.intensity.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(LightIntensityTweenStepPlayer), "Light/Intensity", "Intensity", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(LightIntensityTweenStepPlayer), "Light/Intensity", "Intensity", "Packages/com.damdor.sequentio/Editor/StepsIcons/LightIntensityTweenStep_icon.png")]
     public class LightIntensityTweenStepDefinition : FloatTweenStepDefinition<Light>
     {
     }

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Damdor.Sequentio
 {
     [Serializable]
-    [SequentioStep(typeof(ParticleSystemEmitEventStepPlayer), "ParticleSystem/Emit", "Emit", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(ParticleSystemEmitEventStepPlayer), "ParticleSystem/Emit", "Emit", "Packages/com.damdor.sequentio/Editor/StepsIcons/ParticleSystemEmitEventStep_icon.png")]
     public class ParticleSystemEmitEventStepDefinition : EventStepDefinition
     {
         public VarioValue<ParticleSystem> Target

@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening transform position in local or world coordinates.
     /// </summary>
     [Serializable] 
-    [SequentioStep(typeof(PositionTweenStepPlayer), "Transform/Position", "Move", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(PositionTweenStepPlayer), "Transform/Position", "Move", "Packages/com.damdor.sequentio/Editor/StepsIcons/PositionTweenStep_icon.png")]
     public class PositionTweenStepDefinition : Vector3TweenStepDefinition<Transform>
     {
         /// <summary>

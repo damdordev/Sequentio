@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening Renderer.Material.color.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(RendererMaterialColorTweenStepPlayer), "Renderer.Material/Color", "Color", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(RendererMaterialColorTweenStepPlayer), "Renderer.Material/Color", "Color", "Packages/com.damdor.sequentio/Editor/StepsIcons/RendererMaterialColorTweenStep_icon.png")]
     public class RendererMaterialColorTweenStepDefinition : ColorTweenStepDefinition<Renderer>
     {
         /// <summary>

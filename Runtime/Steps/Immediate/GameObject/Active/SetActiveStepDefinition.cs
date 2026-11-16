@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for setting the active state of a game object.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(SetActiveStepPlayer), "GameObject/Active", "Active", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(SetActiveStepPlayer), "GameObject/Active", "Active", "Packages/com.damdor.sequentio/Editor/StepsIcons/SetActiveStep_icon.png")]
     public class SetActiveStepDefinition : ValueImmediateStepDefinition<GameObject, bool>
     {
     }

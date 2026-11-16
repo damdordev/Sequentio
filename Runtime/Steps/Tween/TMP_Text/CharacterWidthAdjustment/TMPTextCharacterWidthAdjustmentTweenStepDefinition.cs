@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening character width adjustment on a TextMesh Pro component.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(TMPTextCharacterWidthAdjustmentTweenStepPlayer), "TMP_Text/CharacterWidthAdjustment", "CharacterWidthAdjustment", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(TMPTextCharacterWidthAdjustmentTweenStepPlayer), "TMP_Text/CharacterWidthAdjustment", "CharacterWidthAdjustment", "Packages/com.damdor.sequentio/Editor/StepsIcons/TMPTextCharacterWidthAdjustmentTweenStep_icon.png")]
     public class TMPTextCharacterWidthAdjustmentTweenStepDefinition : FloatTweenStepDefinition<TMP_Text>
     {
     }

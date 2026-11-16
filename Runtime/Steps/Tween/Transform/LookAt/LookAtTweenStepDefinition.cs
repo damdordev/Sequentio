@@ -9,7 +9,7 @@ namespace Damdor.Sequentio
     /// When LookAtTarget is assigned, its world position takes precedence over Position.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(LookAtTweenStepPlayer), "Transform/LookAt", "Look at", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(LookAtTweenStepPlayer), "Transform/LookAt", "Look at", "Packages/com.damdor.sequentio/Editor/StepsIcons/LookAtTweenStep_icon.png")]
     public class LookAtTweenStepDefinition : StepDefinition
     {
         public VarioValue<Transform> Target

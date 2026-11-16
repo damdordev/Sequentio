@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening offset min on a RectTransform.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(RectTransformOffsetMinTweenStepPlayer), "RectTransform/OffsetMin", "OffsetMin", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(RectTransformOffsetMinTweenStepPlayer), "RectTransform/OffsetMin", "OffsetMin", "Packages/com.damdor.sequentio/Editor/StepsIcons/RectTransformOffsetMinTweenStep_icon.png")]
     public class RectTransformOffsetMinTweenStepDefinition : Vector2TweenStepDefinition<RectTransform>
     {
     }

@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines a step for setting Material.keyword.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(SetMaterialKeywordStepPlayer), "Material/Keyword", "Keyword", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(SetMaterialKeywordStepPlayer), "Material/Keyword", "Keyword", "Packages/com.damdor.sequentio/Editor/StepsIcons/SetMaterialKeywordStep_icon.png")]
     public class SetMaterialKeywordStepDefinition : ValueImmediateStepDefinition<Material, bool>
     {
         /// <summary>

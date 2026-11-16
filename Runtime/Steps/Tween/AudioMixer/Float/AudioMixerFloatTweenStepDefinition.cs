@@ -9,7 +9,7 @@ namespace Damdor.Sequentio
     /// Defines the AudioMixer/Float step.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(AudioMixerFloatTweenStepPlayer), "AudioMixer/Float", "AudioMixer Float", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(AudioMixerFloatTweenStepPlayer), "AudioMixer/Float", "AudioMixer Float", "Packages/com.damdor.sequentio/Editor/StepsIcons/AudioMixerFloatTweenStep_icon.png")]
     public class AudioMixerFloatTweenStepDefinition : FloatTweenStepDefinition<AudioMixer>
     {
         /// <summary>

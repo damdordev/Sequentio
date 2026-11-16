@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for punching transform local scale.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(PunchScaleStepPlayer), "Transform/Punch scale", "Punch scale", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(PunchScaleStepPlayer), "Transform/Punch scale", "Punch scale", "Packages/com.damdor.sequentio/Editor/StepsIcons/PunchScaleStep_icon.png")]
     public class PunchScaleStepDefinition : PunchStepDefinition<Transform>
     {
         

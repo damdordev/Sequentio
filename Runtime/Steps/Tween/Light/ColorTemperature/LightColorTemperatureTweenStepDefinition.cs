@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening Light.colorTemperature.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(LightColorTemperatureTweenStepPlayer), "Light/ColorTemperature", "ColorTemperature", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(LightColorTemperatureTweenStepPlayer), "Light/ColorTemperature", "ColorTemperature", "Packages/com.damdor.sequentio/Editor/StepsIcons/LightColorTemperatureTweenStep_icon.png")]
     public class LightColorTemperatureTweenStepDefinition : FloatTweenStepDefinition<Light>
     {
     }

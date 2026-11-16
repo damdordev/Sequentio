@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Damdor.Sequentio
 {
     [Serializable] 
-    [SequentioStep(typeof(LogEventStepPlayer), "Log", "Log", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(LogEventStepPlayer), "Log", "Log", "Packages/com.damdor.sequentio/Editor/StepsIcons/LogEventStep_icon.png")]
     public class LogEventStepDefinition : EventStepDefinition
     {
         public LogType LogType

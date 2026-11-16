@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines the Renderer.PropertyBlock/Texture step.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(SetRendererPropertyBlockTextureStepPlayer), "Renderer.PropertyBlock/Texture", "Texture", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(SetRendererPropertyBlockTextureStepPlayer), "Renderer.PropertyBlock/Texture", "Texture", "Packages/com.damdor.sequentio/Editor/StepsIcons/SetRendererPropertyBlockTextureStep_icon.png")]
     public class SetRendererPropertyBlockTextureStepDefinition : ValueImmediateStepDefinition<Renderer, Texture>
     {
         /// <summary>

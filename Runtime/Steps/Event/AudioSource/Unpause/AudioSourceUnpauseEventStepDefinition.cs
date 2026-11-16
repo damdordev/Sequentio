@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Damdor.Sequentio
 {
     [Serializable]
-    [SequentioStep(typeof(AudioSourceUnpauseEventStepPlayer), "AudioSource/Unpause", "Unpause", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(AudioSourceUnpauseEventStepPlayer), "AudioSource/Unpause", "Unpause", "Packages/com.damdor.sequentio/Editor/StepsIcons/AudioSourceUnpauseEventStep_icon.png")]
     public class AudioSourceUnpauseEventStepDefinition : EventStepDefinition
     {
         public VarioValue<AudioSource> Target

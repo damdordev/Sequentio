@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace Damdor.Sequentio
 {
     [Serializable]
-    [SequentioStep(typeof(LayoutGroupRebuildEventStepPlayer), "LayoutGroup/Rebuild", "Rebuild", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(LayoutGroupRebuildEventStepPlayer), "LayoutGroup/Rebuild", "Rebuild", "Packages/com.damdor.sequentio/Editor/StepsIcons/LayoutGroupRebuildEventStep_icon.png")]
     public class LayoutGroupRebuildEventStepDefinition : EventStepDefinition
     {
         public VarioValue<LayoutGroup> Target

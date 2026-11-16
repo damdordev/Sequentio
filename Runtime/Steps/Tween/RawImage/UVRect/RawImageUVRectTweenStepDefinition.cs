@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines the RawImage/UVRect step.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(RawImageUVRectTweenStepPlayer), "RawImage/UVRect", "UVRect", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(RawImageUVRectTweenStepPlayer), "RawImage/UVRect", "UVRect", "Packages/com.damdor.sequentio/Editor/StepsIcons/RawImageUVRectTweenStep_icon.png")]
     public class RawImageUVRectTweenStepDefinition : TweenStepDefinition<RawImage, Rect>
     {
     }

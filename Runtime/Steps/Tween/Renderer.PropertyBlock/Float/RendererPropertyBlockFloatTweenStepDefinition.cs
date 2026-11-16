@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines the Renderer.PropertyBlock/Float step.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(RendererPropertyBlockFloatTweenStepPlayer), "Renderer.PropertyBlock/Float", "Float", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(RendererPropertyBlockFloatTweenStepPlayer), "Renderer.PropertyBlock/Float", "Float", "Packages/com.damdor.sequentio/Editor/StepsIcons/RendererPropertyBlockFloatTweenStep_icon.png")]
     public class RendererPropertyBlockFloatTweenStepDefinition : FloatTweenStepDefinition<Renderer>
     {
         /// <summary>

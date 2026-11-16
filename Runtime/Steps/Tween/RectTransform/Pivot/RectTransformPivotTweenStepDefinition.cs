@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening pivot on a RectTransform.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(RectTransformPivotTweenStepPlayer), "RectTransform/Pivot", "Pivot", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(RectTransformPivotTweenStepPlayer), "RectTransform/Pivot", "Pivot", "Packages/com.damdor.sequentio/Editor/StepsIcons/RectTransformPivotTweenStep_icon.png")]
     public class RectTransformPivotTweenStepDefinition : Vector2TweenStepDefinition<RectTransform>
     {
     }

@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening min height on a LayoutElement.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(LayoutElementMinHeightTweenStepPlayer), "LayoutElement/MinHeight", "MinHeight", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(LayoutElementMinHeightTweenStepPlayer), "LayoutElement/MinHeight", "MinHeight", "Packages/com.damdor.sequentio/Editor/StepsIcons/LayoutElementMinHeightTweenStep_icon.png")]
     public class LayoutElementMinHeightTweenStepDefinition : FloatTweenStepDefinition<LayoutElement>
     {
     }

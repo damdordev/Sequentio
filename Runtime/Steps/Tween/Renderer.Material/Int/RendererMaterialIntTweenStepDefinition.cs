@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening Renderer.Material.int.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(RendererMaterialIntTweenStepPlayer), "Renderer.Material/Int", "Int", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(RendererMaterialIntTweenStepPlayer), "Renderer.Material/Int", "Int", "Packages/com.damdor.sequentio/Editor/StepsIcons/RendererMaterialIntTweenStep_icon.png")]
     public class RendererMaterialIntTweenStepDefinition : IntTweenStepDefinition<Renderer>
     {
         /// <summary>

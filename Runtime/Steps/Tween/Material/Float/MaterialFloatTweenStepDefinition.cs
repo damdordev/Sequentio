@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening Material.float.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(MaterialFloatTweenStepPlayer), "Material/Float", "Float", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(MaterialFloatTweenStepPlayer), "Material/Float", "Float", "Packages/com.damdor.sequentio/Editor/StepsIcons/MaterialFloatTweenStep_icon.png")]
     public class MaterialFloatTweenStepDefinition : FloatTweenStepDefinition<Material>
     {
         /// <summary>

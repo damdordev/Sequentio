@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for setting CanvasGroup.interactable.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(SetCanvasGroupInteractableStepPlayer), "CanvasGroup/Interactable", "Interactable", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(SetCanvasGroupInteractableStepPlayer), "CanvasGroup/Interactable", "Interactable", "Packages/com.damdor.sequentio/Editor/StepsIcons/SetCanvasGroupInteractableStep_icon.png")]
     public class SetCanvasGroupInteractableStepDefinition : ValueImmediateStepDefinition<CanvasGroup, bool>
     {
     }

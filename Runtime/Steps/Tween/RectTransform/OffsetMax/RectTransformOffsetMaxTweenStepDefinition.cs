@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening offset max on a RectTransform.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(RectTransformOffsetMaxTweenStepPlayer), "RectTransform/OffsetMax", "OffsetMax", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(RectTransformOffsetMaxTweenStepPlayer), "RectTransform/OffsetMax", "OffsetMax", "Packages/com.damdor.sequentio/Editor/StepsIcons/RectTransformOffsetMaxTweenStep_icon.png")]
     public class RectTransformOffsetMaxTweenStepDefinition : Vector2TweenStepDefinition<RectTransform>
     {
     }

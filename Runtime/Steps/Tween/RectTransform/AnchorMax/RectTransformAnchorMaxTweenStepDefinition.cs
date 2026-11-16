@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for tweening anchor max on a RectTransform.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(RectTransformAnchorMaxTweenStepPlayer), "RectTransform/AnchorMax", "AnchorMax", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(RectTransformAnchorMaxTweenStepPlayer), "RectTransform/AnchorMax", "AnchorMax", "Packages/com.damdor.sequentio/Editor/StepsIcons/RectTransformAnchorMaxTweenStep_icon.png")]
     public class RectTransformAnchorMaxTweenStepDefinition : Vector2TweenStepDefinition<RectTransform>
     {
     }

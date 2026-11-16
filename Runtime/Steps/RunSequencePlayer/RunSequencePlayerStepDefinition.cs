@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines a step that controls a sequence player component.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(RunSequencePlayerStepPlayer), "Sequentio/Run sequence player", "Run Sequence Player", "Packages/com.damdor.sequentio/Editor/StepsIcons/run-sequence.png")]
+    [SequentioStep(typeof(RunSequencePlayerStepPlayer), "Sequentio/Run sequence player", "Run Sequence Player", "Packages/com.damdor.sequentio/Editor/StepsIcons/RunSequencePlayerStep_icon.png")]
     public class RunSequencePlayerStepDefinition : StepDefinition
     {
         /// <summary>

@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for setting flip x on a SpriteRenderer.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(SetSpriteRendererFlipXStepPlayer), "SpriteRenderer/FlipX", "FlipX", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(SetSpriteRendererFlipXStepPlayer), "SpriteRenderer/FlipX", "FlipX", "Packages/com.damdor.sequentio/Editor/StepsIcons/SetSpriteRendererFlipXStep_icon.png")]
     public class SetSpriteRendererFlipXStepDefinition : ValueImmediateStepDefinition<SpriteRenderer, bool>
     {
     }
