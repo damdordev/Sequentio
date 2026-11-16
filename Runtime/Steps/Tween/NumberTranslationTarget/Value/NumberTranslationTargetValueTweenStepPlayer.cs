@@ -5,7 +5,7 @@ namespace Damdor.Sequentio
     /// <summary>
     /// Plays a step for tweening the numeric value of a translation target.
     /// </summary>
-    public class BaseNumberTranslationTargetValueTweenStepPlayer : FloatTweenStepPlayer<BaseNumberTranslationTargetValueTweenStepDefinition, BaseNumberTranslationTarget>
+    public class NumberTranslationTargetValueTweenStepPlayer : FloatTweenStepPlayer<NumberTranslationTargetValueTweenStepDefinition, BaseNumberTranslationTarget>
     {
         /// <inheritdoc />
         protected override float GetValue(BaseNumberTranslationTarget component) => component.Value;

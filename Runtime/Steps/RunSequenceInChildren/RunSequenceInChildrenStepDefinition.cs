@@ -87,5 +87,7 @@ namespace Damdor.Sequentio
             sorter = null;
             scheduler = new BaseRunWithRegularDelayScheduler();
         }
+
+        public override string GetTargetNameInEditor(VarioStorage storage) => GetTargetName(root, storage);
     }
 }

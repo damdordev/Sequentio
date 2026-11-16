@@ -7,7 +7,7 @@ namespace Damdor.Sequentio
     /// Defines a step for setting whether an image fills its center.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(SetImageFillCenterStepPlayer), "Image/FillCenter", "FillCenter", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(SetImageFillCenterStepPlayer), "Image/FillCenter", "Fill Center", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
     public class SetImageFillCenterStepDefinition : ValueImmediateStepDefinition<Image, bool>
     {
     }

@@ -60,7 +60,7 @@ namespace Damdor.Sequentio.Editor
                 rect.y + (rect.height - ProgressHeight) / 2f, ProgressWidth, ProgressHeight);
 
             ShowIcon(iconRect, step.GetType());
-            ShowLabel(labelRect, step);
+            ShowLabel(labelRect, step, storage);
             ShowDuration(durationRect, step, storage);
 
             if (sequencePlayer != null) ShowProgress(processRect, sequencePlayer, step);
@@ -92,15 +92,15 @@ namespace Damdor.Sequentio.Editor
             var icon = AssetDatabase.LoadAssetAtPath<Texture2D>(iconPath);
             return icon;
         }
+
+        public static string GetStepLabel(StepDefinition step, VarioStorage storage)
+            => $"<b>{GetStepName(step)}</b>  <color=#B8B8B8>{step.GetTargetNameInEditor(storage)}</color>";
         
-        private static void ShowLabel(Rect rect, StepDefinition step)
+        private static void ShowLabel(Rect rect, StepDefinition step, VarioStorage storage)
         {
             GUI.Label(
                 rect,
-                new GUIContent(
-                    //$"<b>{GetStepName(step)}</b>  <color=#B8B8B8>{step.TargetNameInEditor}</color>"
-                    step.GetType().Name
-                ),
+                new GUIContent(GetStepLabel(step, storage)),
                 new GUIStyle(EditorStyles.label)
                 {
                     richText = true,
@@ -109,6 +109,21 @@ namespace Damdor.Sequentio.Editor
                 }
             );
         }
+        
+        private static void ShowPath(Rect rect, StepDefinition step)
+        {
+            GUI.Label(
+                rect,
+                new GUIContent(SequentioSettings.GetStepPath(step.GetType())),
+                new GUIStyle(EditorStyles.label)
+                {
+                    richText = true,
+                    alignment = TextAnchor.MiddleLeft,
+                    clipping = TextClipping.Clip
+                }
+            );
+        }
+        
         //
         private static void ShowDuration(Rect rect, StepDefinition step, VarioStorage storage)
         {
@@ -146,20 +161,37 @@ namespace Damdor.Sequentio.Editor
                 GUILayout.Label("", GUILayout.Width(IconSize), GUILayout.Height(IconSize));
             }
         
-            var titleStyle = new GUIStyle(EditorStyles.boldLabel)
+            var nameStyle = new GUIStyle(EditorStyles.boldLabel)
             {
                 fontSize = 18,
                 alignment = TextAnchor.MiddleLeft,
                 richText = true
             };
-        
+            
+            var pathStyle = new GUIStyle(EditorStyles.boldLabel)
+            {
+                fontSize = 12,
+                alignment = TextAnchor.MiddleLeft,
+                richText = true
+            };
+
+            EditorGUILayout.BeginVertical();
             GUILayout.Label(
                 new GUIContent(
-                    $"<b>{GetStepName(step)}</b>  <color=#B8B8B8>{step.GetTargetNameInEditor(storage)}</color>"
+                    GetStepLabel(step, storage)
                 ),
-                titleStyle,
-                GUILayout.Height(32)
+                nameStyle,
+                GUILayout.Height(24)
             );
+            
+            GUILayout.Label(
+                new GUIContent(
+                    SequentioSettings.GetStepPath(step.GetType())
+                ),
+                pathStyle,
+                GUILayout.Height(24)
+            );
+            EditorGUILayout.EndVertical();
         
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Space(4);

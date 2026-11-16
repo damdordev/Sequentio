@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines the Transform/PunchPosition step.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(PunchPositionStepPlayer), "Transform/PunchPosition", "PunchPosition", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(PunchPositionStepPlayer), "Transform/PunchPosition", "Punch Position", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
     public class PunchPositionStepDefinition : PunchStepDefinition<Transform>
     {
         /// <summary>

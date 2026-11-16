@@ -8,7 +8,7 @@ namespace Damdor.Sequentio
     /// Defines a step for shaking transform Euler angles in local or world coordinates.
     /// </summary>
     [Serializable]
-    [SequentioStep(typeof(ShakeEulerStepPlayer), "Transform/Shake euler", "Shake rotation", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
+    [SequentioStep(typeof(ShakeEulerStepPlayer), "Transform/Shake euler", "Shake Rotation", "Packages/com.damdor.sequentio/Editor/StepsIcons/position.png")]
     public class ShakeEulerStepDefinition : ShakeStepDefinition<Transform>
     {
         /// <summary>
