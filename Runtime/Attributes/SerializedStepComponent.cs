@@ -21,6 +21,7 @@ namespace Damdor.Sequentio
         public void Register<T>(string name)
         {
             var type = typeof(T);
+            if (types.Contains(type)) return;
             types.Add(type);
             typeToName.Add(type, name);
         }
